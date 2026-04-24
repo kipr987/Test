@@ -1,5 +1,13 @@
 loadstring(game:HttpGet("https://pastebin.com/raw/CLNv5GXH"))()
-if game:GetService("Players").LocalPlayer.Name ~= "maksim21eks" and game:GetService("Players").LocalPlayer.Name ~= "kipr987" and game:GetService("Players").LocalPlayer.Name ~= "milanka_sisi3300" and game:GetService("Players").LocalPlayer.Name ~= "top1grinder007" and game:GetService("Players").LocalPlayer.Name ~= "Nick246name" and game:GetService("Players").LocalPlayer.Name ~= "Gkhubi22" then
+local whitelist = {"kipr987","milanka_sisi3300","Gkhubi22"}
+local is = false
+for i, v in whitelist do
+	if v == game:GetService("Players").LocalPlayer.Name then
+		is = true
+		break
+	end
+end
+if is == false then
 	game:GetService("Players").LocalPlayer:Kick("Please buy the script")
 	return
 end
