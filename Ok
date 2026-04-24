@@ -1,0 +1,1382 @@
+
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+
+function missing(t, f, fallback)
+    if type(f) == t then return f end
+    return fallback
+end
+
+queueteleport = missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
+
+local TeleportCheck = false
+
+Players.LocalPlayer.OnTeleport:Connect(function(State)
+    if (not TeleportCheck) and queueteleport then
+        TeleportCheck = true
+        -- УБРАН ПРОБЕЛ В КОНЦЕ URL!
+        queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptsHubRBX/Script/refs/heads/main/Script'))()")
+    end
+end)
+
+for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
+	if v.Name == "ui" then
+		v:Destroy()
+	end
+end
+local UI = loadstring(game:HttpGetAsync("https://pastebin.com/raw/0589YkmB"))()
+loadstring(game:HttpGetAsync("https://pastebin.com/raw/izs4tvu5"))()
+loadstring(game:HttpGetAsync("https://pastebin.com/raw/FFk271mf"))()
+
+local window = UI:Window("Premium")
+local nif = UI:Notification("Welcome to", game:GetService("Players").LocalPlayer.Name, "Okay!")
+local aim = window:Tab("Aimbot")
+local esp = window:Tab("Esp")
+local player = window:Tab("LocalPlayer")
+local misc = window:Tab("Misc")
+local miscsup = window:Tab("Misc (Support)")
+local car = window:Tab("Car")
+local robbers = window:Tab("Robbers")
+local teleport = window:Tab("Teleport")
+
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local Holding = false
+
+_G.TeamCheck = true
+_G.AimPart = "HumanoidRootPart"
+_G.Sensitivity = 0
+local parts = {}
+local function GetClosestPlayer()
+	local Target = nil
+
+	for _, v in next, Players:GetPlayers() do
+		if v.Name ~= LocalPlayer.Name then
+			if _G.TeamCheck == true then
+				if v.Team ~= LocalPlayer.Team then
+					if v.Character ~= nil then
+						if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
+							if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").WalkSpeed > 0 and v.Character:FindFirstChild("Humanoid").Health ~= 0 and LocalPlayer.Character.Humanoid.Sit == false then
+								local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart", math.huge).Position)
+								local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
+
+								if VectorDistance < 100 and (v.Character:FindFirstChild("HumanoidRootPart").Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= _G.Dis then
+									local raparam = RaycastParams.new()
+									raparam.FilterType = Enum.RaycastFilterType.Exclude
+									local inv = {}
+									for i, v in parts do
+										table.insert(inv,v["Part"])
+									end
+									local characters = {}
+									for i, v in game:GetService("Players"):GetChildren() do
+										table.insert(characters,v.Character)
+									end
+									raparam.FilterDescendantsInstances = {inv,game:GetService("Players").LocalPlayer.Character,characters}
+									local raycast = workspace:Raycast(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * 100,raparam)
+									if raycast and raycast.Instance then
+										if not raycast.Instance:FindFirstChild("T") then
+											local b = raycast.Instance.Transparency
+											parts[raycast.Instance] = {["Transparency"] = b,["CanCollide"] = raycast.Instance.CanCollide,["Part"] = raycast.Instance}
+											local t = Instance.new("IntValue", raycast.Instance)
+											t.Name = "T"
+											raycast.Instance.CanCollide = false
+											raycast.Instance.Transparency = 1
+										end
+									end
+									TweenService:Create(Camera, TweenInfo.new(_G.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, v.Character[_G.AimPart].Position)}):Play()
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return Target
+end
+
+function aimtog()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.aim == false then
+			run:Disconnect()
+		end
+		if Holding == true and _G.aim then
+			pcall(function()
+				GetClosestPlayer()
+			end)    
+		elseif Holding == false and _G.aim then
+			for i, v in parts do
+				v["Part"].CanCollide = v["CanCollide"]
+				v["Part"].Transparency = v["Transparency"]
+				if v["Part"]:FindFirstChild("T") then
+					v["Part"].T:Destroy()
+				end
+			end
+			parts = {}
+		end
+	end)
+end
+
+_G.aim = true
+aim:Toggle("Aimbot",true,function(value)
+	_G.aim = value
+	aimtog()
+end)
+
+_G.Dis = 300
+aim:Slider("Distance",0,600,300,function(value)
+	_G.Dis = value
+end)
+
+_G.Esp = true
+esp:Toggle("Esp",true,function(value)
+	_G.Esp = value
+end)
+
+function drop()
+	while wait(1) and _G.dropesp do
+		for i, v in workspace:GetChildren() do
+			if _G.dropesp then
+				if v.Name == "Drop" then
+					if not v:FindFirstChild("BillboardGui") then
+						local bill = Instance.new("BillboardGui", v)
+						bill.Adornee = v
+						bill.Size = UDim2.new(0, 200,0, 50)
+						bill.StudsOffset = Vector3.new(0,4,0)
+						bill.AlwaysOnTop = true
+
+						local textlabel = Instance.new("TextLabel", bill)
+						textlabel.Size = UDim2.new(1,0,1,0)
+						textlabel.Position = UDim2.new(0,0,0,0)
+						textlabel.Name = "TextLabelTitle"
+						textlabel.Text = v.Name
+						textlabel.BackgroundTransparency = 1
+						textlabel.TextSize = 17
+						textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+						textlabel.TextColor3 = v.Bottom.Color
+						local stroke = Instance.new("UIStroke", textlabel)
+					end
+				end
+			elseif v.Name == "Drop" then
+				if v:FindFirstChild("BillboardGui") then
+					v:FindFirstChild("BillboardGui"):Destroy()
+				end
+			end
+		end
+	end
+	for i, v in workspace:GetChildren() do
+		if v.Name == "Drop" then
+			if v:FindFirstChild("BillboardGui") then
+				v:FindFirstChild("BillboardGui"):Destroy()
+			end
+		end
+	end
+end
+
+_G.dropesp = true
+esp:Toggle("Drop Esp",true,function(value)
+	_G.dropesp = value
+	drop()
+end)
+
+function speed()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		pcall(function()
+			if _G.speedOn then
+				game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").WalkSpeed = _G.speed
+			else
+				game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").WalkSpeed = 16
+				run:Disconnect()
+			end
+		end)
+	end)
+end
+
+_G.speedOn = true
+player:Toggle("Speed On/Off",true,function(value)
+	_G.speedOn = value
+	speed()
+end)
+
+_G.speed = 24
+player:Slider("Speed",0,100,24,function(value)
+	_G.speed = value
+end)
+
+local infJump
+infJumpDebounce = false
+player:Toggle("Inf Jump",false,function(value)
+	if value == true then
+		infJump = game:GetService("UserInputService").JumpRequest:Connect(function()
+			if not infJumpDebounce then
+				infJumpDebounce = true
+				game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+				wait()
+				infJumpDebounce = false
+			end
+		end)
+	else
+		infJump:Disconnect()
+	end
+end)
+
+function noclip()
+local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		pcall(function()
+			if _G.Noclip then
+				for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+					if v:IsA("BasePart") then
+						v.CanCollide = false
+					end
+				end
+			else
+				for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+					if v:IsA("BasePart") then
+						v.CanCollide = true
+					end
+				end
+				run:Disconnect()
+			end
+		end)
+	end)
+end
+
+_G.Noclip = false
+player:Toggle("Noclip", false, function(value)
+	_G.Noclip = value
+	noclip()
+end)
+
+misc:Button("Delete Doors",function(value)
+	spawn(function()
+		for i, v in workspace:GetChildren() do
+			if v.Name == "SlideDoor" or v.Name == "SwingDoor" or v.Name == "Doors" then
+				for i, f in v:GetDescendants() do
+					if f:IsA("Part") or f:IsA("MeshPart") then
+						f.CanCollide = false
+						f.Transparency = 1
+					end
+				end
+			end
+		end
+	end)
+	spawn(function()
+		for i, v in workspace.RobberyTomb.Gates:GetChildren() do
+			if v:IsA("Model") then
+				for i, f in v.InnerModel:GetChildren() do
+					f.CanCollide = false
+					f.Transparency = 1
+				end
+			end
+		end
+		workspace.RobberyTomb.Tomb.ExitDoor.InnerModel.Base.CanCollide = false
+		workspace.RobberyTomb.Tomb.ExitDoor.InnerModel.Base.Transparency = 1
+	end)
+	spawn(function()
+		for i, f in game:GetService("Workspace").Jewelrys.Jewelry.Doors:GetDescendants() do
+			if f:IsA("Part") or f:IsA("MeshPart") then
+				f.CanCollide = false
+				f.Transparency = 1
+			end
+		end
+		game:GetService("Workspace").Jewelrys.Jewelry.Doors.SwingDoorVentTop.Model.Part:Destroy()
+	end)
+
+	spawn(function()
+		for i, v in workspace.PoliceStation:GetChildren() do
+			if v.Name == "SlideDoor" or v.Name == "SwingDoor" or v.Name == "Doors" then
+				for i, f in v:GetDescendants() do
+					if f:IsA("Part") or f:IsA("MeshPart") then
+						f.CanCollide = false
+						f.Transparency = 1
+					end
+				end
+			end
+		end
+	end)
+
+	spawn(function()
+		for i, f in workspace.Museum.Doors:GetDescendants() do
+			if f:IsA("Part") or f:IsA("MeshPart") then
+				f.CanCollide = false
+				f.Transparency = 1
+			end
+		end
+	end)
+
+	spawn(function()
+		for i, v in workspace.Jewelrys:GetChildren()[1]:GetChildren() do
+			if v.Name == "SlideDoor" or v.Name == "SwingDoor" then
+				for i, f in v:GetDescendants() do
+					if f:IsA("Part") or f:IsA("MeshPart") then
+						f.CanCollide = false
+						f.Transparency = 1
+					end
+				end
+			end
+		end
+	end)
+
+	spawn(function()
+		for i, v in workspace.Banks:GetChildren() do
+			for i, g in v:GetChildren() do
+				if g.Name == "SlideDoor" or g.Name == "SwingDoor" then
+					for i, f in g:GetDescendants() do
+						wait()
+						if f:IsA("Part") or f:IsA("MeshPart") then
+							f.CanCollide = false
+							f.Transparency = 1
+						end
+					end
+				end
+			end
+		end
+	end)
+end)
+local localPlayer = game:GetService('Players').LocalPlayer
+function onCharacterAdded(character)
+	wait(1)
+	if character then
+		local humanoidRootPart = character:WaitForChild('HumanoidRootPart');
+		for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+			if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
+				v.CanTouch = not _G.Lasers
+			end
+		end
+		if _G.Ragdoll then
+			humanoidRootPart:AddTag('NoFallDamage');
+			humanoidRootPart:AddTag('NoRagdoll');
+		else
+			humanoidRootPart:RemoveTag('NoFallDamage');
+			humanoidRootPart:RemoveTag('NoRagdoll');
+		end
+	end
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.Lasers then
+			pcall(function()
+				workspace.Museum.Lights:Destroy()
+				for i, v in workspace.RobberyTomb.SpikeRoom.Spikes:GetDescendants() do
+					if v.Name == "Spikes" or v.Name == "Door" then
+						v:Destroy()
+					end
+				end
+				workspace.MilitaryBase.Forcefield:Destroy()
+			end)
+		else
+			run:Disconnect()
+		end
+	end)
+end
+
+--function lasers()
+--	for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+--		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
+--			v.CanTouch = not _G.Lasers
+--		end
+--	end
+--end
+
+_G.Lasers = true
+misc:Toggle("Delete Lasers",true,function(value)
+	_G.Lasers = value
+	onCharacterAdded(localPlayer.Character)
+end)
+
+function rocket()
+	while wait(1) and _G.rocket do
+		pcall(function()
+			if workspace:FindFirstChild("CargoShip") then
+				if workspace.CargoShip.TurretBack.Arm:FindFirstChild("Tip") then
+					workspace.CargoShip.TurretBack.Arm.Tip:Destroy()
+				end
+				if workspace.CargoShip.TurretFront.Arm:FindFirstChild("Tip") then
+					workspace.CargoShip.TurretFront.Arm.Tip:Destroy()
+				end
+			end
+			for i, v in workspace.OilRig.Turrets:GetChildren() do
+				if v:FindFirstChild("Arm") and v:FindFirstChild("Arm"):FindFirstChild("Tip") then
+					v:FindFirstChild("Arm"):FindFirstChild("Tip"):Destroy()
+				end
+			end
+			if workspace.MilitaryBase.MilitaryTower.MachineGun.Top:FindFirstChild("Tip") then
+				workspace.MilitaryBase.MilitaryTower.MachineGun.Top.Tip:Destroy()
+			end
+		end)
+	end
+end
+
+_G.rocket = true
+misc:Toggle("Delete Turrets",true,function(value)
+	_G.rocket = value
+	rocket()
+end)
+
+function killed()
+	while wait(.5) and _G.Killed do
+		pcall(function()
+			if workspace:FindFirstChild("Drop") and workspace:FindFirstChild("Drop"):FindFirstChild("NPCs") then
+				for i, f in game:GetService("Workspace").Drop.NPCs:GetChildren() do
+					if (f.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 300 then
+						f.Humanoid.Health = 0
+					end
+				end
+			end
+			if workspace.OilRig:GetChildren()[1] then
+				for i, f in workspace.OilRig.GuardsFolder:GetChildren() do
+					if (f.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 300 then
+						f.Humanoid.Health = 0
+					end
+				end
+			end
+			for i, f in workspace.MansionRobbery.GuardsFolder:GetChildren() do
+				if (f.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 300 then
+					f.NPCDestObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+					f.NPCLookAtObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+				end
+			end
+		end)
+	end
+end
+
+_G.Killed = true
+misc:Toggle("Killed NPC",true,function(value)
+	_G.Killed = value
+	killed()
+end)
+
+function hitbox()
+	while wait(1) and _G.Hitbox do
+		for i, v in game:GetService("Players"):GetChildren() do
+			if v.Character and v.Name ~= game:GetService("Players").LocalPlayer.Name and v.Team ~= game:GetService("Players").LocalPlayer.Team then
+				if v.Character:FindFirstChild("HumanoidRootPart") then
+					if _G.trans then
+						v.Character:FindFirstChild("HumanoidRootPart").Transparency = 1
+					else
+						v.Character:FindFirstChild("HumanoidRootPart").Transparency = .8
+					end
+					v.Character:FindFirstChild("HumanoidRootPart").CanCollide = false
+					if v.Character.Humanoid.Sit == true then
+						v.Character:FindFirstChild("HumanoidRootPart").Size = Vector3.new(1.5,1.5,1.5)
+					else
+						v.Character:FindFirstChild("HumanoidRootPart").Size = Vector3.new(10,10,10)
+					end
+				end
+			end
+		end
+		for i, v in game:GetService("Players"):GetChildren() do
+			if _G.Hitbox == false or v.Team == game:GetService("Players").LocalPlayer.Team then
+				if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+					v.Character:FindFirstChild("HumanoidRootPart").Transparency = 1
+					v.Character:FindFirstChild("HumanoidRootPart").CanCollide = true
+					v.Character:FindFirstChild("HumanoidRootPart").Size = Vector3.new(1.8, 2.1, 0.95)
+				end
+			end
+		end
+	end
+	for i, v in game:GetService("Players"):GetChildren() do
+		if _G.Hitbox == false then
+			if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+				v.Character:FindFirstChild("HumanoidRootPart").Transparency = 1
+				v.Character:FindFirstChild("HumanoidRootPart").CanCollide = true
+				v.Character:FindFirstChild("HumanoidRootPart").Size = Vector3.new(1.8, 2.1, 0.95)
+			end
+		end
+	end
+end
+
+_G.Hitbox = true
+misc:Toggle("Hitbox",true,function(value)
+	_G.Hitbox = value
+	hitbox()
+end)
+
+function head()
+	while wait(1) and _G.ceohead do
+		if _G.ceohead then
+			if workspace.MansionRobbery:FindFirstChild("ActiveBoss") then
+				workspace.MansionRobbery:FindFirstChild("ActiveBoss").Head.Size = Vector3.new(7,7,7)
+				workspace.MansionRobbery.ActiveBoss.NPCLookAtObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+				workspace.MansionRobbery.ActiveBoss.NPCDestObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+			end
+		end 
+	end
+	if _G.ceohead == false then
+		if workspace.MansionRobbery:FindFirstChild("ActiveBoss") then
+			workspace.MansionRobbery:FindFirstChild("ActiveBoss").Head.Size = Vector3.new(0.9599999785423279, 1.2059999704360962, 1.0290000438690186)
+		end
+	end 
+end
+
+_G.ceohead = true
+misc:Toggle("Ceo Head",true,function(value)
+	_G.ceohead = value
+	head()
+end)
+
+local part = nil
+function code()
+	while wait(1) and _G.code do
+		pcall(function()
+			if _G.code then
+				local finalCode = ""
+
+				for i, v in workspace.Casino.RobberyDoor.Codes:GetChildren() do
+					v.Name = "Code"..i
+				end
+
+				local function vectorsAreSimilar(vec1, vec2, tolerance)
+					tolerance = tolerance or 0.3
+					return math.abs(vec1.X - vec2.X) <= tolerance and
+						math.abs(vec1.Y - vec2.Y) <= tolerance and
+						math.abs(vec1.Z - vec2.Z) <= tolerance
+				end
+
+				for i, v in workspace.Casino.RobberyDoor.Codes:GetChildren() do
+					if v:GetChildren()[1].SurfaceGui.TextLabel.Text ~= "" then
+						for j, f in v:GetChildren() do
+							local text = f.SurfaceGui.TextLabel.Text
+							local pos = f.Position
+							if vectorsAreSimilar(pos, Vector3.new(-52.222, 19.919, -4693.738)) then
+							elseif vectorsAreSimilar(pos, Vector3.new(-88.320, 18.941, -4736.364)) then
+							elseif vectorsAreSimilar(pos, Vector3.new(94.722, 23.271, -4632.601)) then
+							elseif vectorsAreSimilar(pos, Vector3.new(-41.168, 20.130, -4696.096)) then
+							elseif vectorsAreSimilar(pos, Vector3.new(-63.617, 18.504, -4733.426)) then
+							end
+						end
+					end
+				end
+
+				for i, v in workspace.Casino.RobberyDoor.Codes:GetChildren() do
+					if v:GetChildren()[1].SurfaceGui.TextLabel.Text ~= "" then
+						local code1, code2, code3, code4 = "", "", "", ""
+
+						for j, f in v:GetChildren() do
+							local pos = f.Position
+							local text = f.SurfaceGui.TextLabel.Text
+
+							if vectorsAreSimilar(pos, Vector3.new(-51.635, 19.932, -4691.796)) then
+								code1 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-51.973, 19.900, -4692.715)) then
+								code2 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-52.222, 19.919, -4693.738)) then
+								code3 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-52.482, 19.926, -4694.694)) then
+								code4 = text
+
+							elseif vectorsAreSimilar(pos, Vector3.new(-90.602, 18.898, -4735.708)) then
+								code1 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-89.439, 18.929, -4736.046)) then
+								code2 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-88.320, 18.941, -4736.364)) then
+								code3 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-87.321, 18.963, -4736.692)) then
+								code4 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(95.008, 21.032, -4631.565)) then
+								code1 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(94.850, 22.142, -4632.097)) then
+								code2 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(94.722, 23.271, -4632.601)) then
+								code3 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(94.575, 24.292, -4633.174)) then
+								code4 = text
+
+							elseif vectorsAreSimilar(pos, Vector3.new(-41.697, 20.076, -4697.997)) then
+								code1 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-41.390, 20.116, -4697.065)) then
+								code2 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-41.168, 20.130, -4696.096)) then
+								code3 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-40.898, 20.066, -4695.148)) then
+								code4 = text
+
+							elseif vectorsAreSimilar(pos, Vector3.new(-63.032, 18.531, -4731.471)) then
+								code1 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-63.328, 18.547, -4732.481)) then
+								code2 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-63.617, 18.504, -4733.426)) then
+								code3 = text
+							elseif vectorsAreSimilar(pos, Vector3.new(-63.853, 18.526, -4734.401)) then
+								code4 = text
+							end
+						end
+
+						if code1 ~= "" and code2 ~= "" and code3 ~= "" and code4 ~= "" then
+							finalCode = code1..code2..code3..code4
+							break
+						end
+					end
+				end
+
+				if part == nil then
+					part = Instance.new("Part",workspace)
+					part.Anchored = true
+					part.Transparency = 1
+					part.CanCollide = false
+					part.Position = Vector3.new(44, 21, -4701)
+
+					local bill = Instance.new("BillboardGui", part)
+					bill.Adornee = part
+					bill.Size = UDim2.new(0, 200,0, 50)
+					bill.StudsOffset = Vector3.new(0,4,0)
+					bill.AlwaysOnTop = false
+
+					local textlabel = Instance.new("TextLabel", bill)
+					textlabel.Size = UDim2.new(1,0,1,0)
+					textlabel.Position = UDim2.new(0,0,0,0)
+					textlabel.Name = "TextLabelTitle"
+					textlabel.Text = ""
+					textlabel.BackgroundTransparency = 1
+					textlabel.TextSize = 17
+					textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+					textlabel.TextColor3 = Color3.new(1,1,1)
+					local stroke = Instance.new("UIStroke", textlabel)
+				end
+				part.BillboardGui.TextLabelTitle.Text = finalCode
+			end
+		end)
+	end
+end
+
+_G.code = true
+misc:Toggle("Casino Code",true,function(value)
+	_G.code = value
+	code()
+end)
+_G.trans = false
+misc:Toggle("HitBox Transparency",false,function(value)
+	_G.trans = value
+end)
+
+function plane()
+	while wait(2) and _G.plane do
+		pcall(function()
+			if workspace:FindFirstChild("Plane") then
+				for i, v in workspace.Plane.BottomDoor.Door:GetChildren() do
+					if v:IsA("Part") or v:IsA("MeshPart") then
+						v.CanCollide = false
+						v.Transparency = 1
+					end
+				end
+			end
+		end)
+	end
+end
+
+_G.plane = true
+misc:Toggle("Plane Door Remove",true,function(value)
+	_G.plane = value
+	plane()
+end)
+
+_G.Ragdoll = true
+misc:Toggle("Anti Ragdoll",true,function(value)
+	_G.Ragdoll = value
+	onCharacterAdded(localPlayer.Character)
+end)
+localPlayer.CharacterAdded:Connect(onCharacterAdded)
+onCharacterAdded(localPlayer.Character)
+--miscsup:Button("Premium Garage",function()
+--	if _G.cheat == "High" then
+--		local GarageUtils = require(game:GetService("ReplicatedStorage").Garage.GarageUtils)
+
+--		local originalInGarage = GarageUtils.inPhysicalGarage
+--		GarageUtils.inPhysicalGarage = function()
+--			return true
+--		end
+
+--		local originalHasPremium = GarageUtils.hasPremium
+--		GarageUtils.hasPremium = function()
+--			return true
+--		end
+--	end
+--end)
+
+local lock = 3
+local value = 0
+UserInputService.InputBegan:Connect(function(key,event)
+	if event then return end
+	if key.UserInputType == Enum.UserInputType.MouseButton2 then
+		Holding = true
+	end
+	if key.KeyCode == Enum.KeyCode.W then
+		value = 1
+	end
+	if key.KeyCode == Enum.KeyCode.S then
+		value = -1
+	end
+	if key.KeyCode == Enum.KeyCode.A then
+		_G.turnspeed = lock
+	end
+	if key.KeyCode == Enum.KeyCode.D then
+		_G.turnspeed = -lock
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(key,event)
+	if event then return end
+	if key.UserInputType == Enum.UserInputType.MouseButton2 then
+		Holding = false
+	end
+	if key.KeyCode == Enum.KeyCode.W then
+		value = 0
+	end
+	if key.KeyCode == Enum.KeyCode.S then
+		value = 0
+	end
+	if key.KeyCode == Enum.KeyCode.A then
+		_G.turnspeed = 0
+	end
+	if key.KeyCode == Enum.KeyCode.D then
+		_G.turnspeed = 0
+	end
+end)
+
+
+function cartog()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.Car then
+			for i,v in next,workspace.Vehicles:children() do
+				if v.Name ~= "Heli" then
+					if v:FindFirstChild("Engine") then
+						local bf,cf = v.Engine:FindFirstChild("NewForce"),v:GetPrimaryPartCFrame().lookVector
+						if not bf then 
+							bf = v.Engine:FindFirstChild("BodyForce") or v.Engine:FindFirstChild("VectorForce")
+							if bf then
+								bf = bf:Clone()
+								bf.Parent = v.Engine
+								bf.Name = "NewForce"
+							end
+						end
+						if bf then
+							local fa = 1
+							if v.Name:lower():find("bike") then fa = .3 elseif v.Name:lower():find("bugg") then fa = .5 end
+							if v.Seat.PlayerName.Value ~= game:GetService("Players").LocalPlayer.Name then fa = 0 end
+							bf.Force = Vector3.new(cf.X*300000*value*fa*_G.CarSpeed,0,cf.Z*300000*value*fa*_G.CarSpeed)
+						end
+					end
+				end
+			end
+		else
+			run:Disconnect()
+		end
+	end)
+end
+
+_G.Car = false
+car:Toggle("Car Speed",false,function(value)
+	_G.Car = value
+	cartog()
+end)
+
+_G.CarSpeed = 3
+car:Slider("Speed",0,10,3,function(value)
+	_G.CarSpeed = value
+end)
+
+function turn()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.turn then
+			for i, v in workspace.Vehicles:GetChildren() do
+				if v:FindFirstChild("_VehicleState_"..game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyAngularVelocity") then
+					v.Engine.BodyAngularVelocity.AngularVelocity = Vector3.new(0,_G.turnspeed,0)
+					break
+				end
+			end
+		else
+			run:Disconnect()
+		end
+	end)
+end
+
+_G.turn = false
+car:Toggle("Turn Speed",false,function(value)
+	_G.turn = value
+	turn()
+end)
+
+_G.turnspeed = 0
+car:Slider("Turn",0,10,3,function(value)
+	lock = value
+end)
+
+function heli()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.heli then
+			for i,v in next,workspace.Vehicles:children() do
+				if v:FindFirstChild("_VehicleState_"..game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyVelocity") then
+					v.Engine:FindFirstChild("BodyVelocity").Velocity *= Vector3.new(_G.helispeed,_G.helispeed,_G.helispeed)
+				end
+			end
+		else
+			run:Disconnect()
+		end
+	end)
+end
+
+_G.heli = false
+car:Toggle("Heli Speed",false,function(value)
+	_G.heli = value
+	heli()
+end)
+_G.helispeed = 10
+car:Slider("Speed",0,10,10,function(value)
+	_G.helispeed = value
+end)
+
+--_G.collision = false
+--car:Toggle("Car Collision",false,function(value)
+--	_G.collision = value
+--end)
+robbers:Button("Exit Jewerly [Надо встать чтоб над головой была вентиляция]",function()
+	local tween = game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.5,Enum.EasingStyle.Linear),{CFrame = CFrame.new(99, 114, 1284)})
+	tween:Play()
+end)
+
+robbers:Button("Bank Creator",function()
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.3,Enum.EasingStyle.Linear),{CFrame = CFrame.new(-628, 18, -6034)}):Play()
+	wait(.3)
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.3,Enum.EasingStyle.Linear),{CFrame = CFrame.new(-628, 18, -6014)}):Play()
+end)
+
+robbers:Button("Bank Rising",function()
+	local t = math.random(18.5, 19)
+print(t)
+game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Anchored = true
+game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.5,Enum.EasingStyle.Linear),{CFrame = CFrame.new(56, t, 825)}):Play()
+	wait(.5)
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(1,Enum.EasingStyle.Linear),{CFrame = CFrame.new(56, t, 845)}):Play()
+	wait(1)
+	game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Anchored = false
+end)
+
+
+FLYING = false
+QEfly = true
+iyflyspeed = 1
+vehicleflyspeed = 6
+function getRoot(char)
+	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return rootPart
+end
+
+function sFLY(vfly)
+	local plr = game:GetService("Players").LocalPlayer
+	local char = plr.Character or plr.CharacterAdded:Wait()
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		repeat task.wait() until char:FindFirstChildOfClass("Humanoid")
+		humanoid = char:FindFirstChildOfClass("Humanoid")
+	end
+
+	if flyKeyDown or flyKeyUp then
+		flyKeyDown:Disconnect()
+		flyKeyUp:Disconnect()
+	end
+
+	local T = getRoot(char)
+	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local SPEED = 0
+
+	local function FLY()
+		FLYING = true
+		local BG = Instance.new('BodyGyro')
+		local BV = Instance.new('BodyVelocity')
+		BG.P = 9e4
+		BG.Parent = T
+		BV.Parent = T
+		BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+		BG.CFrame = T.CFrame
+		BV.Velocity = Vector3.new(0, 0, 0)
+		BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+		task.spawn(function()
+			repeat task.wait()
+				local camera = workspace.CurrentCamera
+				if not vfly and humanoid then
+					humanoid.PlatformStand = true
+				end
+
+				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+					SPEED = 50
+				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+					BV.Velocity = ((camera.CFrame.LookVector * (CONTROL.F + CONTROL.B)) + ((camera.CFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - camera.CFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+					BV.Velocity = ((camera.CFrame.LookVector * (lCONTROL.F + lCONTROL.B)) + ((camera.CFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - camera.CFrame.p)) * SPEED
+				else
+					BV.Velocity = Vector3.new(0, 0, 0)
+				end
+				BG.CFrame = camera.CFrame
+			until not FLYING
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BG:Destroy()
+			BV:Destroy()
+
+			if humanoid then humanoid.PlatformStand = false end
+		end)
+	end
+
+	flyKeyDown = game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+		if input.KeyCode == Enum.KeyCode.W then
+			CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
+		elseif input.KeyCode == Enum.KeyCode.S then
+			CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
+		elseif input.KeyCode == Enum.KeyCode.A then
+			CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
+		elseif input.KeyCode == Enum.KeyCode.D then
+			CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
+		elseif input.KeyCode == Enum.KeyCode.E and QEfly then
+			CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
+		elseif input.KeyCode == Enum.KeyCode.Q and QEfly then
+			CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
+		end
+		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+	end)
+
+	flyKeyUp = game:GetService("UserInputService").InputEnded:Connect(function(input, processed)
+		if input.KeyCode == Enum.KeyCode.W then
+			CONTROL.F = 0
+		elseif input.KeyCode == Enum.KeyCode.S then
+			CONTROL.B = 0
+		elseif input.KeyCode == Enum.KeyCode.A then
+			CONTROL.L = 0
+		elseif input.KeyCode == Enum.KeyCode.D then
+			CONTROL.R = 0
+		elseif input.KeyCode == Enum.KeyCode.E then
+			CONTROL.Q = 0
+		elseif input.KeyCode == Enum.KeyCode.Q then
+			CONTROL.E = 0
+		end
+	end)
+	FLY()
+end
+
+function NOFLY()
+	FLYING = false
+	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+	if game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+		game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+	end
+	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
+
+function carf()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.carfly then
+			if game:GetService("Players").LocalPlayer.Character.Humanoid.Sit == true and FLYING == false then
+				sFLY(true)
+			elseif game:GetService("Players").LocalPlayer.Character.Humanoid.Sit == false and FLYING == true then
+				NOFLY()
+			end
+		else
+			run:Disconnect()
+		end
+	end)
+end
+
+_G.carfly = false
+car:Toggle("Car Fly",false,function(value)
+	_G.carfly = value
+	if value then
+		sFLY(true)
+		carf()
+	else
+		NOFLY()
+	end
+end)
+
+dir = 0
+RunService.RenderStepped:Connect(function()
+	for i, v in workspace.Items:GetChildren() do
+		if v.Name == "Part" then
+			v:Destroy()
+		end
+	end
+end)
+
+aimtog()
+spawn(function()
+	drop()
+end)
+speed()
+spawn(function()
+	killed()
+end)
+spawn(function()
+	wait(3)
+	hitbox()
+end)
+spawn(function()
+	code()
+end)
+spawn(function()
+	head()
+end)
+spawn(function()
+	rocket()
+end)
+spawn(function()
+	plane()
+end)
+
+local speed = 350
+local tpf = false
+
+local function checkAboveHead(checkPos, ignoreList)
+    local startPos = checkPos + Vector3.new(0, 5, 0)
+    local direction = Vector3.new(0, 300, 0)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = ignoreList or {}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    return workspace:Raycast(startPos, direction, raycastParams)
+end
+
+local function getPosition(target)
+    if typeof(target) == "Vector3" then
+        return target
+    elseif typeof(target) == "Instance" then
+        if target:IsA("Model") then
+            local primary = target:FindFirstChild("HumanoidRootPart") or target:FindFirstChild("PrimaryPart") or target:FindFirstChildWhichIsA("BasePart")
+            if primary then
+                return primary.Position
+            end
+        elseif target:IsA("BasePart") then
+            return target.Position
+        end
+    end
+    return nil
+end
+
+function tp(target)
+    local player = game:GetService("Players").LocalPlayer
+    local character = player.Character
+    if not character then return end
+
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    if checkAboveHead(hrp.Position, {character}) then return end
+    if tpf then return end
+
+    tpf = true
+
+    local bv = Instance.new("BodyVelocity")
+    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bv.Velocity = Vector3.zero
+    bv.Parent = hrp
+
+    local function moveTo(targetPos, moveSpeed)
+        local direction = (targetPos - hrp.Position).Unit
+        bv.Velocity = direction * moveSpeed
+        repeat 
+            task.wait() 
+        until (targetPos - hrp.Position).Magnitude <= 25
+        bv.Velocity = Vector3.zero
+    end
+
+    local function moveToObjectHeight(dynamicTarget, height, moveSpeed)
+        bv.Velocity = Vector3.zero
+        repeat
+            local currentPos = getPosition(dynamicTarget)
+            if not currentPos then break end
+            
+            local targetPos = Vector3.new(currentPos.X, height, currentPos.Z)
+            local direction = (targetPos - hrp.Position).Unit
+            local distance = (targetPos - hrp.Position).Magnitude
+            
+            if distance <= 25 then
+                bv.Velocity = Vector3.zero
+                break
+            end
+            
+            bv.Velocity = direction * moveSpeed
+            task.wait()
+        until false
+        bv.Velocity = Vector3.zero
+    end
+
+    local function getVehicle(targetPos)
+        if character:GetAttribute("InVehicle") then return nil end
+		local py = hrp.Position.Y
+		local args = {
+					"Chassis",
+					"Camaro"
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+				wait(1)
+				if character:GetAttribute("InVehicle") then return end
+		if game:GetService("Players").LocalPlayer.TeamColor == BrickColor.new("Bright orange") then
+		moveTo(Vector3.new(hrp.Position.X, 300, hrp.Position.Z), 100)
+		moveTo(Vector3.new(hrp.Position.X, py, hrp.Position.Z), 100)
+				wait(.2)
+        		bv:Destroy()
+				hrp.CFrame = CFrame.new(Vector3.new(hrp.Position.X, py, hrp.Position.Z))
+				wait(.3)
+		local args = {
+					"Chassis",
+					"Camaro"
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+				wait(1)
+				bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.zero
+        bv.Parent = hrp
+		end
+				if character:GetAttribute("InVehicle") then return end
+        local vehicles = {}
+        for _, v in workspace.Vehicles:GetChildren() do
+            if v.Name == "Camaro" and not v:GetAttribute("TeamRestrict") and v:FindFirstChild("Seat") and (not v:GetAttribute("VehicleHasDriver") or v:GetAttribute("VehicleHasDriver") == false) then
+                local seatPos = v.Seat.Position
+                if not checkAboveHead(seatPos, {character, v}) then
+                    table.insert(vehicles, {
+                        vehicle = v,
+                        dist = (seatPos - hrp.Position).Magnitude
+                    })
+                end
+            end
+        end
+
+        if #vehicles == 0 then return nil end
+
+        table.sort(vehicles, function(a, b) return a.dist < b.dist end)
+
+        local nearest = vehicles[1]
+        local playerDist = (targetPos - hrp.Position).Magnitude
+
+        if playerDist <= nearest.dist then return nil end
+
+        local seatPos = nearest.vehicle.Seat.Position
+		local s = nearest.vehicle.Seat
+		print((nearest.vehicle.Seat.Position - hrp.Position).magnitude)
+		if (nearest.vehicle.Seat.Position - hrp.Position).magnitude <= 20 then
+			hrp.CFrame = CFrame.new(seatPos + s.CFrame.RightVector * -5)
+		else
+			moveTo(Vector3.new(hrp.Position.X, 300, hrp.Position.Z), 100)
+			moveTo(Vector3.new(seatPos.X, 300, seatPos.Z), 100)
+			moveTo(seatPos, 100)
+			hrp.CFrame = CFrame.new(seatPos + s.CFrame.RightVector * -5)
+		end
+
+        task.wait(0.2)
+        bv:Destroy()
+
+        repeat
+            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E.Value, false, nil)
+            task.wait()
+            game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E.Value, false, nil)
+            task.wait(.3)
+			if character.Humanoid.Sit == false then
+				local args = {
+					"Chassis",
+					"Camaro"
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+
+			end
+        until character.Humanoid.Sit == true
+
+        task.wait(0.2)
+        bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.zero
+        bv.Parent = hrp
+
+        return nearest.vehicle
+    end
+
+    local isDynamic = typeof(target) ~= "Vector3"
+    local targetPos = getPosition(target)
+
+    if not targetPos then
+        tpf = false
+        return
+    end
+
+    getVehicle(targetPos)
+	spawn(function()
+	repeat wait()
+	if character.Humanoid.Sit == false then
+				local args = {
+					"Chassis",
+					"Camaro"
+				}
+				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+
+			end
+			until tpf == false
+			end)
+    speed = character:GetAttribute("InVehicle") and 450 or 100
+
+    -- 1. Подъём на высоту 500 (статично)
+    moveTo(Vector3.new(hrp.Position.X, 500, hrp.Position.Z), speed)
+
+    speed = character:GetAttribute("InVehicle") and 450 or 100
+
+    -- 2. Движение к цели на высоте 500 (динамически если объект движется)
+    if isDynamic then
+        moveToObjectHeight(target, 500, speed)
+    else
+        moveTo(Vector3.new(targetPos.X, 500, targetPos.Z), speed)
+    end
+
+    speed = character:GetAttribute("InVehicle") and 450 or 100
+
+    -- 3. Спуск к цели (динамически если объект движется)
+    if isDynamic then
+        bv.Velocity = Vector3.zero
+        repeat
+            local currentPos = getPosition(target)
+            if not currentPos then break end
+            
+            local direction = (currentPos - hrp.Position).Unit
+            local distance = (currentPos - hrp.Position).Magnitude
+            
+            if distance <= 15 then
+                bv.Velocity = Vector3.zero
+                break
+            end
+            
+            bv.Velocity = direction * speed
+            task.wait()
+        until false
+        bv.Velocity = Vector3.zero
+		spawn(function()
+			task.wait(.3)
+			local hum = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+			if hum then
+			   game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil) 
+				task.wait(0.1) 
+				game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, nil)
+			   wait(.2)
+			   hum.Parent.HumanoidRootPart.CFrame = CFrame.new(target.Position)
+			end
+		end)
+    else
+        moveTo(Vector3.new(targetPos.X, targetPos.Y, targetPos.Z), speed)
+    end
+
+    task.wait(0.2)
+    bv:Destroy()
+    tpf = false
+end
+
+game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
+	tpf = false
+end)
+
+local list = {
+["Power Plant"] = Vector3.new(83, 21, 2342),
+["Plane"] = Vector3.new(-1244, 42, 2870),
+["Rising Base"] = Vector3.new(-309, 18, 1598),
+["Jewelery"] = Vector3.new(77, 18, 1311),
+["Museum"] = Vector3.new(1103, 140, 1323),
+["Rising Bank"] = Vector3.new(21, 18, 770),
+["Tomb"] = Vector3.new(482, 21, -479),
+["Volcano"] = Vector3.new(2279, 19, -2064),
+["Casino"] = Vector3.new(-211, 20, -4600),
+["Create Bank"] = Vector3.new(-648, 20, -6088),
+["Oil Rig"] = Vector3.new(-2866, 135, -4003),
+["Ceo"] = Vector3.new(3048, 58, -4533),
+}
+
+local t = {
+	[1] = "Power Plant",
+	[2] = "Plane",
+	[3] = "Rising Bank",
+	[4] = "Jewelery",
+	[5] = "Rising Base",
+	[6] = "Museum",
+	[7] = "Tomb",
+	[8] = "Volcano",
+	[9] = "Casino",
+	[10] = "Create Bank",
+	[11] = "Oil Rig",
+	[12] = "Ceo",
+}
+
+teleport:Dropdown("Teleport",t,function(value)
+	tp(list[value])
+end)
+
+local r = {
+	[1] = "Drop",
+	[2] = "Train",
+	[3] = "Plane"
+}
+
+teleport:Dropdown("Robbers",r,function(value)
+	if value == "Plane" then
+		tp(workspace.Plane.CargoPlane)
+	elseif value == "Drop" then
+		tp(workspace.Drop.Root)
+	elseif value == "Train" then
+		if workspace.Trains:FindFirstChild("PassengerArmor") then
+			tp(workspace.Trains.PassengerArmor.Model.Cash:GetChildren()[1]) 
+		else
+			for i, v in workspace.Trains:GetChildren() do
+				if v:FindFirstChild("Skeleton") then
+					tp(v.Model.Box.Roof)
+					break
+				end
+			end
+		end
+	end
+end)
+
+
+teleport:Button("Server Hop",function()
+	local HttpService = game:GetService("HttpService")
+	local servers = {}
+	local PlaceId = game.PlaceId
+	local req = game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true")
+	local body = HttpService:JSONDecode(req)
+
+	if body and body.data then
+		for i, v in next, body.data do
+			if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= JobId then
+				table.insert(servers, 1, v.id)
+			end
+		end
+	end
+
+	if #servers > 0 then
+		TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)], Players.LocalPlayer)
+	else
+		return notify("Serverhop", "Couldn't find a server.")
+	end
+end)
+while wait(1) do
+	pcall(function()
+		for i, v in game:GetService("Players"):GetChildren() do
+			if v.Character:FindFirstChild("BillboardGui") then
+				v.Character.BillboardGui.Bounty.Text = ""
+			end
+		end
+		for i,f in game:GetService("Workspace").BountyBoard.Board.MostWanted.Board:GetChildren() do
+			for i, v in game:GetService("Players"):GetChildren() do
+				if f:IsA("Frame") and v.DisplayName == f.NameText.Text then
+					if v.Character:FindFirstChild("BillboardGui") then
+						v.Character.BillboardGui.Bounty.Text = f.BountyText.Text
+					end
+				end
+			end
+		end
+	end)
+end
