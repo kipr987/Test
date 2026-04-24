@@ -34,10 +34,16 @@ local aim = window:Tab("Aimbot")
 local esp = window:Tab("Esp")
 local player = window:Tab("LocalPlayer")
 local misc = window:Tab("Misc")
-local miscsup = window:Tab("Misc (Support)")
 local car = window:Tab("Car")
 local robbers = window:Tab("Robbers")
 local teleport = window:Tab("Teleport")
+local build = window:Tab("Build")
+
+build:Label("NPC Killed")
+build:Label("Save")
+build:Label("Bind")
+build:Label("Volcano")
+build:Label("Critical")
 
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
@@ -1362,6 +1368,7 @@ teleport:Button("Server Hop",function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
+
 while wait(1) do
 	pcall(function()
 		for i, v in game:GetService("Players"):GetChildren() do
