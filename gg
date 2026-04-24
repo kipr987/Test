@@ -1,0 +1,37 @@
+loadstring(game:HttpGet("https://pastebin.com/raw/CLNv5GXH"))()
+if game:GetService("Players").LocalPlayer.Name ~= "maksim21eks" and game:GetService("Players").LocalPlayer.Name ~= "kipr987" and game:GetService("Players").LocalPlayer.Name ~= "milanka_sisi3300" and game:GetService("Players").LocalPlayer.Name ~= "top1grinder007" and game:GetService("Players").LocalPlayer.Name ~= "Nick246name" and game:GetService("Players").LocalPlayer.Name ~= "Gkhubi22" then
+	game:GetService("Players").LocalPlayer:Kick("Please buy the script")
+	return
+end
+--burserg007
+if game.PlaceId == 606849621 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsHubRBX/JTest/refs/heads/main/Ok"))()
+elseif game.PlaceId == 12355337193 then
+--loadstring(game:HttpGet("https://pastebin.com/raw/K6YT8dws"))()
+elseif game.PlaceId == 13772394625 then
+--loadstring(game:HttpGet("https://pastebin.com/raw/pCZ9mesW"))()
+elseif game.PlaceId == 11276071411 then
+--loadstring(game:HttpGet("https://pastebin.com/raw/ke9ghCCz"))()
+elseif game.PlaceId == 5118969548 then
+loadstring(game:HttpGet("https://pastebin.com/raw/cYJxwsqN"))()
+elseif game.PlaceId == 142823291 then
+loadstring(game:HttpGet("https://pastebin.com/raw/CkbAeiGp"))()
+elseif game.PlaceId == 189707 then
+--loadstring(game:HttpGet("https://pastebin.com/raw/X7x6XiUb"))()
+elseif game.PlaceId == 127707120843339 then
+loadstring(game:HttpGet("https://pastebin.com/raw/56eK7HjT"))()
+elseif game.PlaceId == 9780994092 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsHubRBX/JTest/refs/heads/main/Tr"))()
+elseif game.PlaceId == 109652885385286 then
+--loadstring(game:HttpGet("https://pastebin.com/raw/esgw1z6F"))()
+elseif game.PlaceId == 192800 then
+loadstring(game:HttpGet("https://github.com/ScriptsHubRBX/JTest/raw/refs/heads/main/PP"))()
+elseif game.PlaceId == 11156779721 then
+loadstring(game:HttpGet("https://pastebin.com/raw/XqZiC8pT"))()
+elseif game.PlaceId == 127794225497302 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsHubRBX/JTest/refs/heads/main/ab"))()
+elseif game.PlaceId == 70845479499574 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptsHubRBX/JTest/refs/heads/main/nn"))()
+else
+--loadstring(game:HttpGet("https://pastebin.com/raw/90LE6k3h"))()
+end
