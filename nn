@@ -1,1 +1,267 @@
+for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
+	if v.Name == "ui" then
+		v:Destroy()
+	end
+end
+local UI = loadstring(game:HttpGetAsync("https://pastebin.com/raw/0589YkmB"))()
 
+local window = UI:Window("Premium")
+local nif = UI:Notification("Welcome to", game:GetService("Players").LocalPlayer.Name, "Okay!")
+local esp = window:Tab("Esp")
+local playerframe = window:Tab("LocalPlayer")
+local misc = window:Tab("Misc")
+
+_G.plr = false
+esp:Toggle("Players",false,function(val)
+	_G.plr = val
+	while wait(.1) and _G.plr do
+		for i, v in workspace.PLAYERS.ALIVE:GetChildren() do
+			for i, f in v:GetChildren() do
+				if f:IsA("Highlight") and f.Name ~= "Light" then
+					f:Destroy()
+				end
+			end
+			if not v:FindFirstChild("Light") and v.Name ~= game.Players.LocalPlayer.Name then
+				local high = Instance.new("Highlight",v)
+				high.FillColor = Color3.new(0.556863, 1, 0.419608)
+				high.Name = "Light"
+			end
+		end
+	end
+	for i, v in workspace.PLAYERS.ALIVE:GetChildren() do
+		if v:FindFirstChild("Light") then
+			v:FindFirstChild("Light"):Destroy()
+		end
+	end
+end)
+
+_G.monster = false
+esp:Toggle("Killer",false,function(val)
+	_G.monster = val
+	while wait(.1) and _G.monster do
+		for i, v in workspace.PLAYERS.KILLER:GetChildren() do
+			for i, f in v:GetChildren() do
+				if f:IsA("Highlight") and f.Name ~= "Light" then
+					f:Destroy()
+				end
+			end
+			if not v:FindFirstChild("Light") and v.Name ~= game.Players.LocalPlayer.Name then
+				local high = Instance.new("Highlight",v)
+				high.FillColor = Color3.new(1, 0.309804, 0.309804)
+				high.Name = "Light"
+			end
+		end
+		for _,Players2 in pairs(game.Workspace.IGNORE:GetChildren()) do 
+			if  Players2:IsA("Model") and not Players2:FindFirstChild("Light") and Players2.Name == "Trap" or Players2.Name == "BearTrap"  then
+				Instance.new("Highlight",Players2)
+			end
+		end
+	end
+	for i, v in workspace.PLAYERS.KILLER:GetChildren() do
+		if v:FindFirstChild("Light") then
+			v:FindFirstChild("Light"):Destroy()
+		end
+	end
+	for _,Players2 in pairs(game.Workspace.IGNORE:GetChildren()) do 
+		if  Players2:IsA("Model") and not Players2:FindFirstChild("Light") and Players2.Name == "Trap" or Players2.Name == "BearTrap"  then
+			Instance.new("Highlight",Players2)
+		end
+	end
+end)
+
+_G.Generator = false
+esp:Toggle("Generators",false,function(val)
+	_G.Generator = val
+	while wait(.1) and _G.Generator do
+		pcall(function()
+			for i, v in workspace.MAPS["GAME MAP"].Generators:GetChildren() do
+				for i, f in v:GetChildren() do
+					if f:IsA("Highlight") and f.Name ~= "Light" then
+						f:Destroy()
+					end
+				end
+				if not v:FindFirstChild("Light") and v.Name ~= game.Players.LocalPlayer.Name then
+					local high = Instance.new("Highlight",v)
+					high.FillColor = Color3.new(0.188235, 0.607843, 1)
+					high.Name = "Light"
+				end
+			end
+			for i, v in workspace.IGNORE:GetChildren() do
+				if not v:FindFirstChild("Light") and v.Name == "Battery" then
+					local high = Instance.new("Highlight",v)
+					high.FillColor = Color3.new(0.188235, 0.607843, 1)
+					high.Name = "Light"
+				end
+			end
+		end)
+	end
+	if not workspace:FindFirstChild("MAPS") then return end
+	for i, v in workspace.MAPS["GAME MAP"].Generators:GetChildren() do
+		if v:FindFirstChild("Light") then
+			v:FindFirstChild("Light"):Destroy()
+		end
+	end
+	for i, v in workspace.IGNORE:GetChildren() do
+		if v:FindFirstChild("Light") and v.Name == "Battery" then
+			v:FindFirstChild("Light"):Destroy()
+		end
+	end
+end)
+
+function n()
+	local run = nil
+	run = game:GetService("RunService").RenderStepped:Connect(function()
+		pcall(function()
+			if _G.Noclip then
+				for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+					if v:IsA("BasePart") then
+						v.CanCollide = false
+					end
+				end
+			else
+				for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+					if v:IsA("BasePart") then
+						v.CanCollide = true
+					end
+				end
+				run:Disconnect()
+			end
+		end)
+	end)
+end
+
+_G.Noclip = false
+playerframe:Toggle("Noclip", false, function(value)
+	_G.Noclip = value
+	n()
+end)
+_G.Walk = false
+game:GetService("UserInputService").InputBegan:Connect(function(key,event)
+	if key.KeyCode == Enum.KeyCode.LeftShift then
+		_G.Walk = true
+	end
+end)
+game:GetService("UserInputService").InputEnded:Connect(function(key,event)
+	if key.KeyCode == Enum.KeyCode.LeftShift then
+		_G.Walk = false
+	end
+end)
+_G.speedon = false
+_G.speed = 30
+playerframe:Toggle("Speed", false, function(value)
+	_G.speedon = value
+	while wait(.1) and _G.speedon do
+		game.Players.LocalPlayer.Character:SetAttribute("RunSpeed",_G.speed)
+	end
+	game.Players.LocalPlayer.Character:SetAttribute("RunSpeed",24)
+end)
+	
+playerframe:Slider("WalkSpeed", 24, 50, 30, function(value)
+	_G.speed = value
+	if _G.speedon then
+		game.Players.LocalPlayer.Character:SetAttribute("RunSpeed",value)
+	else
+		game.Players.LocalPlayer.Character:SetAttribute("RunSpeed",24)
+	end
+end)
+
+_G.light = false
+playerframe:Toggle("Lighting",false,function(val)
+	_G.light = val
+	while wait(.2) and _G.light do
+	pcall(function()
+		game:GetService("Lighting").Atmosphere.Density = 0
+		game:GetService("Players").LocalPlayer.PlayerGui.WireyesUI.Enabled = false
+	end)
+	end
+	game:GetService("Lighting").Atmosphere.Density = .444
+	game:GetService("Players").LocalPlayer.PlayerGui.WireyesUI.Enabled = true
+end)
+
+_G.gen = false
+misc:Toggle("Auto Generator",false,function(val)
+	_G.gen = val
+	while wait(.2) and _G.gen do
+		if  game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("Gen") then
+			game:GetService("Players").LocalPlayer.PlayerGui.Gen.GeneratorMain.Event:FireServer(true)
+			wait(3)
+		end
+	end
+end)
+
+local function getNewestDot()
+		local newest = nil
+		local newestTime = -math.huge
+		for _, child in ipairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
+			if child.Name == "Dot" then
+				newest = child
+			end
+		end
+		return newest
+end
+
+_G.bar = false
+misc:Toggle("Auto Barricade",false,function(v)
+	_G.bar = v
+	while wait(.2) and _G.bar do
+	local dot = getNewestDot()
+		if  dot then 
+			local container = dot:FindFirstChild("Container")
+			if  container then
+				local frame = container:FindFirstChild("Frame")
+				local box = container:FindFirstChild("Box")
+				if frame and  box then 
+
+					local boxAbs = box.AbsolutePosition
+					local boxSize = box.AbsoluteSize
+					local conAbs = container.AbsolutePosition
+
+					frame.Position = UDim2.new(
+						0, (boxAbs.X + boxSize.X * 0.5) - conAbs.X,
+						0, (boxAbs.Y + boxSize.Y * 0.5) - conAbs.Y
+					)
+				end
+			end
+		end
+	end
+end)
+
+_G.prompt = false
+misc:Toggle("Instant Prompt",false,function(v)
+_G.prompt = v
+while wait(1) and _G.prompt do
+	for _,Assets in pairs(Game.Workspace:GetDescendants()) do  
+		if Assets:isA("ProximityPrompt") then 
+			task.spawn(function()
+				if Assets.HoldDuration ~= 0.1 then
+					Assets:SetAttribute("HoldDurationOld",Assets.HoldDuration)
+					Assets.HoldDuration = 0.1
+				end
+			end)
+		end 
+	end
+end
+	for _,Assets in pairs(game.Workspace:GetDescendants()) do  
+		if Assets:isA("ProximityPrompt") then 
+			task.spawn(function()
+				if Assets:GetAttribute("HoldDurationOld") and Assets:GetAttribute("HoldDurationOld") ~= 0 then
+					Assets.HoldDuration = Assets:GetAttribute("HoldDurationOld")
+				end
+			end)
+		end 
+	end   
+end)
+
+_G.stamina = false
+playerframe:Toggle("INF Stamina",false,function(v)
+_G.stamina = v
+run = game:GetService("RunService").RenderStepped:Connect(function()
+	local mx = game.Players.LocalPlayer.Character:GetAttribute("MaxStamina") or 100
+	if (game.Players.LocalPlayer.Character:GetAttribute("Stamina") or mx) < mx then
+		game.Players.LocalPlayer.Character:SetAttribute("Stamina", mx)
+	end
+	if _G.stamina == false then
+		run:Disconnect()
+	end
+end)
+end)
