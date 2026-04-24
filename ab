@@ -1,0 +1,277 @@
+for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
+	if v.Name == "ui" then
+		v:Destroy()
+	end
+end
+local sound = Instance.new("Sound",workspace)
+sound.SoundId = "rbxassetid://17426289085"
+local UI = loadstring(game:HttpGetAsync("https://pastebin.com/raw/0589YkmB"))()
+
+local fasttp = {
+	[1] = Vector3.new(-17, 4885, 43),
+	[2] = Vector3.new(-1818, 4407, 178),
+	[3] = Vector3.new(1613, 4031, -1873),
+}
+
+local window = UI:Window("Premium")
+local nif = UI:Notification("Welcome to", game:GetService("Players").LocalPlayer.Name, "Okay!")
+local main = window:Tab("Main")
+local tubes = window:Tab("Tube Speed")
+local player = window:Tab("Player")
+local fish = window:Tab("Fish")
+local tp = window:Tab("Teleport")
+
+_G.o = 40
+_G.eo = true
+main:Toggle("Oxygen Small",true,function(value)
+	_G.eo = value
+end)
+
+main:Slider("Oxygen",0,100,40,function(value)
+	_G.o = value
+end)
+_G.tween = 200
+main:Slider("Tween",0,200,200,function(value)
+	_G.tween = value
+end)
+
+game.Players.LocalPlayer:GetAttributeChangedSignal("oxygen"):Connect(function()
+	if _G.eo and game.Players.LocalPlayer:GetAttribute("oxygen") <= _G.o then
+
+		local playerPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+local closestPoint = nil
+local closestDistance = math.huge
+
+for i, point in pairs(fasttp) do
+    local distance = (playerPos - point).magnitude
+    if distance < closestDistance then
+        closestDistance = distance
+        closestPoint = point
+    end
+end
+
+local targetPosition = closestPoint
+local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local tweenTime = closestDistance / _G.tween
+
+game:GetService("TweenService"):Create(
+    rootPart,
+    TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
+    {CFrame = CFrame.new(closestPoint)}
+):Play()
+
+	end
+end)
+
+
+_G.speedOn = true
+player:Toggle("Speed On/Off",true,function(value)
+	_G.speedOn = value
+end)
+
+_G.speed = 50
+player:Slider("Speed",0,100,50,function(value)
+	_G.speed = value
+end)
+
+_G.Noclip = false
+player:Toggle("Noclip", false, function(value)
+	_G.Noclip = value
+end)
+
+local infJump
+infJumpDebounce = false
+player:Toggle("Inf Jump",false,function(value)
+	if value == true then
+		infJump = game:GetService("UserInputService").JumpRequest:Connect(function()
+	    	if not infJumpDebounce then
+	        infJumpDebounce = true
+	        game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+	        wait()
+	        infJumpDebounce = false
+	    	end
+		end)
+	else
+		infJump:Disconnect()
+	end
+end)
+
+_G.heli = true
+tubes:Toggle("Tube Speed",true,function(value)
+	_G.heli = value
+end)
+_G.helispeed = 200
+tubes:Slider("Speed",0,500,200,function(value)
+	_G.helispeed = value
+end)
+
+tp:Button("Spawn",function()
+	local targetPosition = Vector3.new(-17, 4885, 43)
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local distance = (targetPosition - rootPart.Position).Magnitude
+local tweenTime = distance / _G.tween
+
+game:GetService("TweenService"):Create(
+    rootPart,
+    TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
+    {CFrame = CFrame.new(targetPosition)}
+):Play()
+end) 
+
+tp:Button("Location 1",function()
+		local targetPosition = Vector3.new(-1818, 4407, 178)
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local distance = (targetPosition - rootPart.Position).Magnitude
+local tweenTime = distance / _G.tween
+
+game:GetService("TweenService"):Create(
+    rootPart,
+    TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
+    {CFrame = CFrame.new(targetPosition)}
+):Play()
+end) 
+
+tp:Button("Location 2",function()
+		local targetPosition = Vector3.new(1613, 4031, -1873)
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+local distance = (targetPosition - rootPart.Position).Magnitude
+local tweenTime = distance / _G.tween
+
+game:GetService("TweenService"):Create(
+    rootPart,
+    TweenInfo.new(tweenTime, Enum.EasingStyle.Linear),
+    {CFrame = CFrame.new(targetPosition)}
+):Play()
+end) 
+
+_G.fish = nil
+fish:Textbox("Fish","Enter",function(value)
+	for i, v in workspace.Game.Fish.client:GetChildren() do
+		if v:FindFirstChild("Highlight") then
+			v:FindFirstChild("Highlight"):Destroy()
+		end
+	end
+	_G.fish = value
+end)
+
+_G.mutation = false
+fish:Textbox("Mutation","Enter",function(value)
+	for i, v in workspace.Game.Fish.client:GetChildren() do
+		if v:FindFirstChild("Highlight") then
+			v:FindFirstChild("Highlight"):Destroy()
+		end
+	end
+	_G.mutation = value
+end)
+
+local horizontalValue = 0
+local verticalValue = 0
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+UserInputService.InputBegan:Connect(function(key, event)
+    if event then return end
+    if key.KeyCode == Enum.KeyCode.W then
+        horizontalValue = 1
+    elseif key.KeyCode == Enum.KeyCode.S then
+        horizontalValue = -1
+    elseif key.KeyCode == Enum.KeyCode.E then
+        verticalValue = 1
+    elseif key.KeyCode == Enum.KeyCode.Q then
+        verticalValue = -1 
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(key, event)
+    if event then return end
+    if key.KeyCode == Enum.KeyCode.W or key.KeyCode == Enum.KeyCode.S then
+        horizontalValue = 0
+    elseif key.KeyCode == Enum.KeyCode.E or key.KeyCode == Enum.KeyCode.Q then
+        verticalValue = 0
+    end
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function()
+		if _G.Noclip then
+            for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+	pcall(function()
+		if _G.speedOn then
+			game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = _G.speed
+		end
+	end)
+	if _G.heli and workspace.Game.Tubes:FindFirstChild(game.Players.LocalPlayer.Name) then
+        local tube = workspace.Game.Tubes[game.Players.LocalPlayer.Name]
+        local rootPart = tube.RootPart
+        local linearVel = rootPart.TubeLinearVelocity
+        linearVel.MaxForce = math.huge
+        local horizontalMove = rootPart.CFrame.LookVector * horizontalValue * _G.helispeed
+        local verticalMove = Vector3.new(0, verticalValue * _G.helispeed, 0)
+        local totalVelocity = Vector3.new(
+            horizontalMove.X,
+            verticalMove.Y,
+            horizontalMove.Z
+        )
+        linearVel.VectorVelocity = totalVelocity
+    end
+end)
+
+while wait() do
+	for i, v in workspace.Game.Fish.client:GetChildren() do
+		if v:FindFirstChild("Head") and v.Head.stats.Fish.Text == _G.fish and not v:FindFirstChild("Highlight") and _G.fish ~= nil then
+			local h = Instance.new("Highlight",v)
+			sound:Play()
+			for i,f in v:GetChildren() do
+				if f:IsA("MeshPart") then
+					f.Transparency = 0
+				end
+			end
+		end
+		if v:FindFirstChild("RootPart") and v:FindFirstChild("RootPart"):FindFirstChild("stats") and _G.fish ~= nil then
+			if v:FindFirstChild("RootPart"):FindFirstChild("stats").Fish.Text == _G.fish and not v:FindFirstChild("Highlight") then
+				local h = Instance.new("Highlight",v)
+				sound:Play()
+				for i,f in v:GetChildren() do
+					if f:IsA("MeshPart") then
+						f.Transparency = 0
+					end
+				end
+			end
+		end
+	end
+
+	for i, v in workspace.Game.Fish.client:GetChildren() do
+			if v:FindFirstChild("Head") and v.Head.stats.Mutation.Label.Text == _G.mutation and not v:FindFirstChild("Highlight") and _G.mutation ~= nil then
+				local h = Instance.new("Highlight",v)
+				sound:Play()
+				for i,f in v:GetChildren() do
+					if f:IsA("MeshPart") then
+						f.Transparency = 0
+					end
+				end
+			end
+			if v:FindFirstChild("RootPart") and v:FindFirstChild("RootPart"):FindFirstChild("stats") and _G.mutation ~= nil then
+				if v:FindFirstChild("RootPart"):FindFirstChild("stats").Mutation.Label.Text == _G.mutation and not v:FindFirstChild("Highlight") then
+					local h = Instance.new("Highlight",v)
+					sound:Play()
+					for i,f in v:GetChildren() do
+						if f:IsA("MeshPart") then
+							f.Transparency = 0
+						end
+					end
+				end
+			end
+		end
+end
