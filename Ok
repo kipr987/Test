@@ -1,4 +1,3 @@
-
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 
@@ -14,7 +13,6 @@ local TeleportCheck = false
 Players.LocalPlayer.OnTeleport:Connect(function(State)
     if (not TeleportCheck) and queueteleport then
         TeleportCheck = true
-        -- УБРАН ПРОБЕЛ В КОНЦЕ URL!
         queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptsHubRBX/Script/refs/heads/main/Script'))()")
     end
 end)
@@ -39,10 +37,7 @@ local robbers = window:Tab("Robbers")
 local teleport = window:Tab("Teleport")
 local build = window:Tab("Build")
 
-build:Label("NPC Killed")
-build:Label("Save")
 build:Label("Bind")
-build:Label("Volcano")
 build:Label("Critical")
 
 local Camera = workspace.CurrentCamera
@@ -51,12 +46,123 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
-local Holding = false
 
-_G.TeamCheck = true
-_G.AimPart = "HumanoidRootPart"
-_G.Sensitivity = 0
+-- ========== СИСТЕМА СОХРАНЕНИЯ ==========
+local HttpService = game:GetService("HttpService")
+local SAVE_FILE = "jailbreak_script_saves.json"
+
+local defaultSaves = {
+    TeamCheck = true,
+    AimPart = "HumanoidRootPart",
+    Sensitivity = 0,
+    Dis = 300,
+    Esp = false,
+    dropesp = false,
+    speedOn = false,
+    speed = 24,
+    Noclip = false,
+    Lasers = false,
+    rocket = false,
+    Killed = false,
+    Hitbox = false,
+    ceohead = false,
+    code = false,
+    trans = false,
+    plane = false,
+    Ragdoll = false,
+    Car = false,
+    CarSpeed = 3,
+    turn = false,
+    heli = false,
+    helispeed = 10,
+    carfly = false,
+}
+
+local function loadSaves()
+    if not (readfile and writefile) then return defaultSaves end
+    local ok, data = pcall(readfile, SAVE_FILE)
+    if not ok or not data or data:gsub("%s", "") == "" then
+        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+        return defaultSaves
+    end
+    local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+    if not ok2 then
+        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+        return defaultSaves
+    end
+    for k, v in pairs(defaultSaves) do
+        if decoded[k] == nil then decoded[k] = v end
+    end
+    return decoded
+end
+
+local function saveCurrent()
+    if not writefile then return end
+    local current = {
+        TeamCheck = _G.TeamCheck,
+        AimPart = _G.AimPart,
+        Sensitivity = _G.Sensitivity,
+        Dis = _G.Dis,
+        Esp = _G.Esp,
+        dropesp = _G.dropesp,
+        speedOn = _G.speedOn,
+        speed = _G.speed,
+        Noclip = _G.Noclip,
+        Lasers = _G.Lasers,
+        rocket = _G.rocket,
+        Killed = _G.Killed,
+        Hitbox = _G.Hitbox,
+        ceohead = _G.ceohead,
+        code = _G.code,
+        trans = _G.trans,
+        plane = _G.plane,
+        Ragdoll = _G.Ragdoll,
+        Car = _G.Car,
+        CarSpeed = _G.CarSpeed,
+        turn = _G.turn,
+        heli = _G.heli,
+        helispeed = _G.helispeed,
+        carfly = _G.carfly,
+    }
+    pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
+end
+
+local saves = loadSaves()
+_G.TeamCheck = saves.TeamCheck
+_G.AimPart = saves.AimPart
+_G.Sensitivity = saves.Sensitivity
+_G.Dis = saves.Dis
+_G.Esp = saves.Esp
+_G.dropesp = saves.dropesp
+_G.speedOn = saves.speedOn
+_G.speed = saves.speed
+_G.Noclip = saves.Noclip
+_G.Lasers = saves.Lasers
+_G.rocket = saves.rocket
+_G.Killed = saves.Killed
+_G.Hitbox = saves.Hitbox
+_G.ceohead = saves.ceohead
+_G.code = saves.code
+_G.trans = saves.trans
+_G.plane = saves.plane
+_G.Ragdoll = saves.Ragdoll
+_G.Car = saves.Car
+_G.CarSpeed = saves.CarSpeed
+_G.turn = saves.turn
+_G.heli = saves.heli
+_G.helispeed = saves.helispeed
+_G.carfly = saves.carfly
+
+task.spawn(function()
+    while task.wait(10) do
+        saveCurrent()
+    end
+end)
+-- ========== КОНЕЦ СИСТЕМЫ СОХРАНЕНИЯ ==========
+
+local Holding = false
 local parts = {}
+
 local function GetClosestPlayer()
 	local Target = nil
 
@@ -129,20 +235,23 @@ function aimtog()
 	end)
 end
 
-_G.aim = true
-aim:Toggle("Aimbot",true,function(value)
+_G.aim = false
+aim:Toggle("Aimbot", saves.aim ~= nil and saves.aim or false, function(value)
 	_G.aim = value
+	saveCurrent()
 	aimtog()
 end)
 
-_G.Dis = 300
-aim:Slider("Distance",0,600,300,function(value)
+_G.Dis = saves.Dis
+aim:Slider("Distance", 0, 600, saves.Dis, function(value)
 	_G.Dis = value
+	saveCurrent()
 end)
 
-_G.Esp = true
-esp:Toggle("Esp",true,function(value)
+_G.Esp = saves.Esp
+esp:Toggle("Esp", saves.Esp, function(value)
 	_G.Esp = value
+	saveCurrent()
 end)
 
 function drop()
@@ -185,9 +294,10 @@ function drop()
 	end
 end
 
-_G.dropesp = true
-esp:Toggle("Drop Esp",true,function(value)
+_G.dropesp = saves.dropesp
+esp:Toggle("Drop Esp", saves.dropesp, function(value)
 	_G.dropesp = value
+	saveCurrent()
 	drop()
 end)
 
@@ -205,20 +315,22 @@ function speed()
 	end)
 end
 
-_G.speedOn = true
-player:Toggle("Speed On/Off",true,function(value)
+_G.speedOn = saves.speedOn
+player:Toggle("Speed On/Off", saves.speedOn, function(value)
 	_G.speedOn = value
+	saveCurrent()
 	speed()
 end)
 
-_G.speed = 24
-player:Slider("Speed",0,100,24,function(value)
+_G.speed = saves.speed
+player:Slider("Speed", 0, 100, saves.speed, function(value)
 	_G.speed = value
+	saveCurrent()
 end)
 
 local infJump
 infJumpDebounce = false
-player:Toggle("Inf Jump",false,function(value)
+player:Toggle("Inf Jump", false, function(value)
 	if value == true then
 		infJump = game:GetService("UserInputService").JumpRequest:Connect(function()
 			if not infJumpDebounce then
@@ -234,7 +346,7 @@ player:Toggle("Inf Jump",false,function(value)
 end)
 
 function noclip()
-local run = nil
+	local run = nil
 	run = game:GetService("RunService").RenderStepped:Connect(function()
 		pcall(function()
 			if _G.Noclip then
@@ -255,13 +367,14 @@ local run = nil
 	end)
 end
 
-_G.Noclip = false
-player:Toggle("Noclip", false, function(value)
+_G.Noclip = saves.Noclip
+player:Toggle("Noclip", saves.Noclip, function(value)
 	_G.Noclip = value
+	saveCurrent()
 	noclip()
 end)
 
-misc:Button("Delete Doors",function(value)
+misc:Button("Delete Doors", function(value)
 	spawn(function()
 		for i, v in workspace:GetChildren() do
 			if v.Name == "SlideDoor" or v.Name == "SwingDoor" or v.Name == "Doors" then
@@ -295,7 +408,6 @@ misc:Button("Delete Doors",function(value)
 		end
 		game:GetService("Workspace").Jewelrys.Jewelry.Doors.SwingDoorVentTop.Model.Part:Destroy()
 	end)
-
 	spawn(function()
 		for i, v in workspace.PoliceStation:GetChildren() do
 			if v.Name == "SlideDoor" or v.Name == "SwingDoor" or v.Name == "Doors" then
@@ -308,7 +420,6 @@ misc:Button("Delete Doors",function(value)
 			end
 		end
 	end)
-
 	spawn(function()
 		for i, f in workspace.Museum.Doors:GetDescendants() do
 			if f:IsA("Part") or f:IsA("MeshPart") then
@@ -317,7 +428,6 @@ misc:Button("Delete Doors",function(value)
 			end
 		end
 	end)
-
 	spawn(function()
 		for i, v in workspace.Jewelrys:GetChildren()[1]:GetChildren() do
 			if v.Name == "SlideDoor" or v.Name == "SwingDoor" then
@@ -330,7 +440,6 @@ misc:Button("Delete Doors",function(value)
 			end
 		end
 	end)
-
 	spawn(function()
 		for i, v in workspace.Banks:GetChildren() do
 			for i, g in v:GetChildren() do
@@ -347,22 +456,23 @@ misc:Button("Delete Doors",function(value)
 		end
 	end)
 end)
+
 local localPlayer = game:GetService('Players').LocalPlayer
 function onCharacterAdded(character)
 	wait(1)
 	if character then
-		local humanoidRootPart = character:WaitForChild('HumanoidRootPart');
+		local humanoidRootPart = character:WaitForChild('HumanoidRootPart')
 		for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
 			if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
 				v.CanTouch = not _G.Lasers
 			end
 		end
 		if _G.Ragdoll then
-			humanoidRootPart:AddTag('NoFallDamage');
-			humanoidRootPart:AddTag('NoRagdoll');
+			humanoidRootPart:AddTag('NoFallDamage')
+			humanoidRootPart:AddTag('NoRagdoll')
 		else
-			humanoidRootPart:RemoveTag('NoFallDamage');
-			humanoidRootPart:RemoveTag('NoRagdoll');
+			humanoidRootPart:RemoveTag('NoFallDamage')
+			humanoidRootPart:RemoveTag('NoRagdoll')
 		end
 	end
 	local run = nil
@@ -383,17 +493,10 @@ function onCharacterAdded(character)
 	end)
 end
 
---function lasers()
---	for i, v in game:GetService("Players").LocalPlayer.Character:GetChildren() do
---		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
---			v.CanTouch = not _G.Lasers
---		end
---	end
---end
-
-_G.Lasers = true
-misc:Toggle("Delete Lasers",true,function(value)
+_G.Lasers = saves.Lasers
+misc:Toggle("Delete Lasers", saves.Lasers, function(value)
 	_G.Lasers = value
+	saveCurrent()
 	onCharacterAdded(localPlayer.Character)
 end)
 
@@ -420,9 +523,10 @@ function rocket()
 	end
 end
 
-_G.rocket = true
-misc:Toggle("Delete Turrets",true,function(value)
+_G.rocket = saves.rocket
+misc:Toggle("Delete Turrets", saves.rocket, function(value)
 	_G.rocket = value
+	saveCurrent()
 	rocket()
 end)
 
@@ -453,9 +557,10 @@ function killed()
 	end
 end
 
-_G.Killed = true
-misc:Toggle("Killed NPC",true,function(value)
+_G.Killed = saves.Killed
+misc:Toggle("Killed NPC", saves.Killed, function(value)
 	_G.Killed = value
+	saveCurrent()
 	killed()
 end)
 
@@ -499,9 +604,10 @@ function hitbox()
 	end
 end
 
-_G.Hitbox = true
-misc:Toggle("Hitbox",true,function(value)
+_G.Hitbox = saves.Hitbox
+misc:Toggle("Hitbox", saves.Hitbox, function(value)
 	_G.Hitbox = value
+	saveCurrent()
 	hitbox()
 end)
 
@@ -522,9 +628,10 @@ function head()
 	end 
 end
 
-_G.ceohead = true
-misc:Toggle("Ceo Head",true,function(value)
+_G.ceohead = saves.ceohead
+misc:Toggle("Ceo Head", saves.ceohead, function(value)
 	_G.ceohead = value
+	saveCurrent()
 	head()
 end)
 
@@ -577,7 +684,6 @@ function code()
 								code3 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(-52.482, 19.926, -4694.694)) then
 								code4 = text
-
 							elseif vectorsAreSimilar(pos, Vector3.new(-90.602, 18.898, -4735.708)) then
 								code1 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(-89.439, 18.929, -4736.046)) then
@@ -594,7 +700,6 @@ function code()
 								code3 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(94.575, 24.292, -4633.174)) then
 								code4 = text
-
 							elseif vectorsAreSimilar(pos, Vector3.new(-41.697, 20.076, -4697.997)) then
 								code1 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(-41.390, 20.116, -4697.065)) then
@@ -603,7 +708,6 @@ function code()
 								code3 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(-40.898, 20.066, -4695.148)) then
 								code4 = text
-
 							elseif vectorsAreSimilar(pos, Vector3.new(-63.032, 18.531, -4731.471)) then
 								code1 = text
 							elseif vectorsAreSimilar(pos, Vector3.new(-63.328, 18.547, -4732.481)) then
@@ -623,7 +727,7 @@ function code()
 				end
 
 				if part == nil then
-					part = Instance.new("Part",workspace)
+					part = Instance.new("Part", workspace)
 					part.Anchored = true
 					part.Transparency = 1
 					part.CanCollide = false
@@ -631,19 +735,19 @@ function code()
 
 					local bill = Instance.new("BillboardGui", part)
 					bill.Adornee = part
-					bill.Size = UDim2.new(0, 200,0, 50)
-					bill.StudsOffset = Vector3.new(0,4,0)
+					bill.Size = UDim2.new(0, 200, 0, 50)
+					bill.StudsOffset = Vector3.new(0, 4, 0)
 					bill.AlwaysOnTop = false
 
 					local textlabel = Instance.new("TextLabel", bill)
-					textlabel.Size = UDim2.new(1,0,1,0)
-					textlabel.Position = UDim2.new(0,0,0,0)
+					textlabel.Size = UDim2.new(1, 0, 1, 0)
+					textlabel.Position = UDim2.new(0, 0, 0, 0)
 					textlabel.Name = "TextLabelTitle"
 					textlabel.Text = ""
 					textlabel.BackgroundTransparency = 1
 					textlabel.TextSize = 17
 					textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-					textlabel.TextColor3 = Color3.new(1,1,1)
+					textlabel.TextColor3 = Color3.new(1, 1, 1)
 					local stroke = Instance.new("UIStroke", textlabel)
 				end
 				part.BillboardGui.TextLabelTitle.Text = finalCode
@@ -652,14 +756,17 @@ function code()
 	end
 end
 
-_G.code = true
-misc:Toggle("Casino Code",true,function(value)
+_G.code = saves.code
+misc:Toggle("Casino Code", saves.code, function(value)
 	_G.code = value
+	saveCurrent()
 	code()
 end)
-_G.trans = false
-misc:Toggle("HitBox Transparency",false,function(value)
+
+_G.trans = saves.trans
+misc:Toggle("HitBox Transparency", saves.trans, function(value)
 	_G.trans = value
+	saveCurrent()
 end)
 
 function plane()
@@ -677,38 +784,26 @@ function plane()
 	end
 end
 
-_G.plane = true
-misc:Toggle("Plane Door Remove",true,function(value)
+_G.plane = saves.plane
+misc:Toggle("Plane Door Remove", saves.plane, function(value)
 	_G.plane = value
+	saveCurrent()
 	plane()
 end)
 
-_G.Ragdoll = true
-misc:Toggle("Anti Ragdoll",true,function(value)
+_G.Ragdoll = saves.Ragdoll
+misc:Toggle("Anti Ragdoll", saves.Ragdoll, function(value)
 	_G.Ragdoll = value
+	saveCurrent()
 	onCharacterAdded(localPlayer.Character)
 end)
+
 localPlayer.CharacterAdded:Connect(onCharacterAdded)
 onCharacterAdded(localPlayer.Character)
---miscsup:Button("Premium Garage",function()
---	if _G.cheat == "High" then
---		local GarageUtils = require(game:GetService("ReplicatedStorage").Garage.GarageUtils)
-
---		local originalInGarage = GarageUtils.inPhysicalGarage
---		GarageUtils.inPhysicalGarage = function()
---			return true
---		end
-
---		local originalHasPremium = GarageUtils.hasPremium
---		GarageUtils.hasPremium = function()
---			return true
---		end
---	end
---end)
 
 local lock = 3
 local value = 0
-UserInputService.InputBegan:Connect(function(key,event)
+UserInputService.InputBegan:Connect(function(key, event)
 	if event then return end
 	if key.UserInputType == Enum.UserInputType.MouseButton2 then
 		Holding = true
@@ -727,7 +822,7 @@ UserInputService.InputBegan:Connect(function(key,event)
 	end
 end)
 
-UserInputService.InputEnded:Connect(function(key,event)
+UserInputService.InputEnded:Connect(function(key, event)
 	if event then return end
 	if key.UserInputType == Enum.UserInputType.MouseButton2 then
 		Holding = false
@@ -746,16 +841,15 @@ UserInputService.InputEnded:Connect(function(key,event)
 	end
 end)
 
-
 function cartog()
 	local run = nil
 	run = game:GetService("RunService").RenderStepped:Connect(function()
 		if _G.Car then
-			for i,v in next,workspace.Vehicles:children() do
+			for i, v in next, workspace.Vehicles:children() do
 				if v.Name ~= "Heli" then
 					if v:FindFirstChild("Engine") then
-						local bf,cf = v.Engine:FindFirstChild("NewForce"),v:GetPrimaryPartCFrame().lookVector
-						if not bf then 
+						local bf, cf = v.Engine:FindFirstChild("NewForce"), v:GetPrimaryPartCFrame().lookVector
+						if not bf then
 							bf = v.Engine:FindFirstChild("BodyForce") or v.Engine:FindFirstChild("VectorForce")
 							if bf then
 								bf = bf:Clone()
@@ -767,7 +861,7 @@ function cartog()
 							local fa = 1
 							if v.Name:lower():find("bike") then fa = .3 elseif v.Name:lower():find("bugg") then fa = .5 end
 							if v.Seat.PlayerName.Value ~= game:GetService("Players").LocalPlayer.Name then fa = 0 end
-							bf.Force = Vector3.new(cf.X*300000*value*fa*_G.CarSpeed,0,cf.Z*300000*value*fa*_G.CarSpeed)
+							bf.Force = Vector3.new(cf.X * 300000 * value * fa * _G.CarSpeed, 0, cf.Z * 300000 * value * fa * _G.CarSpeed)
 						end
 					end
 				end
@@ -778,15 +872,17 @@ function cartog()
 	end)
 end
 
-_G.Car = false
-car:Toggle("Car Speed",false,function(value)
+_G.Car = saves.Car
+car:Toggle("Car Speed", saves.Car, function(value)
 	_G.Car = value
+	saveCurrent()
 	cartog()
 end)
 
-_G.CarSpeed = 3
-car:Slider("Speed",0,10,3,function(value)
+_G.CarSpeed = saves.CarSpeed
+car:Slider("Speed", 0, 10, saves.CarSpeed, function(value)
 	_G.CarSpeed = value
+	saveCurrent()
 end)
 
 function turn()
@@ -794,8 +890,8 @@ function turn()
 	run = game:GetService("RunService").RenderStepped:Connect(function()
 		if _G.turn then
 			for i, v in workspace.Vehicles:GetChildren() do
-				if v:FindFirstChild("_VehicleState_"..game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyAngularVelocity") then
-					v.Engine.BodyAngularVelocity.AngularVelocity = Vector3.new(0,_G.turnspeed,0)
+				if v:FindFirstChild("_VehicleState_" .. game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyAngularVelocity") then
+					v.Engine.BodyAngularVelocity.AngularVelocity = Vector3.new(0, _G.turnspeed, 0)
 					break
 				end
 			end
@@ -805,14 +901,15 @@ function turn()
 	end)
 end
 
-_G.turn = false
-car:Toggle("Turn Speed",false,function(value)
+_G.turn = saves.turn
+car:Toggle("Turn Speed", saves.turn, function(value)
 	_G.turn = value
+	saveCurrent()
 	turn()
 end)
 
 _G.turnspeed = 0
-car:Slider("Turn",0,10,3,function(value)
+car:Slider("Turn", 0, 10, 3, function(value)
 	lock = value
 end)
 
@@ -820,9 +917,9 @@ function heli()
 	local run = nil
 	run = game:GetService("RunService").RenderStepped:Connect(function()
 		if _G.heli then
-			for i,v in next,workspace.Vehicles:children() do
-				if v:FindFirstChild("_VehicleState_"..game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyVelocity") then
-					v.Engine:FindFirstChild("BodyVelocity").Velocity *= Vector3.new(_G.helispeed,_G.helispeed,_G.helispeed)
+			for i, v in next, workspace.Vehicles:children() do
+				if v:FindFirstChild("_VehicleState_" .. game:GetService("Players").LocalPlayer.Name) and v.Engine:FindFirstChild("BodyVelocity") then
+					v.Engine:FindFirstChild("BodyVelocity").Velocity *= Vector3.new(_G.helispeed, _G.helispeed, _G.helispeed)
 				end
 			end
 		else
@@ -831,47 +928,46 @@ function heli()
 	end)
 end
 
-_G.heli = false
-car:Toggle("Heli Speed",false,function(value)
+_G.heli = saves.heli
+car:Toggle("Heli Speed", saves.heli, function(value)
 	_G.heli = value
+	saveCurrent()
 	heli()
 end)
-_G.helispeed = 10
-car:Slider("Speed",0,10,10,function(value)
+
+_G.helispeed = saves.helispeed
+car:Slider("Speed", 0, 10, saves.helispeed, function(value)
 	_G.helispeed = value
+	saveCurrent()
 end)
 
---_G.collision = false
---car:Toggle("Car Collision",false,function(value)
---	_G.collision = value
---end)
-robbers:Button("Exit Jewerly [Надо встать чтоб над головой была вентиляция]",function()
-	local tween = game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.5,Enum.EasingStyle.Linear),{CFrame = CFrame.new(99, 114, 1284)})
+robbers:Button("Exit Jewerly [Надо встать чтоб над головой была вентиляция]", function()
+	local tween = game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = CFrame.new(99, 114, 1284)})
 	tween:Play()
 end)
 
-robbers:Button("Bank Creator",function()
-	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.3,Enum.EasingStyle.Linear),{CFrame = CFrame.new(-628, 18, -6034)}):Play()
+robbers:Button("Bank Creator", function()
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(.3, Enum.EasingStyle.Linear), {CFrame = CFrame.new(-628, 18, -6034)}):Play()
 	wait(.3)
-	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.3,Enum.EasingStyle.Linear),{CFrame = CFrame.new(-628, 18, -6014)}):Play()
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(.3, Enum.EasingStyle.Linear), {CFrame = CFrame.new(-628, 18, -6014)}):Play()
 end)
 
-robbers:Button("Bank Rising",function()
+robbers:Button("Bank Rising", function()
 	local t = math.random(18.5, 19)
-print(t)
-game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Anchored = true
-game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(.5,Enum.EasingStyle.Linear),{CFrame = CFrame.new(56, t, 825)}):Play()
+	print(t)
+	game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Anchored = true
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(.5, Enum.EasingStyle.Linear), {CFrame = CFrame.new(56, t, 825)}):Play()
 	wait(.5)
-	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart,TweenInfo.new(1,Enum.EasingStyle.Linear),{CFrame = CFrame.new(56, t, 845)}):Play()
+	game:GetService("TweenService"):Create(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(1, Enum.EasingStyle.Linear), {CFrame = CFrame.new(56, t, 845)}):Play()
 	wait(1)
 	game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Anchored = false
 end)
-
 
 FLYING = false
 QEfly = true
 iyflyspeed = 1
 vehicleflyspeed = 6
+
 function getRoot(char)
 	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 	return rootPart
@@ -913,7 +1009,6 @@ function sFLY(vfly)
 				if not vfly and humanoid then
 					humanoid.PlatformStand = true
 				end
-
 				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
 					SPEED = 50
 				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
@@ -934,7 +1029,6 @@ function sFLY(vfly)
 			SPEED = 0
 			BG:Destroy()
 			BV:Destroy()
-
 			if humanoid then humanoid.PlatformStand = false end
 		end)
 	end
@@ -943,15 +1037,15 @@ function sFLY(vfly)
 		if input.KeyCode == Enum.KeyCode.W then
 			CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
 		elseif input.KeyCode == Enum.KeyCode.S then
-			CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
+			CONTROL.B = -(vfly and vehicleflyspeed or iyflyspeed)
 		elseif input.KeyCode == Enum.KeyCode.A then
-			CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
+			CONTROL.L = -(vfly and vehicleflyspeed or iyflyspeed)
 		elseif input.KeyCode == Enum.KeyCode.D then
 			CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
 		elseif input.KeyCode == Enum.KeyCode.E and QEfly then
-			CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
+			CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed) * 2
 		elseif input.KeyCode == Enum.KeyCode.Q and QEfly then
-			CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
+			CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed) * 2
 		end
 		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
 	end)
@@ -998,9 +1092,10 @@ function carf()
 	end)
 end
 
-_G.carfly = false
-car:Toggle("Car Fly",false,function(value)
+_G.carfly = saves.carfly
+car:Toggle("Car Fly", saves.carfly, function(value)
 	_G.carfly = value
+	saveCurrent()
 	if value then
 		sFLY(true)
 		carf()
@@ -1047,128 +1142,116 @@ local speed = 350
 local tpf = false
 
 local function checkAboveHead(checkPos, ignoreList)
-    local startPos = checkPos + Vector3.new(0, 5, 0)
-    local direction = Vector3.new(0, 300, 0)
-    local raycastParams = RaycastParams.new()
-    raycastParams.FilterDescendantsInstances = ignoreList or {}
-    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-    return workspace:Raycast(startPos, direction, raycastParams)
+	local startPos = checkPos + Vector3.new(0, 5, 0)
+	local direction = Vector3.new(0, 300, 0)
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = ignoreList or {}
+	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+	return workspace:Raycast(startPos, direction, raycastParams)
 end
 
 local function getPosition(target)
-    if typeof(target) == "Vector3" then
-        return target
-    elseif typeof(target) == "Instance" then
-        if target:IsA("Model") then
-            local primary = target:FindFirstChild("HumanoidRootPart") or target:FindFirstChild("PrimaryPart") or target:FindFirstChildWhichIsA("BasePart")
-            if primary then
-                return primary.Position
-            end
-        elseif target:IsA("BasePart") then
-            return target.Position
-        end
-    end
-    return nil
+	if typeof(target) == "Vector3" then
+		return target
+	elseif typeof(target) == "Instance" then
+		if target:IsA("Model") then
+			local primary = target:FindFirstChild("HumanoidRootPart") or target:FindFirstChild("PrimaryPart") or target:FindFirstChildWhichIsA("BasePart")
+			if primary then
+				return primary.Position
+			end
+		elseif target:IsA("BasePart") then
+			return target.Position
+		end
+	end
+	return nil
 end
 
 function tp(target)
-    local player = game:GetService("Players").LocalPlayer
-    local character = player.Character
-    if not character then return end
+	local player = game:GetService("Players").LocalPlayer
+	local character = player.Character
+	if not character then return end
 
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    if checkAboveHead(hrp.Position, {character}) then return end
-    if tpf then return end
+	local hrp = character:WaitForChild("HumanoidRootPart")
+	if checkAboveHead(hrp.Position, {character}) then return end
+	if tpf then return end
 
-    tpf = true
+	tpf = true
 
-    local bv = Instance.new("BodyVelocity")
-    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    bv.Velocity = Vector3.zero
-    bv.Parent = hrp
+	local bv = Instance.new("BodyVelocity")
+	bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	bv.Velocity = Vector3.zero
+	bv.Parent = hrp
 
-    local function moveTo(targetPos, moveSpeed)
-        local direction = (targetPos - hrp.Position).Unit
-        bv.Velocity = direction * moveSpeed
-        repeat 
-            task.wait() 
-        until (targetPos - hrp.Position).Magnitude <= 25
-        bv.Velocity = Vector3.zero
-    end
+	local function moveTo(targetPos, moveSpeed)
+		local direction = (targetPos - hrp.Position).Unit
+		bv.Velocity = direction * moveSpeed
+		repeat
+			task.wait()
+		until (targetPos - hrp.Position).Magnitude <= 25
+		bv.Velocity = Vector3.zero
+	end
 
-    local function moveToObjectHeight(dynamicTarget, height, moveSpeed)
-        bv.Velocity = Vector3.zero
-        repeat
-            local currentPos = getPosition(dynamicTarget)
-            if not currentPos then break end
-            
-            local targetPos = Vector3.new(currentPos.X, height, currentPos.Z)
-            local direction = (targetPos - hrp.Position).Unit
-            local distance = (targetPos - hrp.Position).Magnitude
-            
-            if distance <= 25 then
-                bv.Velocity = Vector3.zero
-                break
-            end
-            
-            bv.Velocity = direction * moveSpeed
-            task.wait()
-        until false
-        bv.Velocity = Vector3.zero
-    end
+	local function moveToObjectHeight(dynamicTarget, height, moveSpeed)
+		bv.Velocity = Vector3.zero
+		repeat
+			local currentPos = getPosition(dynamicTarget)
+			if not currentPos then break end
+			local targetPos = Vector3.new(currentPos.X, height, currentPos.Z)
+			local direction = (targetPos - hrp.Position).Unit
+			local distance = (targetPos - hrp.Position).Magnitude
+			if distance <= 25 then
+				bv.Velocity = Vector3.zero
+				break
+			end
+			bv.Velocity = direction * moveSpeed
+			task.wait()
+		until false
+		bv.Velocity = Vector3.zero
+	end
 
-    local function getVehicle(targetPos)
-        if character:GetAttribute("InVehicle") then return nil end
+	local function getVehicle(targetPos)
+		if character:GetAttribute("InVehicle") then return nil end
 		local py = hrp.Position.Y
-		local args = {
-					"Chassis",
-					"Camaro"
-				}
-				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
-				wait(1)
-				if character:GetAttribute("InVehicle") then return end
+		local args = {"Chassis", "Camaro"}
+		game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+		wait(1)
+		if character:GetAttribute("InVehicle") then return end
 		if game:GetService("Players").LocalPlayer.TeamColor == BrickColor.new("Bright orange") then
-		moveTo(Vector3.new(hrp.Position.X, 300, hrp.Position.Z), 100)
-		moveTo(Vector3.new(hrp.Position.X, py, hrp.Position.Z), 100)
-				wait(.2)
-        		bv:Destroy()
-				hrp.CFrame = CFrame.new(Vector3.new(hrp.Position.X, py, hrp.Position.Z))
-				wait(.3)
-		local args = {
-					"Chassis",
-					"Camaro"
-				}
-				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
-				wait(1)
-				bv = Instance.new("BodyVelocity")
-        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        bv.Velocity = Vector3.zero
-        bv.Parent = hrp
+			moveTo(Vector3.new(hrp.Position.X, 300, hrp.Position.Z), 100)
+			moveTo(Vector3.new(hrp.Position.X, py, hrp.Position.Z), 100)
+			wait(.2)
+			bv:Destroy()
+			hrp.CFrame = CFrame.new(Vector3.new(hrp.Position.X, py, hrp.Position.Z))
+			wait(.3)
+			local args = {"Chassis", "Camaro"}
+			game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
+			wait(1)
+			bv = Instance.new("BodyVelocity")
+			bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+			bv.Velocity = Vector3.zero
+			bv.Parent = hrp
 		end
-				if character:GetAttribute("InVehicle") then return end
-        local vehicles = {}
-        for _, v in workspace.Vehicles:GetChildren() do
-            if v.Name == "Camaro" and not v:GetAttribute("TeamRestrict") and v:FindFirstChild("Seat") and (not v:GetAttribute("VehicleHasDriver") or v:GetAttribute("VehicleHasDriver") == false) then
-                local seatPos = v.Seat.Position
-                if not checkAboveHead(seatPos, {character, v}) then
-                    table.insert(vehicles, {
-                        vehicle = v,
-                        dist = (seatPos - hrp.Position).Magnitude
-                    })
-                end
-            end
-        end
+		if character:GetAttribute("InVehicle") then return end
+		local vehicles = {}
+		for _, v in workspace.Vehicles:GetChildren() do
+			if v.Name == "Camaro" and not v:GetAttribute("TeamRestrict") and v:FindFirstChild("Seat") and (not v:GetAttribute("VehicleHasDriver") or v:GetAttribute("VehicleHasDriver") == false) then
+				local seatPos = v.Seat.Position
+				if not checkAboveHead(seatPos, {character, v}) then
+					table.insert(vehicles, {vehicle = v, dist = (seatPos - hrp.Position).Magnitude})
+				end
+			end
+		end
 
-        if #vehicles == 0 then return nil end
+		if #vehicles == 0 then return nil end
 
-        table.sort(vehicles, function(a, b) return a.dist < b.dist end)
+		table.sort(vehicles, function(a, b) return a.dist < b.dist end)
 
-        local nearest = vehicles[1]
-        local playerDist = (targetPos - hrp.Position).Magnitude
+		local nearest = vehicles[1]
+		local playerDist = (targetPos - hrp.Position).Magnitude
 
-        if playerDist <= nearest.dist then return nil end
+		if playerDist <= nearest.dist then return nil end
 
-        local seatPos = nearest.vehicle.Seat.Position
+		local seatPos = nearest.vehicle.Seat.Position
 		local s = nearest.vehicle.Seat
 		print((nearest.vehicle.Seat.Position - hrp.Position).magnitude)
 		if (nearest.vehicle.Seat.Position - hrp.Position).magnitude <= 20 then
@@ -1180,107 +1263,94 @@ function tp(target)
 			hrp.CFrame = CFrame.new(seatPos + s.CFrame.RightVector * -5)
 		end
 
-        task.wait(0.2)
-        bv:Destroy()
+		task.wait(0.2)
+		bv:Destroy()
 
-        repeat
-            game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E.Value, false, nil)
-            task.wait()
-            game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E.Value, false, nil)
-            task.wait(.3)
+		repeat
+			game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E.Value, false, nil)
+			task.wait()
+			game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E.Value, false, nil)
+			task.wait(.3)
 			if character.Humanoid.Sit == false then
-				local args = {
-					"Chassis",
-					"Camaro"
-				}
+				local args = {"Chassis", "Camaro"}
 				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
-
 			end
-        until character.Humanoid.Sit == true
+		until character.Humanoid.Sit == true
 
-        task.wait(0.2)
-        bv = Instance.new("BodyVelocity")
-        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        bv.Velocity = Vector3.zero
-        bv.Parent = hrp
+		task.wait(0.2)
+		bv = Instance.new("BodyVelocity")
+		bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+		bv.Velocity = Vector3.zero
+		bv.Parent = hrp
 
-        return nearest.vehicle
-    end
+		return nearest.vehicle
+	end
 
-    local isDynamic = typeof(target) ~= "Vector3"
-    local targetPos = getPosition(target)
+	local isDynamic = typeof(target) ~= "Vector3"
+	local targetPos = getPosition(target)
 
-    if not targetPos then
-        tpf = false
-        return
-    end
+	if not targetPos then
+		tpf = false
+		return
+	end
 
-    getVehicle(targetPos)
+	getVehicle(targetPos)
 	spawn(function()
-	repeat wait()
-	if character.Humanoid.Sit == false then
-				local args = {
-					"Chassis",
-					"Camaro"
-				}
+		repeat
+			wait()
+			if character.Humanoid.Sit == false then
+				local args = {"Chassis", "Camaro"}
 				game:GetService("ReplicatedStorage"):WaitForChild("GarageSpawnVehicle"):FireServer(unpack(args))
-
 			end
-			until tpf == false
-			end)
-    speed = character:GetAttribute("InVehicle") and 450 or 100
+		until tpf == false
+	end)
 
-    -- 1. Подъём на высоту 500 (статично)
-    moveTo(Vector3.new(hrp.Position.X, 500, hrp.Position.Z), speed)
+	speed = character:GetAttribute("InVehicle") and 450 or 100
+	moveTo(Vector3.new(hrp.Position.X, 500, hrp.Position.Z), speed)
 
-    speed = character:GetAttribute("InVehicle") and 450 or 100
+	speed = character:GetAttribute("InVehicle") and 450 or 100
 
-    -- 2. Движение к цели на высоте 500 (динамически если объект движется)
-    if isDynamic then
-        moveToObjectHeight(target, 500, speed)
-    else
-        moveTo(Vector3.new(targetPos.X, 500, targetPos.Z), speed)
-    end
+	if isDynamic then
+		moveToObjectHeight(target, 500, speed)
+	else
+		moveTo(Vector3.new(targetPos.X, 500, targetPos.Z), speed)
+	end
 
-    speed = character:GetAttribute("InVehicle") and 450 or 100
+	speed = character:GetAttribute("InVehicle") and 450 or 100
 
-    -- 3. Спуск к цели (динамически если объект движется)
-    if isDynamic then
-        bv.Velocity = Vector3.zero
-        repeat
-            local currentPos = getPosition(target)
-            if not currentPos then break end
-            
-            local direction = (currentPos - hrp.Position).Unit
-            local distance = (currentPos - hrp.Position).Magnitude
-            
-            if distance <= 15 then
-                bv.Velocity = Vector3.zero
-                break
-            end
-            
-            bv.Velocity = direction * speed
-            task.wait()
-        until false
-        bv.Velocity = Vector3.zero
+	if isDynamic then
+		bv.Velocity = Vector3.zero
+		repeat
+			local currentPos = getPosition(target)
+			if not currentPos then break end
+			local direction = (currentPos - hrp.Position).Unit
+			local distance = (currentPos - hrp.Position).Magnitude
+			if distance <= 15 then
+				bv.Velocity = Vector3.zero
+				break
+			end
+			bv.Velocity = direction * speed
+			task.wait()
+		until false
+		bv.Velocity = Vector3.zero
 		spawn(function()
 			task.wait(.3)
 			local hum = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 			if hum then
-			   game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil) 
-				task.wait(0.1) 
+				game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
+				task.wait(0.1)
 				game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, nil)
-			   wait(.2)
-			   hum.Parent.HumanoidRootPart.CFrame = CFrame.new(target.Position)
+				wait(.2)
+				hum.Parent.HumanoidRootPart.CFrame = CFrame.new(target.Position)
 			end
 		end)
-    else
-        moveTo(Vector3.new(targetPos.X, targetPos.Y, targetPos.Z), speed)
-    end
+	else
+		moveTo(Vector3.new(targetPos.X, targetPos.Y, targetPos.Z), speed)
+	end
 
-    task.wait(0.2)
-    bv:Destroy()
-    tpf = false
+	task.wait(0.2)
+	bv:Destroy()
+	tpf = false
 end
 
 game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
@@ -1288,18 +1358,18 @@ game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Died:C
 end)
 
 local list = {
-["Power Plant"] = Vector3.new(83, 21, 2342),
-["Plane"] = Vector3.new(-1244, 42, 2870),
-["Rising Base"] = Vector3.new(-309, 18, 1598),
-["Jewelery"] = Vector3.new(77, 18, 1311),
-["Museum"] = Vector3.new(1103, 140, 1323),
-["Rising Bank"] = Vector3.new(21, 18, 770),
-["Tomb"] = Vector3.new(482, 21, -479),
-["Volcano"] = Vector3.new(2279, 19, -2064),
-["Casino"] = Vector3.new(-211, 20, -4600),
-["Create Bank"] = Vector3.new(-648, 20, -6088),
-["Oil Rig"] = Vector3.new(-2866, 135, -4003),
-["Ceo"] = Vector3.new(3048, 58, -4533),
+	["Power Plant"] = Vector3.new(83, 21, 2342),
+	["Plane"] = Vector3.new(-1244, 42, 2870),
+	["Rising Base"] = Vector3.new(-309, 18, 1598),
+	["Jewelery"] = Vector3.new(77, 18, 1311),
+	["Museum"] = Vector3.new(1103, 140, 1323),
+	["Rising Bank"] = Vector3.new(21, 18, 770),
+	["Tomb"] = Vector3.new(482, 21, -479),
+	["Volcano"] = Vector3.new(2279, 19, -2064),
+	["Casino"] = Vector3.new(-211, 20, -4600),
+	["Create Bank"] = Vector3.new(-648, 20, -6088),
+	["Oil Rig"] = Vector3.new(-2866, 135, -4003),
+	["Ceo"] = Vector3.new(3048, 58, -4533),
 }
 
 local t = {
@@ -1317,7 +1387,7 @@ local t = {
 	[12] = "Ceo",
 }
 
-teleport:Dropdown("Teleport",t,function(value)
+teleport:Dropdown("Teleport", t, function(value)
 	tp(list[value])
 end)
 
@@ -1327,14 +1397,14 @@ local r = {
 	[3] = "Plane"
 }
 
-teleport:Dropdown("Robbers",r,function(value)
+teleport:Dropdown("Robbers", r, function(value)
 	if value == "Plane" then
 		tp(workspace.Plane.CargoPlane)
 	elseif value == "Drop" then
 		tp(workspace.Drop.Root)
 	elseif value == "Train" then
 		if workspace.Trains:FindFirstChild("PassengerArmor") then
-			tp(workspace.Trains.PassengerArmor.Model.Cash:GetChildren()[1]) 
+			tp(workspace.Trains.PassengerArmor.Model.Cash:GetChildren()[1])
 		else
 			for i, v in workspace.Trains:GetChildren() do
 				if v:FindFirstChild("Skeleton") then
@@ -1346,8 +1416,7 @@ teleport:Dropdown("Robbers",r,function(value)
 	end
 end)
 
-
-teleport:Button("Server Hop",function()
+teleport:Button("Server Hop", function()
 	local HttpService = game:GetService("HttpService")
 	local servers = {}
 	local PlaceId = game.PlaceId
@@ -1376,7 +1445,7 @@ while wait(1) do
 				v.Character.BillboardGui.Bounty.Text = ""
 			end
 		end
-		for i,f in game:GetService("Workspace").BountyBoard.Board.MostWanted.Board:GetChildren() do
+		for i, f in game:GetService("Workspace").BountyBoard.Board.MostWanted.Board:GetChildren() do
 			for i, v in game:GetService("Players"):GetChildren() do
 				if f:IsA("Frame") and v.DisplayName == f.NameText.Text then
 					if v.Character:FindFirstChild("BillboardGui") then
