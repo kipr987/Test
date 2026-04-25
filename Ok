@@ -76,6 +76,7 @@ local defaultSaves = {
     heli = false,
     helispeed = 10,
     carfly = false,
+	aim = false
 }
 
 local function loadSaves()
@@ -152,6 +153,7 @@ _G.turn = saves.turn
 _G.heli = saves.heli
 _G.helispeed = saves.helispeed
 _G.carfly = saves.carfly
+_G.aim = saves.aim
 
 task.spawn(function()
     while task.wait(10) do
@@ -235,7 +237,10 @@ function aimtog()
 	end)
 end
 
-_G.aim = false
+_G.aim = saves.aim
+if _G.aim == true then
+	aimtog()
+end
 aim:Toggle("Aimbot", saves.aim ~= nil and saves.aim or false, function(value)
 	_G.aim = value
 	saveCurrent()
@@ -295,6 +300,9 @@ function drop()
 end
 
 _G.dropesp = saves.dropesp
+if _G.dropesp == true then
+	drop()
+end
 esp:Toggle("Drop Esp", saves.dropesp, function(value)
 	_G.dropesp = value
 	saveCurrent()
@@ -316,6 +324,9 @@ function speed()
 end
 
 _G.speedOn = saves.speedOn
+if _G.speedOn == true then
+	speed()
+end
 player:Toggle("Speed On/Off", saves.speedOn, function(value)
 	_G.speedOn = value
 	saveCurrent()
@@ -368,6 +379,9 @@ function noclip()
 end
 
 _G.Noclip = saves.Noclip
+if _G.Noclip == true then
+	noclip()
+end
 player:Toggle("Noclip", saves.Noclip, function(value)
 	_G.Noclip = value
 	saveCurrent()
@@ -524,6 +538,9 @@ function rocket()
 end
 
 _G.rocket = saves.rocket
+if _G.rocket == true then
+	rocket()
+end
 misc:Toggle("Delete Turrets", saves.rocket, function(value)
 	_G.rocket = value
 	saveCurrent()
@@ -562,6 +579,9 @@ function killed()
 end
 
 _G.Killed = saves.Killed
+if _G.Killed == true then
+	killed()
+end
 misc:Toggle("Killed NPC", saves.Killed, function(value)
 	_G.Killed = value
 	saveCurrent()
@@ -609,6 +629,9 @@ function hitbox()
 end
 
 _G.Hitbox = saves.Hitbox
+if _G.Hitbox == true then
+	hitbox()
+end
 misc:Toggle("Hitbox", saves.Hitbox, function(value)
 	_G.Hitbox = value
 	saveCurrent()
@@ -633,6 +656,9 @@ function head()
 end
 
 _G.ceohead = saves.ceohead
+if _G.ceohead == true then
+	head()
+end
 misc:Toggle("Ceo Head", saves.ceohead, function(value)
 	_G.ceohead = value
 	saveCurrent()
@@ -761,6 +787,9 @@ function code()
 end
 
 _G.code = saves.code
+if _G.code == true then
+	code()
+end
 misc:Toggle("Casino Code", saves.code, function(value)
 	_G.code = value
 	saveCurrent()
@@ -789,6 +818,9 @@ function plane()
 end
 
 _G.plane = saves.plane
+if _G.plane == true then
+	plane()
+end
 misc:Toggle("Plane Door Remove", saves.plane, function(value)
 	_G.plane = value
 	saveCurrent()
@@ -877,6 +909,9 @@ function cartog()
 end
 
 _G.Car = saves.Car
+if _G.Car == true then
+	cartog()
+end
 car:Toggle("Car Speed", saves.Car, function(value)
 	_G.Car = value
 	saveCurrent()
@@ -906,6 +941,9 @@ function turn()
 end
 
 _G.turn = saves.turn
+if _G.turn == true then
+	turn()
+end
 car:Toggle("Turn Speed", saves.turn, function(value)
 	_G.turn = value
 	saveCurrent()
@@ -933,6 +971,9 @@ function heli()
 end
 
 _G.heli = saves.heli
+if _G.heli == true then
+	heli()
+end
 car:Toggle("Heli Speed", saves.heli, function(value)
 	_G.heli = value
 	saveCurrent()
@@ -1121,31 +1162,6 @@ RunService.RenderStepped:Connect(function()
 			v:Destroy()
 		end
 	end
-end)
-
-aimtog()
-spawn(function()
-	drop()
-end)
-speed()
-spawn(function()
-	killed()
-end)
-spawn(function()
-	wait(3)
-	hitbox()
-end)
-spawn(function()
-	code()
-end)
-spawn(function()
-	head()
-end)
-spawn(function()
-	rocket()
-end)
-spawn(function()
-	plane()
 end)
 
 local speed = 350
