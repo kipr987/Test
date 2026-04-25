@@ -549,8 +549,12 @@ function killed()
 			end
 			for i, f in workspace.MansionRobbery.GuardsFolder:GetChildren() do
 				if (f.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 300 then
-					f.NPCDestObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
-					f.NPCLookAtObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+					if workspace.MansionRobbery:FindFirstChild("ActiveBoss") then
+						f.NPCDestObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+						f.NPCLookAtObj.Value = workspace.MansionRobbery.ActiveBoss.HumanoidRootPart
+					else
+						f.Humanoid.Health = 0
+					end
 				end
 			end
 		end)
@@ -1353,7 +1357,9 @@ function tp(target)
 	else
 		moveTo(Vector3.new(targetPos.X, targetPos.Y, targetPos.Z), speed)
 	end
-
+	if target == Vector3.new(2192, 70, -2578) then
+		moveTo(Vector3.new(2303, 60, -2593),300)
+	end
 	task.wait(0.2)
 	bv:Destroy()
 	tpf = false
@@ -1371,7 +1377,7 @@ local list = {
 	["Museum"] = Vector3.new(1103, 140, 1323),
 	["Rising Bank"] = Vector3.new(21, 18, 770),
 	["Tomb"] = Vector3.new(482, 21, -479),
-	["Volcano"] = Vector3.new(2279, 19, -2064),
+	["Volcano"] = Vector3.new(2192, 70, -2578),
 	["Casino"] = Vector3.new(-211, 20, -4600),
 	["Create Bank"] = Vector3.new(-648, 20, -6088),
 	["Oil Rig"] = Vector3.new(-2866, 135, -4003),
