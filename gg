@@ -1,5 +1,5 @@
 loadstring(game:HttpGet("https://pastebin.com/raw/CLNv5GXH"))()
-local whitelist = {"kipr987","milanka_sisi3300","Gkhubi22"}
+local whitelist = {"kipr987","milanka_sisi3300","Gkhubi22","Milatakun532"}
 local is = false
 for i, v in whitelist do
 	if v == game:GetService("Players").LocalPlayer.Name then
