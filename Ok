@@ -239,7 +239,9 @@ end
 
 _G.aim = saves.aim
 if _G.aim == true then
+spawn(function()
 	aimtog()
+end)
 end
 aim:Toggle("Aimbot", saves.aim ~= nil and saves.aim or false, function(value)
 	_G.aim = value
@@ -301,7 +303,9 @@ end
 
 _G.dropesp = saves.dropesp
 if _G.dropesp == true then
+spawn(function()
 	drop()
+end)
 end
 esp:Toggle("Drop Esp", saves.dropesp, function(value)
 	_G.dropesp = value
@@ -325,7 +329,9 @@ end
 
 _G.speedOn = saves.speedOn
 if _G.speedOn == true then
+spawn(function()
 	speed()
+end)
 end
 player:Toggle("Speed On/Off", saves.speedOn, function(value)
 	_G.speedOn = value
@@ -380,7 +386,9 @@ end
 
 _G.Noclip = saves.Noclip
 if _G.Noclip == true then
+spawn(function()
 	noclip()
+end)
 end
 player:Toggle("Noclip", saves.Noclip, function(value)
 	_G.Noclip = value
@@ -539,7 +547,9 @@ end
 
 _G.rocket = saves.rocket
 if _G.rocket == true then
+spawn(function()
 	rocket()
+end)
 end
 misc:Toggle("Delete Turrets", saves.rocket, function(value)
 	_G.rocket = value
@@ -580,7 +590,9 @@ end
 
 _G.Killed = saves.Killed
 if _G.Killed == true then
+spawn(function()
 	killed()
+end)
 end
 misc:Toggle("Killed NPC", saves.Killed, function(value)
 	_G.Killed = value
@@ -630,7 +642,9 @@ end
 
 _G.Hitbox = saves.Hitbox
 if _G.Hitbox == true then
+spawn(function()
 	hitbox()
+end)
 end
 misc:Toggle("Hitbox", saves.Hitbox, function(value)
 	_G.Hitbox = value
@@ -657,7 +671,9 @@ end
 
 _G.ceohead = saves.ceohead
 if _G.ceohead == true then
+spawn(function()
 	head()
+end)
 end
 misc:Toggle("Ceo Head", saves.ceohead, function(value)
 	_G.ceohead = value
@@ -788,7 +804,9 @@ end
 
 _G.code = saves.code
 if _G.code == true then
+spawn(function()
 	code()
+end)
 end
 misc:Toggle("Casino Code", saves.code, function(value)
 	_G.code = value
@@ -819,7 +837,9 @@ end
 
 _G.plane = saves.plane
 if _G.plane == true then
+spawn(function()
 	plane()
+end)
 end
 misc:Toggle("Plane Door Remove", saves.plane, function(value)
 	_G.plane = value
@@ -910,7 +930,9 @@ end
 
 _G.Car = saves.Car
 if _G.Car == true then
+spawn(function()
 	cartog()
+end)
 end
 car:Toggle("Car Speed", saves.Car, function(value)
 	_G.Car = value
@@ -942,7 +964,9 @@ end
 
 _G.turn = saves.turn
 if _G.turn == true then
+spawn(function()
 	turn()
+end)
 end
 car:Toggle("Turn Speed", saves.turn, function(value)
 	_G.turn = value
@@ -972,7 +996,9 @@ end
 
 _G.heli = saves.heli
 if _G.heli == true then
+spawn(function()
 	heli()
+end)
 end
 car:Toggle("Heli Speed", saves.heli, function(value)
 	_G.heli = value
