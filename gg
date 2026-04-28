@@ -40,6 +40,8 @@ elseif game.PlaceId == 127794225497302 then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/kipr987/Test/refs/heads/main/ab"))()
 elseif game.PlaceId == 70845479499574 then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/kipr987/Test/refs/heads/main/nn"))()
+elseif game.PlaceId == 17516596118 then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/kipr987/Test/refs/heads/main/hs"))()
 else
 --loadstring(game:HttpGet("https://pastebin.com/raw/90LE6k3h"))()
 end
