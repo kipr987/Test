@@ -37,6 +37,82 @@ local function Abbreviate(Number, Decimals)
     return math.floor(((Number < 1 and Number) or math.floor(Number) / 10 ^ (math.log10(Number) - math.log10(Number) % 3)) * 10 ^ (Decimals or 3)) / 10 ^ (Decimals or 3)..(({"k", "M", "B", "T", "Qa", "Qn", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "QaD", "QnD", "SxD", "SpD", "OcD", "NoD", "Vg", "UvG", "DvG", "TvG", "QaVg", "QnVg", "SxVg", "SpVg", "OcVg", "NoVg"})[math.floor(math.log10(Number) / 3)] or "")
 end
 
+local function esp(v)
+	if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+		if not v.Character:FindFirstChild("Highlight") then
+			hight = Instance.new("Highlight", v.Character)
+			hight.OutlineColor = Color3.new(1,1,1)
+		end
+		if not v.Character:FindFirstChild("BillboardGui") then
+			local bill = Instance.new("BillboardGui", v.Character)
+			bill.Adornee = v.Character
+			bill.Size = UDim2.new(0, 200,0, 50)
+			bill.StudsOffset = Vector3.new(0,4,0)
+			bill.AlwaysOnTop = true
+
+			local textlabel = Instance.new("TextLabel", bill)
+			textlabel.Size = UDim2.new(1,0,1,0)
+			textlabel.Position = UDim2.new(0,0,0,0)
+			textlabel.Name = "TextLabelTitle"
+			textlabel.Text = v.DisplayName
+			textlabel.BackgroundTransparency = 1
+			textlabel.TextSize = 17
+			textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+
+			textlabel2 = Instance.new("TextLabel", bill)
+			textlabel2.Size = UDim2.new(1,0,1,0)
+			textlabel2.Text = "[0]"
+			textlabel2.Position = UDim2.new(0, 0,-0.3, 0)
+			textlabel2.BackgroundTransparency = 1
+			textlabel2.TextColor3 = Color3.new(1, 1, 1)
+			textlabel2.TextSize = 17
+			textlabel2.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+
+			textlabel3 = Instance.new("TextLabel", bill)
+			textlabel3.Size = UDim2.new(1,0,1,0)
+			textlabel3.Text = ""
+			textlabel3.Name = "Bounty"
+			textlabel3.Position = UDim2.new(0, 0,-0.6, 0)
+			textlabel3.BackgroundTransparency = 1
+			textlabel3.TextColor3 = Color3.new(0, 1, 0.0313725)
+			textlabel3.TextSize = 17
+			textlabel3.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			textlabel.TextColor3 = v.TeamColor.Color
+			local stroke = Instance.new("UIStroke", textlabel)
+			local stroke = Instance.new("UIStroke", textlabel2)
+			local stroke = Instance.new("UIStroke", textlabel3)
+			spawn(function()
+				while task.wait(1) do
+					pcall(function()
+						v.Character.BillboardGui.TextLabel.Text = "["..math.floor((v.Character.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude).."]"
+					end)    
+				end
+			end)
+		end
+	end
+end
+_G.Esp = false
+game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(function(child)
+	if child.Name == "Trade" then
+		for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
+			v.MouseButton1Click:Connect(function()
+				for i, f in game:GetService("Players"):GetChildren() do
+					if f.DisplayName ~= v.Title.Text.Text then
+						if f.Character:FindFirstChildOfClass("Highlight") then
+							f.Character:FindFirstChildOfClass("Highlight"):Destroy()
+						end
+						if f.Character:FindFirstChildOfClass("BillboardGui") then
+							f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
+						end
+					else	
+						esp(f)
+					end
+				end
+			end)
+		end
+	end
+end)
+
 -- Функция поиска предмета: сначала точное совпадение, потом похожее
 local function findItem(itemName, values)
     -- 1. Точное совпадение
