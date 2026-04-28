@@ -1171,6 +1171,10 @@ function carf()
 end
 
 _G.carfly = saves.carfly
+if _G.carfly == true then
+	sFLY(true)
+	carf()
+end
 car:Toggle("Car Fly", saves.carfly, function(value)
 	_G.carfly = value
 	saveCurrent()
