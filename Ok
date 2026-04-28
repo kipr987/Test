@@ -255,7 +255,7 @@ aim:Slider("Distance", 0, 600, saves.Dis, function(value)
 	saveCurrent()
 end)
 
-aim:Label(Gun Spam [Scroll click]
+aim:Label("Gun Spam [Scroll click]")
 
 _G.Esp = saves.Esp
 esp:Toggle("Esp", saves.Esp, function(value)
