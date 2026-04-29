@@ -1515,7 +1515,9 @@ teleport:Button("Server Hop", function()
 	end
 end)
 if save.respawn then
-	_G.respawn = save.respawn
+pcall(function()
+	_G.respawn = save.respawn or false
+end)
 else
 	_G.respawn = false
 end
