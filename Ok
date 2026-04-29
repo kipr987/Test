@@ -124,7 +124,7 @@ local function saveCurrent()
         heli = _G.heli,
         helispeed = _G.helispeed,
         carfly = _G.carfly,
-		aim = _G.aim
+		aim = _G.aim,
 		respawn = _G.respawn
     }
     pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
