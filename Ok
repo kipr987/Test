@@ -1514,7 +1514,8 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-if save.respawn then
+local l = save.respawn
+if l ~= nil then
 pcall(function()
 	_G.respawn = save.respawn or false
 end)
