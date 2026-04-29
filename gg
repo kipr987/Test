@@ -1,17 +1,29 @@
 loadstring(game:HttpGet("https://pastebin.com/raw/CLNv5GXH"))()
-local whitelist = {"kipr987","milanka_sisi3300","Gkhubi22","Milatakun530","Steechlove123","Rer_k0","milanka_sisi300"}
-local is = false
-for i, v in whitelist do
-	if v == game:GetService("Players").LocalPlayer.Name then
-		is = true
+
+_G.whitelist = {
+	["kipr987"] = true,
+	["milanka_sisi"] = {m = 6, d = 6, h = 8},
+	["gkhubi"] = {m = 5, d = 25, h = 13},
+	["milatakun"] = true,
+	["steechlove"] = {m = 5, d = 2, h = 18},
+	["rer_k"] = {m = 5, d = 9, h = 8},
+}
+local playerName = string.lower(game:GetService("Players").LocalPlayer.Name)
+local allowed = false
+
+for name, data in pairs(_G.whitelist) do
+	name = string.lower(name)
+	if playerName == name or string.find(playerName, name, 1, true) then
+		allowed = true
 		break
 	end
 end
-if is == false then
+
+if not allowed then
 	game:GetService("Players").LocalPlayer:Kick("Please buy the script")
 	return
 end
---burserg007
+
 if game.PlaceId == 606849621 then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/kipr987/Test/refs/heads/main/Ok"))()
 elseif game.PlaceId == 12355337193 then
