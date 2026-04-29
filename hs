@@ -15,19 +15,18 @@ local function IsVisible(targetPart, targetModel)
 	if not myHead then return false end
 
 	local origin = myHead.Position
-	local direction = (targetPart.Position - origin)
+	local direction = targetPart.Position - origin
 
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Blacklist
 	params.FilterDescendantsInstances = {
-		character, -- себя игнорим
+		character,
 		Camera
 	}
 	params.IgnoreWater = true
 
 	local result = workspace:Raycast(origin, direction, params)
 
-	-- если луч попал прямо в цель (или в её часть)
 	if result and result.Instance then
 		if result.Instance:IsDescendantOf(targetModel) then
 			return true
@@ -35,7 +34,7 @@ local function IsVisible(targetPart, targetModel)
 		return false
 	end
 
-	return false
+	return true
 end
 
 local function GetClosestTarget()
@@ -69,7 +68,6 @@ local function GetClosestTarget()
 			return
 		end
 
-		-- не своя команда
 		if myTeam and targetTeam and myTeam == targetTeam then
 			return
 		end
@@ -79,7 +77,6 @@ local function GetClosestTarget()
 			return
 		end
 
-		-- проверка видимости через raycast (должна быть видна голова)
 		if not IsVisible(head, model) then
 			return
 		end
@@ -90,7 +87,6 @@ local function GetClosestTarget()
 		end
 	end
 
-	-- Мобы
 	local mobsFolder = workspace:FindFirstChild("Mobs")
 	if mobsFolder then
 		for _, mob in pairs(mobsFolder:GetChildren()) do
@@ -98,7 +94,6 @@ local function GetClosestTarget()
 		end
 	end
 
-	-- Игроки
 	for _, player in pairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character then
 			Check(player.Character, player:GetAttribute("Team"))
@@ -108,7 +103,6 @@ local function GetClosestTarget()
 	return closest
 end
 
--- ПКМ
 UserInputService.InputBegan:Connect(function(input, gp)
 	if gp then return end
 
@@ -137,43 +131,50 @@ RunService.RenderStepped:Connect(function()
 		head.Position
 	)
 end)
-while task.wait() do
-	pcall(function()
-		local myTeam = game:GetService("Players").LocalPlayer:GetAttribute("Team")
 
-		-- Мобы
-		for _, v in pairs(workspace.Mobs:GetChildren()) do
-			if v:GetAttribute("Team") ~= myTeam then
-			for i, f in v:GetChildren() do
-				if f:IsA("Highlight") and f.Name ~= "L" then
-					f:Destroy()
-				end
-			end
-				if not v:FindFirstChild("L") then
-					local l = Instance.new("Highlight")
-					l.Name = "L"
-					l.Parent = v
-				end
-			end
-		end
+task.spawn(function()
+	while task.wait(1) do
+		pcall(function()
+			local myTeam = LocalPlayer:GetAttribute("Team")
 
-		-- Игроки
-		for _, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v ~= game:GetService("Players").LocalPlayer then
-				local char = v.Character
-				for i, f in char:GetChildren() do
-					if f:IsA("Highlight") and f.Name ~= "L" then
-						f:Destroy()
-					end
-				end
-				if char and v:GetAttribute("Team") ~= myTeam then
-					if not char:FindFirstChild("L") then
-						local l = Instance.new("Highlight")
-						l.Name = "L"
-						l.Parent = char
+			local mobsFolder = workspace:FindFirstChild("Mobs")
+			if mobsFolder then
+				for _, v in pairs(mobsFolder:GetChildren()) do
+					if v:GetAttribute("Team") ~= myTeam then
+						for _, f in pairs(v:GetChildren()) do
+							if f:IsA("Highlight") and f.Name ~= "L" then
+								f:Destroy()
+							end
+						end
+
+						if not v:FindFirstChild("L") then
+							local l = Instance.new("Highlight")
+							l.Name = "L"
+							l.Parent = v
+						end
 					end
 				end
 			end
-		end
-	end)
-end
+
+			for _, v in pairs(Players:GetPlayers()) do
+				if v ~= LocalPlayer and v.Character then
+					local char = v.Character
+
+					if v:GetAttribute("Team") ~= myTeam then
+						for _, f in pairs(char:GetChildren()) do
+							if f:IsA("Highlight") and f.Name ~= "L" then
+								f:Destroy()
+							end
+						end
+
+						if not char:FindFirstChild("L") then
+							local l = Instance.new("Highlight")
+							l.Name = "L"
+							l.Parent = char
+						end
+					end
+				end
+			end
+		end)
+	end
+end)
