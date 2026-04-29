@@ -1523,8 +1523,6 @@ end)
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-player.Character.Humanoid.Health = 0
-
 player.CharacterAdded:Connect(function(char)
 if noot _G.respawn then return end
 	pcall(function()
