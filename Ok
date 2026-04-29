@@ -1514,8 +1514,11 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-
-_G.respawn = save.respawn
+if save.respawn then
+	_G.respawn = save.respawn
+else
+	_G.respawn = false
+end
 teleport:Toggle("Respawn Teleport",saves.respawn,function(v)
 	_G.respawn = v
 end)
