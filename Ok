@@ -1524,7 +1524,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 player.CharacterAdded:Connect(function(char)
-if noot _G.respawn then return end
+if not _G.respawn then return end
 	pcall(function()
 		local hrp = char:WaitForChild("HumanoidRootPart")
 		wait(.1)
