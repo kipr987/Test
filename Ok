@@ -1514,12 +1514,13 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-local l = save.respawn
-if l ~= nil then
-pcall(function()
-	_G.respawn = save.respawn or false
+local l = nil
+local succ,err = pcall(function()
+	l = save.respawn
 end)
-else
+if succ then
+	_G.respawn = saves.respawn
+	else
 	_G.respawn = false
 end
 teleport:Toggle("Respawn Teleport",saves.respawn,function(v)
