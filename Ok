@@ -75,7 +75,8 @@ local defaultSaves = {
     heli = false,
     helispeed = 10,
     carfly = false,
-	aim = false
+	aim = false,
+	respawn = false
 }
 
 local function loadSaves()
@@ -124,6 +125,7 @@ local function saveCurrent()
         helispeed = _G.helispeed,
         carfly = _G.carfly,
 		aim = _G.aim
+		respawn = _G.respawn
     }
     pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
 end
@@ -154,6 +156,7 @@ _G.heli = saves.heli
 _G.helispeed = saves.helispeed
 _G.carfly = saves.carfly
 _G.aim = saves.aim
+_G.respawn = saves.respawn
 
 task.spawn(function()
     while task.wait(10) do
@@ -1510,6 +1513,53 @@ teleport:Button("Server Hop", function()
 	else
 		return notify("Serverhop", "Couldn't find a server.")
 	end
+end)
+
+_G.respawn = save.respawn
+teleport:Toggle("Respawn Teleport",saves.respawn,function(v)
+	_G.respawn = v
+end)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+player.Character.Humanoid.Health = 0
+
+player.CharacterAdded:Connect(function(char)
+if noot _G.respawn then return end
+	pcall(function()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		wait(.1)
+		local minHeight = 95
+		local rayHeight = 500
+
+		local startPos = hrp.Position + Vector3.new(0, rayHeight, 0)
+
+		local rayParams = RaycastParams.new()
+		rayParams.FilterDescendantsInstances = {char}
+		rayParams.FilterType = Enum.RaycastFilterType.Exclude
+		rayParams.IgnoreWater = true
+
+		-- Луч сверху вниз на 500
+		local result = workspace:Raycast(
+			startPos,
+			Vector3.new(0, -rayHeight * 2, 0),
+			rayParams
+		)
+
+		if result then
+			local hitY = result.Position.Y
+			local currentY = hrp.Position.Y
+
+			-- Если объект выше чем HRP + 95, не телепортируем
+			if hitY <= (currentY + minHeight) then
+				hrp.CFrame = hrp.CFrame + Vector3.new(0, minHeight, 0)
+			end
+		else
+			-- Если вообще ничего не найдено — тоже телепортируем
+			hrp.CFrame = hrp.CFrame + Vector3.new(0, minHeight, 0)
+		end
+	end)
 end)
 
 while wait(1) do
