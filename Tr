@@ -1128,3 +1128,26 @@ Tradevalue:Button("Trade value [click]", function()
         print("Окно трейда не открыто")
     end
 end)
+local slots = {}
+local ins = {["1"]=true,["2"]=true,["3"]=true,["4"]=true,["5"]=true,
+             ["6"]=true,["7"]=true,["8"]=true,["9"]=true,["10"]=true}
+
+Tradevalue:Button("Save slots", function()
+    slots = {}
+    pcall(function()
+        if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
+        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+            if not ins[v.Name] then
+                table.insert(slots, v.Name)
+            end
+        end
+    end)
+end)
+
+Tradevalue:Button("Load slots", function()
+	local args = {
+	false,
+	slots
+}
+game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
+end)
