@@ -7,7 +7,7 @@ _G.whitelist = {
 	["milatakun"] = true,
 	["steechlove"] = {m = 5, d = 2, h = 18},
 	["rer_k"] = {m = 5, d = 9, h = 8},
-	["burgserg007"] = {m = 5, d = 1, h = 21}
+	["burserg007"] = {m = 5, d = 1, h = 21}
 }
 local playerName = string.lower(game:GetService("Players").LocalPlayer.Name)
 local allowed = false
