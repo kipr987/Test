@@ -9,6 +9,7 @@ local window = UI:Window("Premium")
 local nif = UI:Notification("Welcome to", game:GetService("Players").LocalPlayer.Name, "Okay!")
 local Trade = window:Tab("Trade")
 local Tradevalue = window:Tab("Trade Value")
+local sl = window:Tab("Slots")
 for i, v in game:GetService("Players"):GetChildren() do
     Trade:Button(v.DisplayName,function()
         game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
@@ -41,14 +42,16 @@ local function esp(v)
 	if v.Name ~= game:GetService("Players").LocalPlayer.Name then
 		if not v.Character:FindFirstChild("Highlight") then
 			hight = Instance.new("Highlight", v.Character)
+			hight.Name = "L"
 			hight.OutlineColor = Color3.new(1,1,1)
 		end
-		if not v.Character:FindFirstChild("BillboardGui") then
+		if not v.Character:FindFirstChild("B") then
 			local bill = Instance.new("BillboardGui", v.Character)
 			bill.Adornee = v.Character
 			bill.Size = UDim2.new(0, 200,0, 50)
 			bill.StudsOffset = Vector3.new(0,4,0)
 			bill.AlwaysOnTop = true
+			bill.Name = "B"
 
 			local textlabel = Instance.new("TextLabel", bill)
 			textlabel.Size = UDim2.new(1,0,1,0)
@@ -98,11 +101,11 @@ game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(functi
 			v.MouseButton1Click:Connect(function()
 				for i, f in game:GetService("Players"):GetChildren() do
 					if f.DisplayName ~= v.Title.Text.Text then
-						if f.Character:FindFirstChildOfClass("Highlight") then
-							f.Character:FindFirstChildOfClass("Highlight"):Destroy()
+						if f.Character:FindFirstChildOfClass("L") then
+							f.Character:FindFirstChildOfClass("L"):Destroy()
 						end
-						if f.Character:FindFirstChildOfClass("BillboardGui") then
-							f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
+						if f.Character:FindFirstChildOfClass("B") then
+							f.Character:FindFirstChildOfClass("B"):Destroy()
 						end
 					else	
 						esp(f)
@@ -1128,11 +1131,12 @@ Tradevalue:Button("Trade value [click]", function()
         print("Окно трейда не открыто")
     end
 end)
+
 local slots = {}
 local ins = {["1"]=true,["2"]=true,["3"]=true,["4"]=true,["5"]=true,
              ["6"]=true,["7"]=true,["8"]=true,["9"]=true,["10"]=true}
 
-Tradevalue:Button("Save slots", function()
+sl:Button("Save slots", function()
     slots = {}
     pcall(function()
         if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
@@ -1144,7 +1148,7 @@ Tradevalue:Button("Save slots", function()
     end)
 end)
 
-Tradevalue:Button("Load slots", function()
+sl:Button("Load slots", function()
 	local args = {
 	false,
 	slots
