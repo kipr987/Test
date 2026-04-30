@@ -91,7 +91,7 @@ local function esp(v)
 		end
 	end
 end
-_G.Esp = false
+_G.Esp = true
 game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(function(child)
 	if child.Name == "Trade" then
 		for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
