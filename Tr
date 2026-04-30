@@ -101,11 +101,11 @@ game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(functi
 			v.MouseButton1Click:Connect(function()
 				for i, f in game:GetService("Players"):GetChildren() do
 					if f.DisplayName ~= v.Title.Text.Text then
-						if f.Character:FindFirstChildOfClass("L") then
-							f.Character:FindFirstChildOfClass("L"):Destroy()
+						if f.Character:FindFirstChildOfClass("Highlight") then
+							f.Character:FindFirstChildOfClass("Highlight"):Destroy()
 						end
-						if f.Character:FindFirstChildOfClass("B") then
-							f.Character:FindFirstChildOfClass("B"):Destroy()
+						if f.Character:FindFirstChildOfClass("BillboardGui") then
+							f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
 						end
 					else	
 						esp(f)
