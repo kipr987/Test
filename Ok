@@ -48,7 +48,7 @@ local LocalPlayer = Players.LocalPlayer
 
 -- ========== СИСТЕМА СОХРАНЕНИЯ ==========
 local HttpService = game:GetService("HttpService")
-local SAVE_FILE = "jailbreak_script_saves.json"
+local SAVE_FILE = "jailbreak_script_saves1.json"
 
 local defaultSaves = {
     TeamCheck = true,
@@ -76,7 +76,8 @@ local defaultSaves = {
     helispeed = 10,
     carfly = false,
 	aim = false,
-	respawn = false
+	respawn = false,
+	sprint = false
 }
 
 local function loadSaves()
@@ -125,7 +126,8 @@ local function saveCurrent()
         helispeed = _G.helispeed,
         carfly = _G.carfly,
 		aim = _G.aim,
-		respawn = _G.respawn
+		respawn = _G.respawn,
+		sprint = _G.Sprint
     }
     pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
 end
@@ -157,6 +159,7 @@ _G.helispeed = saves.helispeed
 _G.carfly = saves.carfly
 _G.aim = saves.aim
 _G.respawn = saves.respawn
+_G.Sprint = saves.sprint
 
 task.spawn(function()
     while task.wait(10) do
@@ -399,6 +402,19 @@ player:Toggle("Noclip", saves.Noclip, function(value)
 	_G.Noclip = value
 	saveCurrent()
 	noclip()
+end)
+
+
+local function Sprint()
+	game:GetService("ReplicatedStorage"):SetAttribute("RollingEnabled", _G.Sprint)
+end
+
+_G.Sprint = saves.sprint
+Sprint()
+player:Toggle("Sprint", saves.sprint, function(value)
+	_G.Sprint = value
+	saveCurrent()
+	Sprint()
 end)
 
 misc:Button("Delete Doors", function(value)
@@ -1514,15 +1530,9 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-local l = nil
-local succ,err = pcall(function()
-	l = save.respawn
-end)
-if succ then
-	_G.respawn = saves.respawn
-	else
-	_G.respawn = false
-end
+
+_G.respawn = saves.respawn
+
 teleport:Toggle("Respawn Teleport",saves.respawn,function(v)
 	_G.respawn = v
 end)
