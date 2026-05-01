@@ -35,9 +35,7 @@ local misc = window:Tab("Misc")
 local car = window:Tab("Car")
 local robbers = window:Tab("Robbers")
 local teleport = window:Tab("Teleport")
-local build = window:Tab("Build")
-
-build:Label("Critical")
+local visual = window:Tab("Visual")
 
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
@@ -1575,6 +1573,37 @@ if not _G.respawn then return end
 			hrp.CFrame = hrp.CFrame + Vector3.new(0, minHeight, 0)
 		end
 	end)
+end)
+_G.Nerf = false
+visual:Toggle("Nerf Items", false, function(v)
+	_G.Nerf = v
+	while wait(.1) and _G.Nerf do
+	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol") then
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol"):SetAttribute("HotbarImageSrc", "rbxassetid://6930018123")
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol").Name = "NerfPistol"
+	end
+	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver") then
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver"):SetAttribute("HotbarImageSrc", "rbxassetid://6930017845")
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver").Name = "NerfRevolver"
+	end
+	if game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider") then
+		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://6930018123"
+		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://6930017845"
+	end
+end
+
+if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol") then
+	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol"):SetAttribute("HotbarImageSrc", "rbxassetid://16647913398")
+	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol").Name = "Pistol"
+end
+if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver") then
+	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver"):SetAttribute("HotbarImageSrc", "rbxassetid://16647917031")
+	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver").Name = "Revolver"
+end
+if game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider") then
+	game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://16647913398"
+	game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://16647917031"
+end
 end)
 
 while wait(1) do
