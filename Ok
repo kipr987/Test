@@ -1625,7 +1625,6 @@ local function nerf()
 		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://16647917031"
 	end
 end
-_G.Nerf = false
 if _G.Nerf then
 	nerf()
 end
@@ -1958,25 +1957,21 @@ visual:Toggle("HyperShift Mode", _G.hypershift, function(v)
     tun()
 end)
 
-_G.Rim = ""
 visual:Textbox("Rim", "Enter", function(value)
 	_G.Rim = value
 	saveCurrent()
 end)
 
-_G.Sp = ""
 visual:Textbox("Spoiler", "Enter", function(value)
 	_G.Sp = value
 	saveCurrent()
 end)
 
-_G.Txt = ""
 visual:Textbox("Texture", "Enter", function(value)
 	_G.Txt = value
 	saveCurrent()
 end)
 
-_G.Dr = ""
 visual:Textbox("Drift", "Enter", function(value)
 	_G.Dr = value
 	saveCurrent()
