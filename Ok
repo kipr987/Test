@@ -1937,6 +1937,10 @@ local function tun()
     stopHypershiftAnimation()
 end
 _G.CarObj = nil
+_G.Rim = saves.rim
+_G.Sp = saves.spoiler
+_G.Dr = saves.drift
+_G.Txt = saves.texture
 if _G.tun then
 	spawn(function()
     	tun()
