@@ -1937,7 +1937,9 @@ local function tun()
 end
 _G.CarObj = nil
 if _G.tun then
-    tun()
+	spawn(function()
+    	tun()
+	end)
 end
 visual:Toggle("Car Tuning", _G.tun, function(v)
 	_G.tun = v
