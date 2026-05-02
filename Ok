@@ -83,6 +83,7 @@ local defaultSaves = {
     texture = false,
     drift = false,
 }
+print(saves.rim)
 
 local function loadSaves()
 	if not (readfile and writefile) then return defaultSaves end
