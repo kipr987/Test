@@ -1,9 +1,8 @@
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
-
 function missing(t, f, fallback)
-    if type(f) == t then return f end
-    return fallback
+	if type(f) == t then return f end
+	return fallback
 end
 
 queueteleport = missing("function", queue_on_teleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport))
@@ -11,10 +10,10 @@ queueteleport = missing("function", queue_on_teleport or (syn and syn.queue_on_t
 local TeleportCheck = false
 
 Players.LocalPlayer.OnTeleport:Connect(function(State)
-    if (not TeleportCheck) and queueteleport then
-        TeleportCheck = true
-        queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptsHubRBX/Script/refs/heads/main/Script'))()")
-    end
+	if (not TeleportCheck) and queueteleport then
+		TeleportCheck = true
+		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ScriptsHubRBX/Script/refs/heads/main/Script'))()")
+	end
 end)
 
 for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
@@ -46,88 +45,102 @@ local LocalPlayer = Players.LocalPlayer
 
 -- ========== СИСТЕМА СОХРАНЕНИЯ ==========
 local HttpService = game:GetService("HttpService")
-local SAVE_FILE = "jailbreak_script_saves1.json"
+local SAVE_FILE = "jailbreak_script_saves3.json"
 
 local defaultSaves = {
-    TeamCheck = true,
-    AimPart = "HumanoidRootPart",
-    Sensitivity = 0,
-    Dis = 300,
-    Esp = false,
-    dropesp = false,
-    speedOn = false,
-    speed = 24,
-    Noclip = false,
-    Lasers = false,
-    rocket = false,
-    Killed = false,
-    Hitbox = false,
-    ceohead = false,
-    code = false,
-    trans = false,
-    plane = false,
-    Ragdoll = false,
-    Car = false,
-    CarSpeed = 3,
-    turn = false,
-    heli = false,
-    helispeed = 10,
-    carfly = false,
+	TeamCheck = true,
+	AimPart = "HumanoidRootPart",
+	Sensitivity = 0,
+	Dis = 300,
+	Esp = false,
+	dropesp = false,
+	speedOn = false,
+	speed = 24,
+	Noclip = false,
+	Lasers = false,
+	rocket = false,
+	Killed = false,
+	Hitbox = false,
+	ceohead = false,
+	code = false,
+	trans = false,
+	plane = false,
+	Ragdoll = false,
+	Car = false,
+	CarSpeed = 3,
+	turn = false,
+	heli = false,
+	helispeed = 10,
+	carfly = false,
 	aim = false,
 	respawn = false,
-	sprint = false
+	sprint = false,
+	nerf = false,
+    tun = false,
+    shift = false,
+    rim = false,
+    spoiler = false,
+    texture = false,
+    drift = false,
 }
 
 local function loadSaves()
-    if not (readfile and writefile) then return defaultSaves end
-    local ok, data = pcall(readfile, SAVE_FILE)
-    if not ok or not data or data:gsub("%s", "") == "" then
-        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
-        return defaultSaves
-    end
-    local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
-    if not ok2 then
-        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
-        return defaultSaves
-    end
-    for k, v in pairs(defaultSaves) do
-        if decoded[k] == nil then decoded[k] = v end
-    end
-    return decoded
+	if not (readfile and writefile) then return defaultSaves end
+	local ok, data = pcall(readfile, SAVE_FILE)
+	if not ok or not data or data:gsub("%s", "") == "" then
+		pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+		return defaultSaves
+	end
+	local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+	if not ok2 then
+		pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+		return defaultSaves
+	end
+	for k, v in pairs(defaultSaves) do
+		if decoded[k] == nil then decoded[k] = v end
+	end
+	return decoded
 end
 
 local function saveCurrent()
-    if not writefile then return end
-    local current = {
-        TeamCheck = _G.TeamCheck,
-        AimPart = _G.AimPart,
-        Sensitivity = _G.Sensitivity,
-        Dis = _G.Dis,
-        Esp = _G.Esp,
-        dropesp = _G.dropesp,
-        speedOn = _G.speedOn,
-        speed = _G.speed,
-        Noclip = _G.Noclip,
-        Lasers = _G.Lasers,
-        rocket = _G.rocket,
-        Killed = _G.Killed,
-        Hitbox = _G.Hitbox,
-        ceohead = _G.ceohead,
-        code = _G.code,
-        trans = _G.trans,
-        plane = _G.plane,
-        Ragdoll = _G.Ragdoll,
-        Car = _G.Car,
-        CarSpeed = _G.CarSpeed,
-        turn = _G.turn,
-        heli = _G.heli,
-        helispeed = _G.helispeed,
-        carfly = _G.carfly,
+	if not writefile then return end
+	local current = {
+		TeamCheck = _G.TeamCheck,
+		AimPart = _G.AimPart,
+		Sensitivity = _G.Sensitivity,
+		Dis = _G.Dis,
+		Esp = _G.Esp,
+		dropesp = _G.dropesp,
+		speedOn = _G.speedOn,
+		speed = _G.speed,
+		Noclip = _G.Noclip,
+		Lasers = _G.Lasers,
+		rocket = _G.rocket,
+		Killed = _G.Killed,
+		Hitbox = _G.Hitbox,
+		ceohead = _G.ceohead,
+		code = _G.code,
+		trans = _G.trans,
+		plane = _G.plane,
+		Ragdoll = _G.Ragdoll,
+		Car = _G.Car,
+		CarSpeed = _G.CarSpeed,
+		turn = _G.turn,
+		heli = _G.heli,
+		helispeed = _G.helispeed,
+		carfly = _G.carfly,
 		aim = _G.aim,
 		respawn = _G.respawn,
-		sprint = _G.Sprint
-    }
-    pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
+		sprint = _G.Sprint,
+		nerf = _G.Nerf,
+        tun = _G.tun,
+        shift = _G.hypershift,
+        rim = _G.Rim,
+        spoiler = _G.Sp,
+        texture = _G.Txt,
+        drift = _G.Dr
+	}
+	pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
 end
 
 local saves = loadSaves()
@@ -158,11 +171,18 @@ _G.carfly = saves.carfly
 _G.aim = saves.aim
 _G.respawn = saves.respawn
 _G.Sprint = saves.sprint
+_G.Nerf = saves.nerf
+_G.tun = saves.tun
+_G.hypershift = saves.shift
+_G.Rim = saves.rim
+_G.Sp = saves.spoiler
+_G.Txt = saves.texture
+_G.Dr = saves.drift
 
 task.spawn(function()
-    while task.wait(10) do
-        saveCurrent()
-    end
+	while task.wait(10) do
+		saveCurrent()
+	end
 end)
 -- ========== КОНЕЦ СИСТЕМЫ СОХРАНЕНИЯ ==========
 
@@ -243,9 +263,9 @@ end
 
 _G.aim = saves.aim
 if _G.aim == true then
-spawn(function()
-	aimtog()
-end)
+	spawn(function()
+		aimtog()
+	end)
 end
 aim:Toggle("Aimbot", saves.aim ~= nil and saves.aim or false, function(value)
 	_G.aim = value
@@ -309,9 +329,9 @@ end
 
 _G.dropesp = saves.dropesp
 if _G.dropesp == true then
-spawn(function()
-	drop()
-end)
+	spawn(function()
+		drop()
+	end)
 end
 esp:Toggle("Drop Esp", saves.dropesp, function(value)
 	_G.dropesp = value
@@ -335,9 +355,9 @@ end
 
 _G.speedOn = saves.speedOn
 if _G.speedOn == true then
-spawn(function()
-	speed()
-end)
+	spawn(function()
+		speed()
+	end)
 end
 player:Toggle("Speed On/Off", saves.speedOn, function(value)
 	_G.speedOn = value
@@ -392,9 +412,9 @@ end
 
 _G.Noclip = saves.Noclip
 if _G.Noclip == true then
-spawn(function()
-	noclip()
-end)
+	spawn(function()
+		noclip()
+	end)
 end
 player:Toggle("Noclip", saves.Noclip, function(value)
 	_G.Noclip = value
@@ -566,9 +586,9 @@ end
 
 _G.rocket = saves.rocket
 if _G.rocket == true then
-spawn(function()
-	rocket()
-end)
+	spawn(function()
+		rocket()
+	end)
 end
 misc:Toggle("Delete Turrets", saves.rocket, function(value)
 	_G.rocket = value
@@ -609,9 +629,9 @@ end
 
 _G.Killed = saves.Killed
 if _G.Killed == true then
-spawn(function()
-	killed()
-end)
+	spawn(function()
+		killed()
+	end)
 end
 misc:Toggle("Killed NPC", saves.Killed, function(value)
 	_G.Killed = value
@@ -661,9 +681,9 @@ end
 
 _G.Hitbox = saves.Hitbox
 if _G.Hitbox == true then
-spawn(function()
-	hitbox()
-end)
+	spawn(function()
+		hitbox()
+	end)
 end
 misc:Toggle("Hitbox", saves.Hitbox, function(value)
 	_G.Hitbox = value
@@ -690,9 +710,9 @@ end
 
 _G.ceohead = saves.ceohead
 if _G.ceohead == true then
-spawn(function()
-	head()
-end)
+	spawn(function()
+		head()
+	end)
 end
 misc:Toggle("Ceo Head", saves.ceohead, function(value)
 	_G.ceohead = value
@@ -823,9 +843,9 @@ end
 
 _G.code = saves.code
 if _G.code == true then
-spawn(function()
-	code()
-end)
+	spawn(function()
+		code()
+	end)
 end
 misc:Toggle("Casino Code", saves.code, function(value)
 	_G.code = value
@@ -856,9 +876,9 @@ end
 
 _G.plane = saves.plane
 if _G.plane == true then
-spawn(function()
-	plane()
-end)
+	spawn(function()
+		plane()
+	end)
 end
 misc:Toggle("Plane Door Remove", saves.plane, function(value)
 	_G.plane = value
@@ -949,9 +969,9 @@ end
 
 _G.Car = saves.Car
 if _G.Car == true then
-spawn(function()
-	cartog()
-end)
+	spawn(function()
+		cartog()
+	end)
 end
 car:Toggle("Car Speed", saves.Car, function(value)
 	_G.Car = value
@@ -983,9 +1003,9 @@ end
 
 _G.turn = saves.turn
 if _G.turn == true then
-spawn(function()
-	turn()
-end)
+	spawn(function()
+		turn()
+	end)
 end
 car:Toggle("Turn Speed", saves.turn, function(value)
 	_G.turn = value
@@ -1015,9 +1035,9 @@ end
 
 _G.heli = saves.heli
 if _G.heli == true then
-spawn(function()
-	heli()
-end)
+	spawn(function()
+		heli()
+	end)
 end
 car:Toggle("Heli Speed", saves.heli, function(value)
 	_G.heli = value
@@ -1539,7 +1559,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 player.CharacterAdded:Connect(function(char)
-if not _G.respawn then return end
+	if not _G.respawn then return end
 	pcall(function()
 		local hrp = char:WaitForChild("HumanoidRootPart")
 		wait(.1)
@@ -1574,37 +1594,380 @@ if not _G.respawn then return end
 		end
 	end)
 end)
-_G.Nerf = false
-visual:Toggle("Nerf Items", false, function(v)
-	_G.Nerf = v
+
+local function nerf()
 	while wait(.1) and _G.Nerf do
-	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol") then
-		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol"):SetAttribute("HotbarImageSrc", "rbxassetid://6930018123")
-		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol").Name = "NerfPistol"
+		if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol") then
+			game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol"):SetAttribute("HotbarImageSrc", "rbxassetid://6930018123")
+			game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Pistol").Name = "NerfPistol"
+		end
+		if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver") then
+			game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver"):SetAttribute("HotbarImageSrc", "rbxassetid://6930017845")
+			game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver").Name = "NerfRevolver"
+		end
+		if game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider") then
+			game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://6930018123"
+			game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://6930017845"
+		end
 	end
-	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver") then
-		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver"):SetAttribute("HotbarImageSrc", "rbxassetid://6930017845")
-		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("Revolver").Name = "NerfRevolver"
+
+	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol") then
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol"):SetAttribute("HotbarImageSrc", "rbxassetid://16647913398")
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol").Name = "Pistol"
+	end
+	if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver") then
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver"):SetAttribute("HotbarImageSrc", "rbxassetid://16647917031")
+		game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver").Name = "Revolver"
 	end
 	if game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider") then
-		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://6930018123"
-		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://6930017845"
+		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://16647913398"
+		game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://16647917031"
 	end
 end
-
-if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol") then
-	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol"):SetAttribute("HotbarImageSrc", "rbxassetid://16647913398")
-	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfPistol").Name = "Pistol"
+_G.Nerf = false
+if _G.Nerf then
+	nerf()
 end
-if game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver") then
-	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver"):SetAttribute("HotbarImageSrc", "rbxassetid://16647917031")
-	game:GetService("Players").LocalPlayer.Folder:FindFirstChild("NerfRevolver").Name = "Revolver"
-end
-if game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider") then
-	game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Pistol.Top.Icon.Image = "rbxassetid://16647913398"
-	game:GetService("Players").LocalPlayer.PlayerGui.GunShopGui.Container.Container.Main.Container:FindFirstChild("Slider").Revolver.Top.Icon.Image = "rbxassetid://16647917031"
-end
+visual:Toggle("Nerf Items", _G.Nerf, function(v)
+	_G.Nerf = v
+	nerf()
 end)
+
+local function tun()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/kipr987/Test/refs/heads/main/te"))()
+
+    local RunService = game:GetService("RunService")
+    local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local CYCLE_TIME = 5
+
+    local rimid = nil
+    local spoilerid = nil
+    local heartbeatConn = nil
+    local lastHypershift = false
+    local lastCar = nil -- отслеживаем последнюю машину
+    local driftid = nil
+
+    local function rim(name, car)
+        if not ReplicatedStorage.Resource.Rims:FindFirstChild(name) then return end
+        rimid = ReplicatedStorage.Resource.Rims:FindFirstChild(name).MeshId
+        for i, v in car.Preset:GetChildren() do
+            if v:IsA("Model") then
+                local hasRim = false
+                for i, f in v:GetChildren() do
+                    if f.Name == "Rim" and f.MeshId == rimid then
+                        hasRim = true
+                    elseif f.Name == "Rim" then
+                        f:Destroy()
+                    end
+                end
+                if not hasRim and v:FindFirstChild("WheelRoot") then
+                    local void = ReplicatedStorage.Resource.Rims[name]:Clone()
+                    void.CFrame = v.WheelRoot.CFrame
+                    void.Name = "Rim"
+                    void.Parent = v
+                    void.Anchored = false
+                    void.Size = Vector3.new(
+                        v.WheelRoot.Size.X * 1.1,
+                        v.WheelRoot.Size.Y / 1.3,
+                        v.WheelRoot.Size.Z / 1.3
+                    )
+                    local weld = Instance.new("Weld", void)
+                    weld.Part1 = void
+                    weld.Part0 = v.WheelRoot
+                end
+            end
+        end
+    end
+
+    local function spoiler(name, car)
+        if not ReplicatedStorage.Resource.Spoiler:FindFirstChild(name) then return end
+        if not car:FindFirstChild("Spoiler") then return end
+        local hasSpoiler = false
+        spoilerid = ReplicatedStorage.Resource.Spoiler:FindFirstChild(name).MeshId
+        for i, v in car:GetChildren() do
+            if v.Name == "SpoilerPart" and v:IsA("MeshPart") and v.MeshId == spoilerid then
+                hasSpoiler = true
+            elseif v.Name == "SpoilerPart" then
+                v:Destroy()
+            end
+        end
+        if hasSpoiler then return end
+        local thr = ReplicatedStorage.Resource.Spoiler[name]:Clone()
+        thr.Parent = car
+        thr.Name = "SpoilerPart"
+        thr.Anchored = false
+        local weld = Instance.new("Weld", thr)
+        weld.Part1 = thr
+        weld.Part0 = car.Spoiler
+    end
+
+    local function texture(name, car)
+        if not _G.TextureId then return end
+        if not _G.TextureId[name] then return end
+        if not _G.TextureId[name][car.Name] then return end
+        car.Model.Body.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+    end
+
+    local function applyHypershiftTexturesNoColor(part)
+        if not part or not part:IsA("MeshPart") then return end
+        for _, normalId in Enum.NormalId:GetEnumItems() do
+            if normalId ~= Enum.NormalId.Bottom then
+                local texName = "HyperChrome" .. normalId.Name
+                if not part:FindFirstChild(texName) then
+                    local tex = Instance.new("Texture")
+                    tex.Name = texName
+                    tex.StudsPerTileU = 55
+                    tex.StudsPerTileV = 105
+                    tex.Face = normalId
+                    tex.Texture = "rbxassetid://11372133369"
+                    tex.Parent = part
+                end
+            end
+        end
+    end
+
+    local function applyHypershiftTexturesBody(part)
+        if not part or not part:IsA("MeshPart") then return end
+        part.Color = Color3.new(0, 0, 0)
+        for _, normalId in Enum.NormalId:GetEnumItems() do
+            if normalId ~= Enum.NormalId.Bottom then
+                local texName = "HyperChrome" .. normalId.Name
+                if not part:FindFirstChild(texName) then
+                    local tex = Instance.new("Texture")
+                    tex.Name = texName
+                    tex.StudsPerTileU = 55
+                    tex.StudsPerTileV = 105
+                    tex.Face = normalId
+                    tex.Texture = "rbxassetid://11372133369"
+                    tex.Parent = part
+                end
+            end
+        end
+    end
+
+    local function removeHypershiftTextures(part)
+        if not part or not part:IsA("MeshPart") then return end
+        for _, child in part:GetChildren() do
+            if child:IsA("Texture") and child.Name:sub(1, 11) == "HyperChrome" then
+                child:Destroy()
+            end
+        end
+    end
+
+    local function applyHypershiftToAll(car)
+        for _, v in car.Preset:GetChildren() do
+            if v:IsA("Model") then
+                local r = v:FindFirstChild("Rim")
+                if r then
+                    applyHypershiftTexturesNoColor(r)
+                end
+            end
+        end
+        local sp = car:FindFirstChild("SpoilerPart")
+        if sp then
+            applyHypershiftTexturesNoColor(sp)
+        end
+        local body = car.Model:FindFirstChild("Body")
+        if body then
+            car:SetAttribute("HyperChromeAppliedName", "HyperShift")
+            applyHypershiftTexturesBody(body)
+        end
+    end
+
+    local function removeHypershiftFromAll(car)
+        for _, v in car.Preset:GetChildren() do
+            if v:IsA("Model") then
+                local r = v:FindFirstChild("Rim")
+                if r then
+                    removeHypershiftTextures(r)
+                end
+            end
+        end
+        local sp = car:FindFirstChild("SpoilerPart")
+        if sp then
+            removeHypershiftTextures(sp)
+        end
+        local body = car.Model:FindFirstChild("Body")
+        if body then
+            removeHypershiftTextures(body)
+            car:SetAttribute("HyperChromeAppliedName", "")
+            body.Color = Color3.fromRGB(163, 162, 165)
+        end
+    end
+
+    local function animateHypershiftOnPart(part, rainbowColor)
+        if not part or not part:IsA("MeshPart") then return end
+        local cam = workspace.CurrentCamera
+        local pos = part.Position
+        local lookVec = cam.CFrame.LookVector
+        local angle = lookVec:Angle(Vector3.new(1, 1, 1))
+        local offset = pos.X % 8096 / 8096 + pos.Y % 8096 / 8096 + pos.Z % 8096 / 8096
+        local offsetU = (angle + offset * 55) * 10
+        local offsetV = (angle + offset * 105) * 10
+        for _, child in part:GetChildren() do
+            if child:IsA("Texture") and child.Name:sub(1, 11) == "HyperChrome" then
+                child.OffsetStudsU = offsetU
+                child.OffsetStudsV = offsetV
+                child.Color3 = rainbowColor
+            end
+        end
+    end
+
+    local function startHypershiftAnimation()
+        if heartbeatConn then return end
+        heartbeatConn = RunService.Heartbeat:Connect(function()
+            if not _G.tun or not _G.hypershift then return end
+
+            local hue = os.clock() % CYCLE_TIME / CYCLE_TIME
+            local rainbowColor = Color3.fromHSV(hue, 0.94, 1)
+
+            for _, v in workspace.Vehicles:GetChildren() do
+                if v:FindFirstChild("_VehicleState_" .. Players.LocalPlayer.Name) then
+                    for _, wheel in v.Preset:GetChildren() do
+                        if wheel:IsA("Model") then
+                            local r = wheel:FindFirstChild("Rim")
+                            if r then
+                                animateHypershiftOnPart(r, rainbowColor)
+                            end
+                        end
+                    end
+                    local sp = v:FindFirstChild("SpoilerPart")
+                    if sp then
+                        animateHypershiftOnPart(sp, rainbowColor)
+                    end
+                    local body = v.Model:FindFirstChild("Body")
+                    if body then
+                        animateHypershiftOnPart(body, rainbowColor)
+                        if body.Color.R ~= 0 or body.Color.G ~= 0 or body.Color.B ~= 0 then
+                            body.Color = Color3.new(0, 0, 0)
+                        end
+                    end
+                    break
+                end
+            end
+        end)
+    end
+
+    local function stopHypershiftAnimation()
+        if heartbeatConn then
+            heartbeatConn:Disconnect()
+            heartbeatConn = nil
+        end
+    end
+
+    local function drift(name, car)
+        if not game:GetService("ReplicatedStorage").Resource.DriftParticles:FindFirstChild(name) then return end
+        if not car:FindFirstChild("Spoiler") then return end
+        local drift = false
+        driftid = game:GetService("ReplicatedStorage").Resource.DriftParticles:FindFirstChild(name):GetChildren()[1].Texture
+        for i, v in car.Preset:GetChildren() do
+            if v.Name == "Drift" then
+                for i, f in v:GetChildren() do
+                    if f.Texture == driftid then
+                        drift = true
+                    else
+                        f:Destroy()
+                    end
+                end
+            end
+        end
+        if not drift then
+            for i, v in car.Preset:GetChildren() do
+                if v.Name == "Drift" then
+                    local dr = game:GetService("ReplicatedStorage").Resource.DriftParticles:FindFirstChild(name):GetChildren()[1]:Clone()
+                    dr.Parent = v
+                    dr.Enabled = false
+                    car:GetAttributeChangedSignal("VehicleIsDriver"):Connect(function()
+                        if car:GetAttribute("VehicleIsDriver") then
+                            dr.Enabled = true
+                        else
+                            dr.Enabled = false
+                        end
+                    end)
+                end
+            end
+        end
+    end
+
+    while wait() and _G.tun do
+        local car = nil
+        for i, v in workspace.Vehicles:GetChildren() do
+            if v:FindFirstChild("_VehicleState_" .. Players.LocalPlayer.Name) then
+                car = v
+                _G.CarObj = v
+                break
+            end
+        end
+
+        if car then
+            rim(_G.Rim, car)
+            drift(_G.Dr, car)
+            spoiler(_G.Sp, car)
+            texture(_G.Txt, car)
+
+            -- если сменилась машина — сбрасываем lastHypershift
+            -- чтобы hypershift применился заново к новой машине
+            if lastCar ~= car then
+                lastCar = car
+                lastHypershift = not _G.hypershift -- форсируем переприменение
+            end
+
+            if _G.hypershift ~= lastHypershift then
+                lastHypershift = _G.hypershift
+                if _G.hypershift then
+                    applyHypershiftToAll(car)
+                    startHypershiftAnimation()
+                else
+                    stopHypershiftAnimation()
+                    removeHypershiftFromAll(car)
+                end
+            end
+        else
+            -- вышли из машины — сбрасываем
+            if lastCar ~= nil then
+                lastCar = nil
+                lastHypershift = false
+                stopHypershiftAnimation()
+            end
+        end
+    end
+    stopHypershiftAnimation()
+end
+_G.CarObj = nil
+if _G.tun then
+    tun()
+end
+visual:Toggle("Car Tuning", _G.tun, function(v)
+	_G.tun = v
+	tun()
+end)
+
+visual:Toggle("HyperShift Mode", _G.hypershift, function(v)
+	_G.hypershift = v
+    tun()
+end)
+
+_G.Rim = ""
+visual:Textbox("Rim", "Enter", function(value)
+	_G.Rim = value
+end)
+
+_G.Sp = ""
+visual:Textbox("Spoiler", "Enter", function(value)
+	_G.Sp = value
+end)
+
+_G.Txt = ""
+visual:Textbox("Texture", "Enter", function(value)
+	_G.Txt = value
+end)
+
+_G.Dr = ""
+visual:Textbox("Drift", "Enter", function(value)
+	_G.Dr = value
+end)
+
 
 while wait(1) do
 	pcall(function()
