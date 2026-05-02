@@ -1626,7 +1626,9 @@ local function nerf()
 	end
 end
 if _G.Nerf then
-	nerf()
+	spawn(function()
+		nerf()
+	end)
 end
 visual:Toggle("Nerf Items", _G.Nerf, function(v)
 	_G.Nerf = v
