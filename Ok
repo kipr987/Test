@@ -1630,6 +1630,7 @@ if _G.Nerf then
 end
 visual:Toggle("Nerf Items", _G.Nerf, function(v)
 	_G.Nerf = v
+	saveCurrent()
 	nerf()
 end)
 
@@ -1940,32 +1941,38 @@ if _G.tun then
 end
 visual:Toggle("Car Tuning", _G.tun, function(v)
 	_G.tun = v
+	saveCurrent()
 	tun()
 end)
 
 visual:Toggle("HyperShift Mode", _G.hypershift, function(v)
 	_G.hypershift = v
+	saveCurrent()
     tun()
 end)
 
 _G.Rim = ""
 visual:Textbox("Rim", "Enter", function(value)
 	_G.Rim = value
+	saveCurrent()
 end)
 
 _G.Sp = ""
 visual:Textbox("Spoiler", "Enter", function(value)
 	_G.Sp = value
+	saveCurrent()
 end)
 
 _G.Txt = ""
 visual:Textbox("Texture", "Enter", function(value)
 	_G.Txt = value
+	saveCurrent()
 end)
 
 _G.Dr = ""
 visual:Textbox("Drift", "Enter", function(value)
 	_G.Dr = value
+	saveCurrent()
 end)
 
 
