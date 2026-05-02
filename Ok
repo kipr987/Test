@@ -83,7 +83,6 @@ local defaultSaves = {
     texture = false,
     drift = false,
 }
-print(saves.rim)
 
 local function loadSaves()
 	if not (readfile and writefile) then return defaultSaves end
@@ -180,6 +179,7 @@ _G.Sp = saves.spoiler
 _G.Txt = saves.texture
 _G.Dr = saves.drift
 
+print(saves.rim)
 task.spawn(function()
 	while task.wait(10) do
 		saveCurrent()
