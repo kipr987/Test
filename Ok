@@ -1671,13 +1671,18 @@ local function tun()
                     void.Parent = v
                     void.Anchored = false
                     void.Size = Vector3.new(
-                        v.WheelRoot.Size.X * 1.1,
+                        void.Size.X,
                         v.WheelRoot.Size.Y / 1.3,
                         v.WheelRoot.Size.Z / 1.3
                     )
                     local weld = Instance.new("Weld", void)
                     weld.Part1 = void
                     weld.Part0 = v.WheelRoot
+					if v.Name == "WheelBackRight" or v.Name == "WheelFrontRight" then
+						weld.C1 = CFrame.Angles(0,math.rad(180),0) * CFrame.new(0 -_G.RimsTable[_G.Rim]/1.5,0,0)
+					else
+						weld.C1 = CFrame.new(_G.RimsTable[_G.Rim]/1.5,0,0)
+					end
                 end
             end
         end
@@ -1703,6 +1708,7 @@ local function tun()
         local weld = Instance.new("Weld", thr)
         weld.Part1 = thr
         weld.Part0 = car.Spoiler
+		weld.C1 = CFrame.new(0,-1,0)
     end
 
     local function texture(name, car)
@@ -1710,6 +1716,12 @@ local function tun()
         if not _G.TextureId[name] then return end
         if not _G.TextureId[name][car.Name] then return end
         car.Model.Body.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+		if car.Model:FindFirstChild("SecondBody") then
+			car.Model.SecondBody.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+		end
+		if car.Model:FindFirstChild("Wing") then
+			car.Model.Wing.Body.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+		end
     end
 
     local function applyHypershiftTexturesNoColor(part)
@@ -1775,6 +1787,12 @@ local function tun()
         if body then
             car:SetAttribute("HyperChromeAppliedName", "HyperShift")
             applyHypershiftTexturesBody(body)
+			if car.Model:FindFirstChild("SecondBody") then
+				applyHypershiftTexturesBody(car.Model:FindFirstChild("SecondBody"))
+			end
+			if car.Model:FindFirstChild("Wing") then
+				applyHypershiftTexturesBody(car.Model.Wing.Body)
+			end
         end
     end
 
@@ -1796,6 +1814,14 @@ local function tun()
             removeHypershiftTextures(body)
             car:SetAttribute("HyperChromeAppliedName", "")
             body.Color = Color3.fromRGB(163, 162, 165)
+			if car.Model:FindFirstChild("SecondBody") then
+				removeHypershiftTextures(car.Model:FindFirstChild("SecondBody"))
+				car.Model:FindFirstChild("SecondBody").Color = Color3.fromRGB(163, 162, 165)
+			end
+			if car.Model:FindFirstChild("Wing") then
+				removeHypershiftTextures(car.Model.Wing.Body)
+				car.Model.Wing.Body.Color = Color3.fromRGB(163, 162, 165)
+			end
         end
     end
 
@@ -1845,6 +1871,19 @@ local function tun()
                         if body.Color.R ~= 0 or body.Color.G ~= 0 or body.Color.B ~= 0 then
                             body.Color = Color3.new(0, 0, 0)
                         end
+
+						if v.Model:FindFirstChild("SecondBody") then
+							animateHypershiftOnPart(v.Model:FindFirstChild("SecondBody"), rainbowColor)
+							if v.Model:FindFirstChild("SecondBody").Color.R ~= 0 or v.Model:FindFirstChild("SecondBody").Color.G ~= 0 or v.Model:FindFirstChild("SecondBody").Color.B ~= 0 then
+                            	v.Model:FindFirstChild("SecondBody").Color = Color3.new(0, 0, 0)
+                        	end
+						end
+						if v.Model:FindFirstChild("Wing") then
+							animateHypershiftOnPart(v.Model:FindFirstChild("Wing").Body, rainbowColor)
+							if v.Model:FindFirstChild("Wing").Body.Color.R ~= 0 or v.Model:FindFirstChild("Wing").Body.Color.G ~= 0 or v.Model:FindFirstChild("Wing").Body.Color.B ~= 0 then
+                            	v.Model:FindFirstChild("Wing").Body.Color = Color3.new(0, 0, 0)
+                        	end
+						end
                     end
                     break
                 end
