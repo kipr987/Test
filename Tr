@@ -10,6 +10,55 @@ local nif = UI:Notification("Welcome to", game:GetService("Players").LocalPlayer
 local Trade = window:Tab("Trade")
 local Tradevalue = window:Tab("Trade Value")
 local sl = window:Tab("Slots")
+
+-- ========== СИСТЕМА СОХРАНЕНИЯ ==========
+local HttpService = game:GetService("HttpService")
+local SAVE_FILE = "jailbreak_trade_saves.json"
+
+local defaultSaves = {
+    cooldown = 5,
+    slots = {},
+    slotsfake = {},
+}
+
+local function loadSaves()
+    if not (readfile and writefile) then return defaultSaves end
+    local ok, data = pcall(readfile, SAVE_FILE)
+    if not ok or not data or data:gsub("%s", "") == "" then
+        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+        return defaultSaves
+    end
+    local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+    if not ok2 then
+        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+        return defaultSaves
+    end
+    for k, v in pairs(defaultSaves) do
+        if decoded[k] == nil then decoded[k] = v end
+    end
+    return decoded
+end
+
+local function saveCurrent()
+    if not writefile then return end
+    local current = {
+        cooldown = _G.cooldown,
+        savefake = _G.savefake,
+        slots = _G.save,
+        slotsfake = slotsfake,
+    }
+    pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
+end
+
+local saves = loadSaves()
+
+task.spawn(function()
+    while task.wait(10) do
+        saveCurrent()
+    end
+end)
+-- ========== КОНЕЦ СИСТЕМЫ СОХРАНЕНИЯ ==========
+
 for i, v in game:GetService("Players"):GetChildren() do
     Trade:Button(v.DisplayName,function()
         game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
@@ -39,81 +88,81 @@ local function Abbreviate(Number, Decimals)
 end
 
 local function esp(v)
-	if v.Name ~= game:GetService("Players").LocalPlayer.Name then
-		if not v.Character:FindFirstChild("Highlight") then
-			hight = Instance.new("Highlight", v.Character)
-			hight.Name = "L"
-			hight.OutlineColor = Color3.new(1,1,1)
-		end
-		if not v.Character:FindFirstChild("B") then
-			local bill = Instance.new("BillboardGui", v.Character)
-			bill.Adornee = v.Character
-			bill.Size = UDim2.new(0, 200,0, 50)
-			bill.StudsOffset = Vector3.new(0,4,0)
-			bill.AlwaysOnTop = true
-			bill.Name = "B"
+        if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+                if not v.Character:FindFirstChild("Highlight") then
+                        hight = Instance.new("Highlight", v.Character)
+                        hight.Name = "L"
+                        hight.OutlineColor = Color3.new(1,1,1)
+                end
+                if not v.Character:FindFirstChild("B") then
+                        local bill = Instance.new("BillboardGui", v.Character)
+                        bill.Adornee = v.Character
+                        bill.Size = UDim2.new(0, 200,0, 50)
+                        bill.StudsOffset = Vector3.new(0,4,0)
+                        bill.AlwaysOnTop = true
+                        bill.Name = "B"
 
-			local textlabel = Instance.new("TextLabel", bill)
-			textlabel.Size = UDim2.new(1,0,1,0)
-			textlabel.Position = UDim2.new(0,0,0,0)
-			textlabel.Name = "TextLabelTitle"
-			textlabel.Text = v.DisplayName
-			textlabel.BackgroundTransparency = 1
-			textlabel.TextSize = 17
-			textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+                        local textlabel = Instance.new("TextLabel", bill)
+                        textlabel.Size = UDim2.new(1,0,1,0)
+                        textlabel.Position = UDim2.new(0,0,0,0)
+                        textlabel.Name = "TextLabelTitle"
+                        textlabel.Text = v.DisplayName
+                        textlabel.BackgroundTransparency = 1
+                        textlabel.TextSize = 17
+                        textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
-			textlabel2 = Instance.new("TextLabel", bill)
-			textlabel2.Size = UDim2.new(1,0,1,0)
-			textlabel2.Text = "[0]"
-			textlabel2.Position = UDim2.new(0, 0,-0.3, 0)
-			textlabel2.BackgroundTransparency = 1
-			textlabel2.TextColor3 = Color3.new(1, 1, 1)
-			textlabel2.TextSize = 17
-			textlabel2.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+                        textlabel2 = Instance.new("TextLabel", bill)
+                        textlabel2.Size = UDim2.new(1,0,1,0)
+                        textlabel2.Text = "[0]"
+                        textlabel2.Position = UDim2.new(0, 0,-0.3, 0)
+                        textlabel2.BackgroundTransparency = 1
+                        textlabel2.TextColor3 = Color3.new(1, 1, 1)
+                        textlabel2.TextSize = 17
+                        textlabel2.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
-			textlabel3 = Instance.new("TextLabel", bill)
-			textlabel3.Size = UDim2.new(1,0,1,0)
-			textlabel3.Text = ""
-			textlabel3.Name = "Bounty"
-			textlabel3.Position = UDim2.new(0, 0,-0.6, 0)
-			textlabel3.BackgroundTransparency = 1
-			textlabel3.TextColor3 = Color3.new(0, 1, 0.0313725)
-			textlabel3.TextSize = 17
-			textlabel3.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-			textlabel.TextColor3 = v.TeamColor.Color
-			local stroke = Instance.new("UIStroke", textlabel)
-			local stroke = Instance.new("UIStroke", textlabel2)
-			local stroke = Instance.new("UIStroke", textlabel3)
-			spawn(function()
-				while task.wait(1) do
-					pcall(function()
-						v.Character.BillboardGui.TextLabel.Text = "["..math.floor((v.Character.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude).."]"
-					end)    
-				end
-			end)
-		end
-	end
+                        textlabel3 = Instance.new("TextLabel", bill)
+                        textlabel3.Size = UDim2.new(1,0,1,0)
+                        textlabel3.Text = ""
+                        textlabel3.Name = "Bounty"
+                        textlabel3.Position = UDim2.new(0, 0,-0.6, 0)
+                        textlabel3.BackgroundTransparency = 1
+                        textlabel3.TextColor3 = Color3.new(0, 1, 0.0313725)
+                        textlabel3.TextSize = 17
+                        textlabel3.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+                        textlabel.TextColor3 = v.TeamColor.Color
+                        local stroke = Instance.new("UIStroke", textlabel)
+                        local stroke = Instance.new("UIStroke", textlabel2)
+                        local stroke = Instance.new("UIStroke", textlabel3)
+                        spawn(function()
+                                while task.wait(1) do
+                                        pcall(function()
+                                                v.Character.BillboardGui.TextLabel.Text = "["..math.floor((v.Character.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude).."]"
+                                        end)    
+                                end
+                        end)
+                end
+        end
 end
 _G.Esp = true
 game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(function(child)
-	if child.Name == "Trade" then
-		for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
-			v.MouseButton1Click:Connect(function()
-				for i, f in game:GetService("Players"):GetChildren() do
-					if f.DisplayName ~= v.Title.Text.Text then
-						if f.Character:FindFirstChildOfClass("Highlight") then
-							f.Character:FindFirstChildOfClass("Highlight"):Destroy()
-						end
-						if f.Character:FindFirstChildOfClass("BillboardGui") then
-							f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
-						end
-					else	
-						esp(f)
-					end
-				end
-			end)
-		end
-	end
+        if child.Name == "Trade" then
+                for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
+                        v.MouseButton1Click:Connect(function()
+                                for i, f in game:GetService("Players"):GetChildren() do
+                                        if f.DisplayName ~= v.Title.Text.Text then
+                                                if f.Character:FindFirstChildOfClass("Highlight") then
+                                                        f.Character:FindFirstChildOfClass("Highlight"):Destroy()
+                                                end
+                                                if f.Character:FindFirstChildOfClass("BillboardGui") then
+                                                        f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
+                                                end
+                                        else    
+                                                esp(f)
+                                        end
+                                end
+                        end)
+                end
+        end
 end)
 
 -- Функция поиска предмета: сначала точное совпадение, потом похожее
@@ -723,7 +772,7 @@ local values = {
     ["HyperPurple Lvl1"] = 500000,
     ["HyperRed Lvl1"] = 500000,
     ["HyperYellow Lvl1"] = 500000,
-    ["HyperYellow Lvl2"] = 500000, -- updated from JBCL
+    ["HyperYellow Lvl2"] = 500000,
     ["Jungle Vine"] = 500000,
     ["Lady Liberty?!"] = 500000,
     ["Lava"] = 500000,
@@ -810,7 +859,7 @@ local values = {
     ["Guitar Riff"] = 1000000,
     ["HyperGreen Lvl2"] = 1000000,
     ["HyperOrange Lvl2"] = 1000000,
-    ["HyperPink Lvl2"] = 1000000, -- updated from JBCL
+    ["HyperPink Lvl2"] = 1000000,
     ["HyperPurple Lvl2"] = 1000000,
     ["HyperRed Lvl2"] = 1000000,
     ["Ice Spike"] = 1000000,
@@ -939,12 +988,12 @@ local values = {
     ["Blue 2"] = 3000000,
     ["Brulee"] = 3000000,
     ["Clickbait"] = 3000000,
-    ["Diamond 2"] = 3000000, -- updated from JBCL
+    ["Diamond 2"] = 3000000,
     ["Eight Leg"] = 3000000,
     ["Glider"] = 3000000,
     ["Hot Chocolate"] = 3000000,
     ["HyperBlue Lvl2"] = 3000000,
-    ["HyperDiamond Lvl2"] = 3000000, -- updated from JBCL
+    ["HyperDiamond Lvl2"] = 3000000,
     ["HyperOrange Lvl3"] = 3000000,
     ["Iceborn"] = 3000000,
     ["Orange 3"] = 3000000,
@@ -958,8 +1007,8 @@ local values = {
     ["Bookshelf"] = 3500000,
     ["Earthquake"] = 3500000,
     ["Galactic Carbon"] = 3500000,
-    ["Green 3"] = 3500000, -- updated from JBCL
-    ["HyperGreen Lvl3"] = 3500000, -- updated from JBCL
+    ["Green 3"] = 3500000,
+    ["HyperGreen Lvl3"] = 3500000,
     ["Katana"] = 3500000,
     ["Orion"] = 3500000,
     ["Rattler"] = 3500000,
@@ -974,8 +1023,8 @@ local values = {
     ["Torero"] = 4000000,
     ["Bandit"] = 5000000,
     ["Goliath"] = 5000000,
-    ["HyperRed Lvl3"] = 5000000, -- updated from JBCL
-    ["Red 3"] = 5000000, -- updated from JBCL
+    ["HyperRed Lvl3"] = 5000000,
+    ["Red 3"] = 5000000,
     ["Snow Face"] = 5000000,
     ["2 Billion"] = 5500000,
     ["Bicycle Rack"] = 5500000,
@@ -988,7 +1037,7 @@ local values = {
     ["Cash Spitter"] = 7000000,
     ["Spiked"] = 7500000,
     ["HyperPurple Lvl3"] = 8000000,
-    ["Purple 3"] = 8000000, -- updated from JBCL
+    ["Purple 3"] = 8000000,
     ["Snowstorm"] = 8000000,
     ["Aperture"] = 8500000,
     ["Blue 50"] = 8500000,
@@ -996,68 +1045,68 @@ local values = {
     ["HyperPink Lvl3"] = 9000000,
     ["Noob Scream"] = 9000000,
     ["Parisian"] = 9000000,
-    ["Pink 3"] = 9000000, -- updated from JBCL
-    ["Diamond 3"] = 10000000, -- updated from JBCL
-    ["HyperDiamond Lvl3"] = 10000000, -- updated from JBCL
+    ["Pink 3"] = 9000000,
+    ["Diamond 3"] = 10000000,
+    ["HyperDiamond Lvl3"] = 10000000,
     ["Volt 4x4"] = 10000000,
-    ["Blue 3"] = 11000000, -- updated from JBCL
+    ["Blue 3"] = 11000000,
     ["HyperBlue Lvl3"] = 11000000,
     ["HyperYellow Lvl4"] = 11000000,
     ["Raptor"] = 11000000,
-    ["Yellow 4"] = 11000000, -- updated from JBCL
+    ["Yellow 4"] = 11000000,
     ["Gradient Pixel"] = 12000000,
     ["Arachnid"] = 14000000,
     ["Spinner"] = 14000000,
-    ["Green 4"] = 14500000, -- updated from JBCL
-    ["HyperGreen Lvl4"] = 14500000, -- updated from JBCL
+    ["Green 4"] = 14500000,
+    ["HyperGreen Lvl4"] = 14500000,
     ["RTX"] = 14500000,
     ["HyperOrange Lvl4"] = 15000000,
     ["Molten M12"] = 15000000,
-    ["Orange 4"] = 15000000, -- updated from JBCL
+    ["Orange 4"] = 15000000,
     ["Banana Car"] = 16000000,
     ["Beam Hybrid"] = 19000000,
     ["HyperYellow Lvl5"] = 19000000,
-    ["Yellow 5"] = 19000000, -- updated from JBCL
+    ["Yellow 5"] = 19000000,
     ["Drip"] = 20000000,
-    ["HyperPurple Lvl4"] = 20000000, -- updated from JBCL
+    ["HyperPurple Lvl4"] = 20000000,
     ["Icebreaker"] = 20000000,
     ["Purple 4"] = 20000000,
-    ["HyperRed Lvl4"] = 20500000, -- updated from JBCL
-    ["Red 4"] = 20500000, -- updated from JBCL
+    ["HyperRed Lvl4"] = 20500000,
+    ["Red 4"] = 20500000,
     ["Vantablack"] = 22000000,
-    ["Blue 4"] = 25000000, -- updated from JBCL
+    ["Blue 4"] = 25000000,
     ["Blue Fire"] = 25000000,
     ["Celsior"] = 25000000,
-    ["Green 5"] = 25000000, -- updated from JBCL
-    ["HyperBlue Lvl4"] = 25000000, -- updated from JBCL
+    ["Green 5"] = 25000000,
+    ["HyperBlue Lvl4"] = 25000000,
     ["HyperGreen Lvl5"] = 25000000,
     ["HyperPink Lvl4"] = 25000000,
-    ["Pink 4"] = 25000000, -- updated from JBCL
+    ["Pink 4"] = 25000000,
     ["Power-1"] = 25000000,
-    ["HyperOrange Lvl5"] = 27000000, -- updated from JBCL
-    ["Orange 5"] = 27000000, -- updated from JBCL
+    ["HyperOrange Lvl5"] = 27000000,
+    ["Orange 5"] = 27000000,
     ["Laser Cannon"] = 28000000,
-    ["Diamond 4"] = 29000000, -- updated from JBCL
-    ["HyperDiamond Lvl4"] = 29000000, -- updated from JBCL
+    ["Diamond 4"] = 29000000,
+    ["HyperDiamond Lvl4"] = 29000000,
     ["Thrusters"] = 30000000,
-    ["HyperPurple Lvl5"] = 31000000, -- updated from JBCL
-    ["HyperRed Lvl5"] = 31000000, -- updated from JBCL
+    ["HyperPurple Lvl5"] = 31000000,
+    ["HyperRed Lvl5"] = 31000000,
     ["Proto-08"] = 31000000,
-    ["Purple 5"] = 31000000, -- updated from JBCL
-    ["Red 5"] = 31000000, -- updated from JBCL
+    ["Purple 5"] = 31000000,
+    ["Red 5"] = 31000000,
     ["Void"] = 33000000,
     ["Checker"] = 35000000,
     ["Torpedo"] = 35000000,
-    ["HyperPink Lvl5"] = 38000000, -- updated from JBCL
-    ["Pink 5"] = 38000000, -- updated from JBCL
-    ["Blue 5"] = 39500000, -- updated from JBCL
-    ["HyperBlue Lvl5"] = 39500000, -- updated from JBCL
+    ["HyperPink Lvl5"] = 38000000,
+    ["Pink 5"] = 38000000,
+    ["Blue 5"] = 39500000,
+    ["HyperBlue Lvl5"] = 39500000,
     ["Beignet"] = 40000000,
-    ["Diamond 5"] = 43000000, -- updated from JBCL
-    ["HyperDiamond Lvl5"] = 43000000, -- updated from JBCL
+    ["Diamond 5"] = 43000000,
+    ["HyperDiamond Lvl5"] = 43000000,
     ["Javelin"] = 50000000,
-    ["Hyper Shift 4"] = 157000000, -- updated from JBCL
-    ["Hyper Shift 5"] = 231500000, -- updated from JBCL
+    ["Hyper Shift 4"] = 157000000,
+    ["Hyper Shift 5"] = 231500000,
 }
 
 
@@ -1129,26 +1178,61 @@ Tradevalue:Button("Trade value [click]", function()
     end
 end)
 
-local slots = {}
+_G.save = saves.slots or {}
+local slotsfake = saves.slotsfake or {}
 local ins = {["1"]=true,["2"]=true,["3"]=true,["4"]=true,["5"]=true,
              ["6"]=true,["7"]=true,["8"]=true,["9"]=true,["10"]=true}
 
 sl:Button("Save slots", function()
-    slots = {}
+    _G.save = {}
     pcall(function()
         if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
         for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
             if not ins[v.Name] then
-                table.insert(slots, v.Name)
+                table.insert(_G.save, v.Name)
             end
         end
     end)
+    saveCurrent()
 end)
 
 sl:Button("Load slots", function()
-	local args = {
-	true,
-	slots
-}
-game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
+    local slotint = {}
+    for i, v in _G.save do
+        table.insert(slotint, v)
+        local args = {
+            false,
+            slotint
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
+        wait(_G.cooldown / 10)
+    end
+end)
+
+_G.cooldown = saves.cooldown
+sl:Slider("Cooldown slots", 0, 10, saves.cooldown, function(v)
+    _G.cooldown = v
+    saveCurrent()
+end)
+
+_G.savefake = saves.savefake
+sl:Button("Save slots Fake", function()
+    _G.savefake = {}
+    pcall(function()
+        if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
+        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+            if not ins[v.Name] then
+                table.insert(_G.savefake, v.Name)
+            end
+        end
+    end)
+    saveCurrent()
+end)
+
+sl:Button("Load slots Fake", function()
+    local args = {
+        true,
+        _G.savefake
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
 end)
