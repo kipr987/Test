@@ -1214,7 +1214,7 @@ if _G.carfly == true then
 	sFLY(true)
 	carf()
 end
-car:Toggle("Car Fly [X]", saves.carfly, function(value)
+car:Toggle("Car Fly", saves.carfly, function(value)
 	_G.carfly = value
 	saveCurrent()
 	if value then
@@ -1222,20 +1222,6 @@ car:Toggle("Car Fly [X]", saves.carfly, function(value)
 		carf()
 	else
 		NOFLY()
-	end
-end)
-
-game:GetService("UserInputService").InputBegan:Connect(function(key,event)
-	if event then return end
-	if key.KeyCode == Enum.KeyCode.X then
-		if _G.carfly then
-			_G.carfly = false
-			NOFLY()
-		else
-			_G.carfly = true
-			sFLY(true)
-			carf()
-		end
 	end
 end)
 
