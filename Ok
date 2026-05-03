@@ -1708,6 +1708,10 @@ local function tun()
 		if car.Model:FindFirstChild("Wing") then
 			car.Model.Wing.Body.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
 		end
+		if car.Preset:FindFirstChild("Hatch") then
+			car.Preset:FindFirstChild("Hatch").InnerModel.Body.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+			car.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.TextureID = "rbxassetid://" .. _G.TextureId[name][car.Name]
+		end
     end
 
     local function applyHypershiftTexturesNoColor(part)
@@ -1779,6 +1783,10 @@ local function tun()
 			if car.Model:FindFirstChild("Wing") then
 				applyHypershiftTexturesBody(car.Model.Wing.Body)
 			end
+			if car.Preset:FindFirstChild("Hatch") then
+				applyHypershiftTexturesBody(car.Preset:FindFirstChild("Hatch").InnerModel.Body)
+				applyHypershiftTexturesBody(car.Preset:FindFirstChild("Hatch").InnerModel.SecondBody)
+			end
         end
     end
 
@@ -1807,6 +1815,12 @@ local function tun()
 			if car.Model:FindFirstChild("Wing") then
 				removeHypershiftTextures(car.Model.Wing.Body)
 				car.Model.Wing.Body.Color = Color3.fromRGB(163, 162, 165)
+			end
+			if car.Preset:FindFirstChild("Hatch") then
+				removeHypershiftTextures(car.Preset:FindFirstChild("Hatch").InnerModel.Body)
+				car.Preset:FindFirstChild("Hatch").InnerModel.Body.Color = Color3.fromRGB(163, 162, 165)
+				removeHypershiftTextures(car.Preset:FindFirstChild("Hatch").InnerModel.SecondBody)
+				car.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.Color = Color3.fromRGB(163, 162, 165)
 			end
         end
     end
@@ -1868,6 +1882,16 @@ local function tun()
 							animateHypershiftOnPart(v.Model:FindFirstChild("Wing").Body, rainbowColor)
 							if v.Model:FindFirstChild("Wing").Body.Color.R ~= 0 or v.Model:FindFirstChild("Wing").Body.Color.G ~= 0 or v.Model:FindFirstChild("Wing").Body.Color.B ~= 0 then
                             	v.Model:FindFirstChild("Wing").Body.Color = Color3.new(0, 0, 0)
+                        	end
+						end
+						if v.Preset:FindFirstChild("Hatch") then
+							animateHypershiftOnPart(v.Preset:FindFirstChild("Hatch").InnerModel.Body, rainbowColor)
+							if v.Preset:FindFirstChild("Hatch").InnerModel.Body.Color.R ~= 0 or v.Preset:FindFirstChild("Hatch").InnerModel.Body.Color.G ~= 0 or v.Preset:FindFirstChild("Hatch").InnerModel.Body.Color.B ~= 0 then
+								v.Preset:FindFirstChild("Hatch").InnerModel.Body.Color = Color3.new(0, 0, 0)
+                        	end
+							animateHypershiftOnPart(v.Preset:FindFirstChild("Hatch").InnerModel.SecondBody, rainbowColor)
+							if v.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.Color.R ~= 0 or v.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.Color.G ~= 0 or v.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.Color.B ~= 0 then
+								v.Preset:FindFirstChild("Hatch").InnerModel.SecondBody.Color = Color3.new(0, 0, 0)
                         	end
 						end
                     end
