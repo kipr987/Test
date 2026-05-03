@@ -1535,7 +1535,7 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-teleport:Toggle("Scan Map", function()
+teleport:Button("Scan Map", function()
 	local Players = game:GetService("Players")
 	local plr = Players.LocalPlayer.Character
 	
