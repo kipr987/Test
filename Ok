@@ -1535,7 +1535,30 @@ teleport:Button("Server Hop", function()
 		return notify("Serverhop", "Couldn't find a server.")
 	end
 end)
-
+teleport:Toggle("Scan Map", function()
+	local Players = game:GetService("Players")
+	local plr = Players.LocalPlayer.Character
+	
+	local points = {
+	    {pos = CFrame.new(-1441, 29, 502),   look = Vector3.new(0, 0, 0)},
+	    {pos = CFrame.new(-2859, 24, -4076), look = Vector3.new(0, 0, 0)},
+	    {pos = CFrame.new(-440, 20, -5455), look = Vector3.new(0, 5, 0)},
+	    {pos = CFrame.new(2686, 48, -3948), look = Vector3.new(0, 0, 0)},
+		{pos = CFrame.new(918, 57, -65), look = Vector3.new(0, 0, 0)},
+		{pos = CFrame.new(749, 61, 1404), look = Vector3.new(0, 0, 0)},
+		{pos = CFrame.new(-119, 21, 903), look = Vector3.new(0, 0, 0)}, 
+		{pos = CFrame.new(-262, 37, 2180), look = Vector3.new(0, 0, 0)},
+		{pos = CFrame.new(-1452, 50, 2805), look = Vector3.new(0, 0, 0)},
+		{pos = CFrame.new(2541, 71, -2411), look = Vector3.new(0, 0, 0)},
+	}
+	plr.HumanoidRootPart.Anchored = true
+	for i, v in points do
+		plr.HumanoidRootPart.CFrame = v.pos
+		wait(1)
+	end
+	
+	plr.HumanoidRootPart.Anchored = false
+end)
 _G.respawn = saves.respawn
 
 teleport:Toggle("Respawn Teleport",saves.respawn,function(v)
