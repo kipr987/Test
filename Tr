@@ -1,7 +1,7 @@
 for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
-    if v.Name == "ui" then
-        v:Destroy()
-    end
+	if v.Name == "ui" then
+		v:Destroy()
+	end
 end
 repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("AppUI")
 local UI = loadstring(game:HttpGetAsync("https://pastebin.com/raw/0589YkmB"))()
@@ -16,1223 +16,1311 @@ local HttpService = game:GetService("HttpService")
 local SAVE_FILE = "jailbreak_trade_saves.json"
 
 local defaultSaves = {
-    cooldown = 5,
-    slots = {},
-    slotsfake = {},
+	cooldown = 5,
+	slots = {},
+	slotsfake = {},
 }
 
 local function loadSaves()
-    if not (readfile and writefile) then return defaultSaves end
-    local ok, data = pcall(readfile, SAVE_FILE)
-    if not ok or not data or data:gsub("%s", "") == "" then
-        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
-        return defaultSaves
-    end
-    local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
-    if not ok2 then
-        pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
-        return defaultSaves
-    end
-    for k, v in pairs(defaultSaves) do
-        if decoded[k] == nil then decoded[k] = v end
-    end
-    return decoded
+	if not (readfile and writefile) then return defaultSaves end
+	local ok, data = pcall(readfile, SAVE_FILE)
+	if not ok or not data or data:gsub("%s", "") == "" then
+		pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+		return defaultSaves
+	end
+	local ok2, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+	if not ok2 then
+		pcall(writefile, SAVE_FILE, HttpService:JSONEncode(defaultSaves))
+		return defaultSaves
+	end
+	for k, v in pairs(defaultSaves) do
+		if decoded[k] == nil then decoded[k] = v end
+	end
+	return decoded
 end
 
 local function saveCurrent()
-    if not writefile then return end
-    local current = {
-        cooldown = _G.cooldown,
-        savefake = _G.savefake,
-        slots = _G.save,
-        slotsfake = slotsfake,
-    }
-    pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
+	if not writefile then return end
+	local current = {
+		cooldown = _G.cooldown,
+		savefake = _G.savefake,
+		slots = _G.save,
+		slotsfake = slotsfake,
+	}
+	pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
 end
 
 local saves = loadSaves()
 
 task.spawn(function()
-    while task.wait(10) do
-        saveCurrent()
-    end
+	while task.wait(10) do
+		saveCurrent()
+	end
 end)
 -- ========== КОНЕЦ СИСТЕМЫ СОХРАНЕНИЯ ==========
 
 for i, v in game:GetService("Players"):GetChildren() do
-    Trade:Button(v.DisplayName,function()
-        game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
-    end)
+	Trade:Button(v.DisplayName,function()
+		game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
+	end)
 end
 
 game:GetService("Players").PlayerAdded:Connect(function(plr)
-    Trade:Button(plr.DisplayName,function()
-        game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = plr.UserId}))
-    end)
+	Trade:Button(plr.DisplayName,function()
+		game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = plr.UserId}))
+	end)
 end)
 
 game:GetService("Players").PlayerRemoving:Connect(function(plr)
-    for i, v in game:GetService("CoreGui").ui.Main.TabFolder:GetDescendants() do
-        if v:IsA("TextLabel") and v.Text == plr.DisplayName then
-            v.Parent:Destroy()
-            break
-        end
-    end
+	for i, v in game:GetService("CoreGui").ui.Main.TabFolder:GetDescendants() do
+		if v:IsA("TextLabel") and v.Text == plr.DisplayName then
+			v.Parent:Destroy()
+			break
+		end
+	end
 end)
 -- Функция для сокращения чисел
 local function Abbreviate(Number, Decimals)
-    if Number < 1000 then
-        return tostring(Number)
-    end
-    return math.floor(((Number < 1 and Number) or math.floor(Number) / 10 ^ (math.log10(Number) - math.log10(Number) % 3)) * 10 ^ (Decimals or 3)) / 10 ^ (Decimals or 3)..(({"k", "M", "B", "T", "Qa", "Qn", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "QaD", "QnD", "SxD", "SpD", "OcD", "NoD", "Vg", "UvG", "DvG", "TvG", "QaVg", "QnVg", "SxVg", "SpVg", "OcVg", "NoVg"})[math.floor(math.log10(Number) / 3)] or "")
+	if Number < 1000 then
+		return tostring(Number)
+	end
+	return math.floor(((Number < 1 and Number) or math.floor(Number) / 10 ^ (math.log10(Number) - math.log10(Number) % 3)) * 10 ^ (Decimals or 3)) / 10 ^ (Decimals or 3)..(({"k", "M", "B", "T", "Qa", "Qn", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "QaD", "QnD", "SxD", "SpD", "OcD", "NoD", "Vg", "UvG", "DvG", "TvG", "QaVg", "QnVg", "SxVg", "SpVg", "OcVg", "NoVg"})[math.floor(math.log10(Number) / 3)] or "")
+end
+
+function formatNumber(n)
+	local s = tostring(math.floor(n))
+	local result = ""
+	local count = 0
+
+	for i = #s, 1, -1 do
+		if count > 0 and count % 3 == 0 then
+			result = "," .. result
+		end
+		result = s:sub(i, i) .. result
+		count = count + 1
+	end
+
+	return result
+end
+
+function formatNumber(n)
+	local s = tostring(math.floor(n))
+	local result = ""
+	local count = 0
+
+	for i = #s, 1, -1 do
+		if count > 0 and count % 3 == 0 then
+			result = "," .. result
+		end
+		result = s:sub(i, i) .. result
+		count = count + 1
+	end
+
+	return result
 end
 
 local function esp(v)
-        if v.Name ~= game:GetService("Players").LocalPlayer.Name then
-                if not v.Character:FindFirstChild("Highlight") then
-                        hight = Instance.new("Highlight", v.Character)
-                        hight.Name = "L"
-                        hight.OutlineColor = Color3.new(1,1,1)
-                end
-                if not v.Character:FindFirstChild("B") then
-                        local bill = Instance.new("BillboardGui", v.Character)
-                        bill.Adornee = v.Character
-                        bill.Size = UDim2.new(0, 200,0, 50)
-                        bill.StudsOffset = Vector3.new(0,4,0)
-                        bill.AlwaysOnTop = true
-                        bill.Name = "B"
+	if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+		if not v.Character:FindFirstChild("Highlight") then
+			hight = Instance.new("Highlight", v.Character)
+			hight.Name = "L"
+			hight.OutlineColor = Color3.new(1,1,1)
+		end
+		if not v.Character:FindFirstChild("B") then
+			local bill = Instance.new("BillboardGui", v.Character)
+			bill.Adornee = v.Character
+			bill.Size = UDim2.new(0, 200,0, 50)
+			bill.StudsOffset = Vector3.new(0,4,0)
+			bill.AlwaysOnTop = true
+			bill.Name = "B"
 
-                        local textlabel = Instance.new("TextLabel", bill)
-                        textlabel.Size = UDim2.new(1,0,1,0)
-                        textlabel.Position = UDim2.new(0,0,0,0)
-                        textlabel.Name = "TextLabelTitle"
-                        textlabel.Text = v.DisplayName
-                        textlabel.BackgroundTransparency = 1
-                        textlabel.TextSize = 17
-                        textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			local textlabel = Instance.new("TextLabel", bill)
+			textlabel.Size = UDim2.new(1,0,1,0)
+			textlabel.Position = UDim2.new(0,0,0,0)
+			textlabel.Name = "TextLabelTitle"
+			textlabel.Text = v.DisplayName
+			textlabel.BackgroundTransparency = 1
+			textlabel.TextSize = 17
+			textlabel.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
-                        textlabel2 = Instance.new("TextLabel", bill)
-                        textlabel2.Size = UDim2.new(1,0,1,0)
-                        textlabel2.Text = "[0]"
-                        textlabel2.Position = UDim2.new(0, 0,-0.3, 0)
-                        textlabel2.BackgroundTransparency = 1
-                        textlabel2.TextColor3 = Color3.new(1, 1, 1)
-                        textlabel2.TextSize = 17
-                        textlabel2.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			textlabel2 = Instance.new("TextLabel", bill)
+			textlabel2.Size = UDim2.new(1,0,1,0)
+			textlabel2.Text = "[0]"
+			textlabel2.Position = UDim2.new(0, 0,-0.3, 0)
+			textlabel2.BackgroundTransparency = 1
+			textlabel2.TextColor3 = Color3.new(1, 1, 1)
+			textlabel2.TextSize = 17
+			textlabel2.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
-                        textlabel3 = Instance.new("TextLabel", bill)
-                        textlabel3.Size = UDim2.new(1,0,1,0)
-                        textlabel3.Text = ""
-                        textlabel3.Name = "Bounty"
-                        textlabel3.Position = UDim2.new(0, 0,-0.6, 0)
-                        textlabel3.BackgroundTransparency = 1
-                        textlabel3.TextColor3 = Color3.new(0, 1, 0.0313725)
-                        textlabel3.TextSize = 17
-                        textlabel3.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-                        textlabel.TextColor3 = v.TeamColor.Color
-                        local stroke = Instance.new("UIStroke", textlabel)
-                        local stroke = Instance.new("UIStroke", textlabel2)
-                        local stroke = Instance.new("UIStroke", textlabel3)
-                        spawn(function()
-                                while task.wait(1) do
-                                        pcall(function()
-                                                v.Character.BillboardGui.TextLabel.Text = "["..math.floor((v.Character.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude).."]"
-                                        end)    
-                                end
-                        end)
-                end
-        end
+			textlabel3 = Instance.new("TextLabel", bill)
+			textlabel3.Size = UDim2.new(1,0,1,0)
+			textlabel3.Text = ""
+			textlabel3.Name = "Bounty"
+			textlabel3.Position = UDim2.new(0, 0,-0.6, 0)
+			textlabel3.BackgroundTransparency = 1
+			textlabel3.TextColor3 = Color3.new(0, 1, 0.0313725)
+			textlabel3.TextSize = 17
+			textlabel3.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+			textlabel.TextColor3 = v.TeamColor.Color
+			local stroke = Instance.new("UIStroke", textlabel)
+			local stroke = Instance.new("UIStroke", textlabel2)
+			local stroke = Instance.new("UIStroke", textlabel3)
+			spawn(function()
+				while task.wait(1) do
+					pcall(function()
+						v.Character.BillboardGui.TextLabel.Text = "["..math.floor((v.Character.HumanoidRootPart.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).magnitude).."]"
+					end)    
+				end
+			end)
+		end
+	end
 end
 _G.Esp = true
 game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(function(child)
-        if child.Name == "Trade" then
-                for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
-                        v.MouseButton1Click:Connect(function()
-                                for i, f in game:GetService("Players"):GetChildren() do
-                                        if f.DisplayName ~= v.Title.Text.Text then
-                                                if f.Character:FindFirstChildOfClass("Highlight") then
-                                                        f.Character:FindFirstChildOfClass("Highlight"):Destroy()
-                                                end
-                                                if f.Character:FindFirstChildOfClass("BillboardGui") then
-                                                        f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
-                                                end
-                                        else    
-                                                esp(f)
-                                        end
-                                end
-                        end)
-                end
-        end
+	if child.Name == "Trade" then
+		for i, v in child.OtherPlayerInventoryContainers.ScrollingGrid:GetChildren() do
+			v.MouseButton1Click:Connect(function()
+				for i, f in game:GetService("Players"):GetChildren() do
+					if f.DisplayName ~= v.Title.Text.Text then
+						if f.Character:FindFirstChildOfClass("Highlight") then
+							f.Character:FindFirstChildOfClass("Highlight"):Destroy()
+						end
+						if f.Character:FindFirstChildOfClass("BillboardGui") then
+							f.Character:FindFirstChildOfClass("BillboardGui"):Destroy()
+						end
+					else    
+						esp(f)
+					end
+				end
+			end)
+		end
+	end
 end)
 
 -- Функция поиска предмета: сначала точное совпадение, потом похожее
 local function findItem(itemName, values)
-    -- 1. Точное совпадение
-    if values[itemName] then
-        return itemName, values[itemName], "exact"
-    end
+	-- 1. Точное совпадение
+	if values[itemName] then
+		return itemName, values[itemName], "exact"
+	end
 
-    -- 2. Точное совпадение без учёта регистра
-    local itemLower = itemName:lower()
-    for key, val in pairs(values) do
-        if key:lower() == itemLower then
-            return key, val, "case-insensitive"
-        end
-    end
+	-- 2. Точное совпадение без учёта регистра
+	local itemLower = itemName:lower()
+	for key, val in pairs(values) do
+		if key:lower() == itemLower then
+			return key, val, "case-insensitive"
+		end
+	end
 
-    -- 3. Поиск по словам + Левенштейн как запасной
-    local function levenshtein(s, t)
-        local m, n = #s, #t
-        local d = {}
-        for i = 0, m do d[i] = {[0] = i} end
-        for j = 0, n do d[0][j] = j end
-        for i = 1, m do
-            for j = 1, n do
-                local cost = s:sub(i,i) == t:sub(j,j) and 0 or 1
-                d[i][j] = math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
-            end
-        end
-        return d[m][n]
-    end
+	-- 3. Поиск по словам + Левенштейн как запасной
+	local function levenshtein(s, t)
+		local m, n = #s, #t
+		local d = {}
+		for i = 0, m do d[i] = {[0] = i} end
+		for j = 0, n do d[0][j] = j end
+		for i = 1, m do
+			for j = 1, n do
+				local cost = s:sub(i,i) == t:sub(j,j) and 0 or 1
+				d[i][j] = math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost)
+			end
+		end
+		return d[m][n]
+	end
 
-    local itemWords = {}
-    for word in itemLower:gmatch("%S+") do
-        itemWords[word] = true
-    end
+	local itemWords = {}
+	for word in itemLower:gmatch("%S+") do
+		itemWords[word] = true
+	end
 
-    local bestKey = nil
-    local bestVal = 0
-    local bestScore = -math.huge
+	local bestKey = nil
+	local bestVal = 0
+	local bestScore = -math.huge
 
-    for key, val in pairs(values) do
-        local keyLower = key:lower()
-        local wordScore = 0
+	for key, val in pairs(values) do
+		local keyLower = key:lower()
+		local wordScore = 0
 
-        for word in keyLower:gmatch("%S+") do
-            if itemWords[word] then
-                wordScore = wordScore + 1
-            end
-        end
+		for word in keyLower:gmatch("%S+") do
+			if itemWords[word] then
+				wordScore = wordScore + 1
+			end
+		end
 
-        -- Левенштейн как дополнительный критерий
-        local dist = levenshtein(itemLower, keyLower)
-        local score = wordScore * 100 - dist  -- слова важнее, расстояние — тайбрейкер
+		-- Левенштейн как дополнительный критерий
+		local dist = levenshtein(itemLower, keyLower)
+		local score = wordScore * 100 - dist  -- слова важнее, расстояние — тайбрейкер
 
-        if score > bestScore then
-            bestScore = score
-            bestKey = key
-            bestVal = val
-        end
-    end
+		if score > bestScore then
+			bestScore = score
+			bestKey = key
+			bestVal = val
+		end
+	end
 
-    if bestScore > -math.huge then
-        return bestKey, bestVal, "fuzzy"
-    end
+	if bestScore > -math.huge then
+		return bestKey, bestVal, "fuzzy"
+	end
 
-    return nil, 0, "not found"
+	return nil, 0, "not found"
 end
 
 local values = {
-    ["6 Billion"] = 0,
-    ["Blade 2049"] = 0,
-    ["Camaro"] = 0,
-    ["Celestial"] = 0,
-    ["Classic Tires"] = 0,
-    ["Cracky4"] = 0,
-    ["Cruiser"] = 0,
-    ["Helicopter"] = 0,
-    ["Injan"] = 0,
-    ["Jeep"] = 0,
-    ["Lia's Ship"] = 0,
-    ["Live 2024"] = 0,
-    ["MCL36"] = 0,
-    ["NASCAR"] = 0,
-    ["NASCAR Free"] = 0,
-    ["Original"] = 0,
-    ["Star"] = 0,
-    ["SWAT Van"] = 0,
-    ["VIP Radio"] = 0,
-    ["Police Desk"] = 100,
-    ["Shoebox"] = 100,
-    ["Modern Chair"] = 250,
-    ["Step Stool"] = 250,
-    ["Ye Old Chair"] = 250,
-    ["Yellow Lamp"] = 250,
-    ["Outlet"] = 500,
-    ["Smoke Alarm"] = 500,
-    ["Switch #1"] = 500,
-    ["Switch #2"] = 500,
-    ["Vent"] = 500,
-    ["Blade"] = 750,
-    ["Halo"] = 750,
-    ["Turbine"] = 750,
-    ["Volt Table"] = 750,
-    ["Wood Media"] = 750,
-    ["Black"] = 1000,
-    ["Blue"] = 1000,
-    ["Blue Globe"] = 1000,
-    ["Cyan"] = 1000,
-    ["Flatblack"] = 1000,
-    ["Forest Green"] = 1000,
-    ["Green"] = 1000,
-    ["Grey"] = 1000,
-    ["Large Curtain"] = 1000,
-    ["Laughability"] = 1000,
-    ["Matte"] = 1000,
-    ["Modern White"] = 1000,
-    ["Orange"] = 1000,
-    ["Pastel Brown"] = 1000,
-    ["Pink"] = 1000,
-    ["Purple"] = 1000,
-    ["Red"] = 1000,
-    ["Small Curtain"] = 1000,
-    ["Star Rug"] = 1000,
-    ["White"] = 1000,
-    ["Yellow"] = 1000,
-    ["Tulip Chair"] = 1250,
-    ["Board"] = 1500,
-    ["Drumset"] = 1500,
-    ["Modern Desk"] = 1500,
-    ["Volt Shelf"] = 1500,
-    ["Wall Lamp"] = 1500,
-    ["Solo Sofa"] = 1750,
-    ["Can Light"] = 2000,
-    ["Pastel Blue"] = 2000,
-    ["Pastel Gray"] = 2000,
-    ["Pastel Green"] = 2000,
-    ["Pastel Orange"] = 2000,
-    ["Pastel Pink"] = 2000,
-    ["Pastel Violet"] = 2000,
-    ["Pastel Yellow"] = 2000,
-    ["Twin Bed"] = 2000,
-    ["Wood Coffee"] = 2000,
-    ["Bicycle"] = 2500,
-    ["City"] = 2500,
-    ["Globe Ceiling"] = 2500,
-    ["Ice Table"] = 2500,
-    ["Lava Lamp"] = 2500,
-    ["Recliner"] = 2500,
-    ["Scary Treasures"] = 2500,
-    ["Tall Plant"] = 2500,
-    ["Turret"] = 2500,
-    ["Wood Dining"] = 2500,
-    ["Asimo's Desk"] = 3500,
-    ["Large Plant"] = 3500,
-    ["Marble Coffee"] = 3500,
-    ["Modern Island"] = 3500,
-    ["ClassicVar2"] = 4000,
-    ["Cow"] = 4000,
-    ["Flatscreen"] = 4000,
-    ["Modern Couch"] = 4500,
-    ["Badimo Tiki Stack"] = 5000,
-    ["Badonuts"] = 5000,
-    ["Bamboo"] = 5000,
-    ["Bananas"] = 5000,
-    ["Black Fan"] = 5000,
-    ["Block Wing"] = 5000,
-    ["Bomb"] = 5000,
-    ["Box of Cash"] = 5000,
-    ["Cannon"] = 5000,
-    ["Cat Plush"] = 5000,
-    ["Cosmic"] = 5000,
-    ["Countdown"] = 5000,
-    ["Darkest Blue"] = 5000,
-    ["Darkest Brown"] = 5000,
-    ["Darkest Green"] = 5000,
-    ["Darkest Marine"] = 5000,
-    ["Darkest Red"] = 5000,
-    ["Deep Purple"] = 5000,
-    ["Double Sofa"] = 5000,
-    ["Double Twin"] = 5000,
-    ["Fire Brigade"] = 5000,
-    ["Flower"] = 5000,
-    ["Hot Orange"] = 5000,
-    ["Hottest Pink"] = 5000,
-    ["Insert Coin"] = 5000,
-    ["Jungle Mosaic"] = 5000,
-    ["LeEclair"] = 5000,
-    ["Marble Dining"] = 5000,
-    ["Maroon"] = 5000,
-    ["Military Green"] = 5000,
-    ["Mud"] = 5000,
-    ["Navy Blue"] = 5000,
-    ["Night Train"] = 5000,
-    ["Old Computer"] = 5000,
-    ["Prehistoric"] = 5000,
-    ["Rainbow"] = 5000,
-    ["Rally Lights"] = 5000,
-    ["Rally Signage"] = 5000,
-    ["Real Green"] = 5000,
-    ["Realistic"] = 5000,
-    ["Safari"] = 5000,
-    ["Sakura Pink"] = 5000,
-    ["Sand"] = 5000,
-    ["Scary Sofa"] = 5000,
-    ["Shelves"] = 5000,
-    ["Terminator"] = 5000,
-    ["White Fan"] = 5000,
-    ["Cyber Tubes"] = 6000,
-    ["Rest in Peace"] = 6000,
-    ["Pickup"] = 9000,
-    ["Pixel Wardrobe"] = 9000,
-    ["Pixelated"] = 9000,
-    ["Billion"] = 10000,
-    ["Cactus Buddy"] = 10000,
-    ["Cruise Liner"] = 10000,
-    ["Cyclone"] = 10000,
-    ["Deja"] = 10000,
-    ["Fireplace"] = 10000,
-    ["Frost"] = 10000,
-    ["Heli Night"] = 10000,
-    ["Hungry Snake"] = 10000,
-    ["Jet"] = 10000,
-    ["King Bed"] = 10000,
-    ["Kitchen"] = 10000,
-    ["Oak Armchair"] = 10000,
-    ["Oak Fine Sofa"] = 10000,
-    ["Oak Table"] = 10000,
-    ["Paint"] = 10000,
-    ["Pixel Portrait"] = 10000,
-    ["Pool Table"] = 10000,
-    ["Rocket"] = 10000,
-    ["Round Dance"] = 10000,
-    ["Rumble Siren"] = 10000,
-    ["Small Dance"] = 10000,
-    ["Small Orbital"] = 10000,
-    ["TV Wall"] = 10000,
-    ["Twin Sofa"] = 10000,
-    ["Vault"] = 10000,
-    ["3 Lives"] = 12000,
-    ["147"] = 15000,
-    ["Abstracts"] = 15000,
-    ["Arch"] = 15000,
-    ["Captain Chandelier"] = 15000,
-    ["Captain Table"] = 15000,
-    ["Construction"] = 15000,
-    ["Dual Wingbeat"] = 15000,
-    ["Flame Spitter"] = 15000,
-    ["Landmine"] = 15000,
-    ["Mystic"] = 15000,
-    ["Nitro Tank"] = 15000,
-    ["Parrot"] = 15000,
-    ["RX-1"] = 15000,
-    ["Settima"] = 15000,
-    ["Spike"] = 15000,
-    ["Steamer"] = 15000,
-    ["Super Lime"] = 15000,
-    ["Taxi"] = 15000,
-    ["Tiny Wing"] = 15000,
-    ["Treasure Island"] = 15000,
-    ["Weapons"] = 15000,
-    ["Wingo"] = 15000,
-    ["Model 3"] = 16000,
-    ["8-Bit Rug"] = 18000,
-    ["Ball"] = 20000,
-    ["Blue DJ Booth"] = 20000,
-    ["Boomerang"] = 20000,
-    ["Classic Sport"] = 20000,
-    ["Classic Thick"] = 20000,
-    ["Clown"] = 20000,
-    ["Crash Nation"] = 20000,
-    ["Criminal"] = 20000,
-    ["DatBrian"] = 20000,
-    ["DenisDaily"] = 20000,
-    ["Frit"] = 20000,
-    ["Galaxy Wave"] = 20000,
-    ["HelloItsVG"] = 20000,
-    ["Ice"] = 20000,
-    ["Jailbreak"] = 20000,
-    ["JBMS"] = 20000,
-    ["KraoESP"] = 20000,
-    ["KreekCraft"] = 20000,
-    ["Line"] = 20000,
-    ["MyUsernamesThis"] = 20000,
-    ["NapkinNate"] = 20000,
-    ["NoobFreak"] = 20000,
-    ["Offroad"] = 20000,
-    ["Orbital"] = 20000,
-    ["PGHLFilms"] = 20000,
-    ["Phindr"] = 20000,
-    ["Police"] = 20000,
-    ["Racing Wing"] = 20000,
-    ["Swirl"] = 20000,
-    ["Tall Arch"] = 20000,
-    ["Thin"] = 20000,
-    ["Tsutek"] = 20000,
-    ["Two Sided"] = 20000,
-    ["Vecchio"] = 20000,
-    ["Ahooga"] = 25000,
-    ["Aquarium"] = 25000,
-    ["Dance Floor"] = 25000,
-    ["Doghouse Bulldog"] = 25000,
-    ["Doghouse German"] = 25000,
-    ["Dragster"] = 25000,
-    ["Eternal Flame"] = 25000,
-    ["Grand Piano"] = 25000,
-    ["Leapyear"] = 25000,
-    ["Meep Meep"] = 25000,
-    ["Melons"] = 25000,
-    ["Performance"] = 25000,
-    ["Ray"] = 25000,
-    ["RGB Machine"] = 25000,
-    ["Sendoff"] = 25000,
-    ["Slashers"] = 25000,
-    ["Space-R"] = 25000,
-    ["Supersuit"] = 25000,
-    ["Tailfin"] = 25000,
-    ["Train"] = 25000,
-    ["Treaded"] = 25000,
-    ["Treaded Sport"] = 25000,
-    ["Treaded Thick"] = 25000,
-    ["Voxel Sofa"] = 25000,
-    ["Badimo Bros"] = 30000,
-    ["Gamer TV Set"] = 30000,
-    ["Interrogator"] = 30000,
-    ["Mark 5"] = 30000,
-    ["Park Bench"] = 30000,
-    ["Patchy Jeans"] = 30000,
-    ["Trapped Spikes"] = 33333,
-    ["Aerial Support"] = 35000,
-    ["Airhorn"] = 35000,
-    ["Armorpunk"] = 35000,
-    ["Bleeding Edge"] = 35000,
-    ["Camo Shark"] = 35000,
-    ["Cartoon"] = 35000,
-    ["Cobweb"] = 35000,
-    ["Corp CR1"] = 35000,
-    ["Cyber Couch"] = 35000,
-    ["Dirtbike"] = 35000,
-    ["Hex-Bond"] = 35000,
-    ["Hologram Donut"] = 35000,
-    ["Jade Glow"] = 35000,
-    ["Lines"] = 35000,
-    ["Missile Sofa"] = 35000,
-    ["Museum"] = 35000,
-    ["Plane"] = 35000,
-    ["Police That Way"] = 35000,
-    ["Propeller"] = 35000,
-    ["Quack"] = 35000,
-    ["Rally"] = 35000,
-    ["Reactor"] = 35000,
-    ["Sloopwreck Bed"] = 35000,
-    ["SRT"] = 35000,
-    ["Tracer"] = 35000,
-    ["VFX"] = 35000,
-    ["Voltline"] = 35000,
-    ["Wanted Hologram"] = 35000,
-    ["Volcano"] = 39000,
-    ["Candy Cane"] = 40000,
-    ["Diamond"] = 40000,
-    ["Galaxy"] = 40000,
-    ["Scorch"] = 40000,
-    ["Unified"] = 40000,
-    ["Zebra"] = 40000,
-    ["Badger"] = 45000,
-    ["Bubble Wand"] = 45000,
-    ["Dune Buggy"] = 45000,
-    ["Patrol Bike"] = 45000,
-    ["Wireframe"] = 45000,
-    ["80s Style"] = 50000,
-    ["ATV"] = 50000,
-    ["Aurora Light"] = 50000,
-    ["Bad Omen"] = 50000,
-    ["Bat Wings"] = 50000,
-    ["Buoy"] = 50000,
-    ["Camo"] = 50000,
-    ["Catch Me"] = 50000,
-    ["Energy"] = 50000,
-    ["Eric's Starship"] = 50000,
-    ["Fabulous Sign"] = 50000,
-    ["Flags of Europe"] = 50000,
-    ["Heli Prop"] = 50000,
-    ["Jet Ski"] = 50000,
-    ["Jungle Ruins"] = 50000,
-    ["Native"] = 50000,
-    ["Neon Vein Wall-Art"] = 50000,
-    ["Nuclear Waste"] = 50000,
-    ["P100I"] = 50000,
-    ["Python"] = 50000,
-    ["Quarter Dollar"] = 50000,
-    ["Radiation"] = 50000,
-    ["Roblox R"] = 50000,
-    ["Ski Wing"] = 50000,
-    ["Skull and Sails"] = 50000,
-    ["Tokyo"] = 50000,
-    ["USA"] = 50000,
-    ["Voxel"] = 50000,
-    ["Wanted Sign"] = 50000,
-    ["Watermelon"] = 50000,
-    ["Boxer"] = 55000,
-    ["Police Chase"] = 55000,
-    ["XRK Aero"] = 55000,
-    ["Challenger"] = 59000,
-    ["Scary Organ"] = 70000,
-    ["Animated Obby"] = 75000,
-    ["Campout"] = 75000,
-    ["Classic Jet"] = 75000,
-    ["Delivery"] = 75000,
-    ["Dragon Chaser"] = 75000,
-    ["GTR"] = 75000,
-    ["Hold E"] = 75000,
-    ["Jailbreak Hills"] = 75000,
-    ["SFOTH"] = 75000,
-    ["Spawn"] = 75000,
-    ["Speed"] = 75000,
-    ["Spyglass"] = 75000,
-    ["Studded"] = 75000,
-    ["Subcarbon"] = 75000,
-    ["Subspace"] = 75000,
-    ["Camper"] = 79000,
-    ["Desert Camo"] = 80000,
-    ["Tanker Truck"] = 80000,
-    ["Tow Truck"] = 80000,
-    ["Ambulance"] = 90000,
-    ["Roulette"] = 90000,
-    ["Shell Mark-5"] = 92000,
-    ["4 Billion"] = 100000,
-    ["8-Bit"] = 100000,
-    ["Beachball"] = 100000,
-    ["Belgian Waffle"] = 100000,
-    ["Carbon Fire"] = 100000,
-    ["Champion"] = 100000,
-    ["Cheeseburger"] = 100000,
-    ["ClassicVar1"] = 100000,
-    ["ClassicVar3"] = 100000,
-    ["Comic Convict"] = 100000,
-    ["Cybertruck"] = 100000,
-    ["D-Pad"] = 100000,
-    ["Darkest Purple"] = 100000,
-    ["Dragon Breath"] = 100000,
-    ["Dragon Scales"] = 100000,
-    ["Electrostatic"] = 100000,
-    ["Escape Bot"] = 100000,
-    ["Grande Punto"] = 100000,
-    ["Gun Rack"] = 100000,
-    ["Gunfire"] = 100000,
-    ["Harpoon"] = 100000,
-    ["King"] = 100000,
-    ["La Matador"] = 100000,
-    ["Ladybug"] = 100000,
-    ["Leaning Wing"] = 100000,
-    ["Magic Purple"] = 100000,
-    ["Meteor Magnet"] = 100000,
-    ["Old Wagon"] = 100000,
-    ["Peach"] = 100000,
-    ["R2008"] = 100000,
-    ["Reaper"] = 100000,
-    ["Revolver"] = 100000,
-    ["Road Warrior"] = 100000,
-    ["Semi Truck"] = 100000,
-    ["Skater Wing"] = 100000,
-    ["SWAT Graffiti"] = 100000,
-    ["Synth"] = 100000,
-    ["T.Rex Bone"] = 100000,
-    ["Tesla"] = 100000,
-    ["Trouble Wing"] = 100000,
-    ["Vault Door"] = 100000,
-    ["Volleyball"] = 100000,
-    ["Winner"] = 100000,
-    ["Yarg Cap"] = 100000,
-    ["Surus"] = 109000,
-    ["Deep Purple Flame"] = 120000,
-    ["Dino Exhibit"] = 150000,
-    ["Falcon S"] = 150000,
-    ["Prison Bus"] = 150000,
-    ["RFX"] = 150000,
-    ["Spares"] = 150000,
-    ["DeLorean"] = 175000,
-    ["Firetruck"] = 175000,
-    ["R-Tracer"] = 175000,
-    ["Little Bird"] = 190000,
-    ["Ray 9"] = 199000,
-    ["Stallion"] = 200000,
-    ["Desert Crawler"] = 229000,
-    ["5B Flags"] = 250000,
-    ["Alpine Racer"] = 250000,
-    ["Banana Chandelier"] = 250000,
-    ["Beloved Wardrobe"] = 250000,
-    ["Blue 1"] = 250000,
-    ["Bonded"] = 250000,
-    ["Boomin Speaker"] = 250000,
-    ["Brigbone"] = 250000,
-    ["Buccaneer"] = 250000,
-    ["Camo Radar"] = 250000,
-    ["Campfire"] = 250000,
-    ["Car Pool"] = 250000,
-    ["Chilling"] = 250000,
-    ["Classic"] = 250000,
-    ["Cosmetic Safe"] = 250000,
-    ["Croissant"] = 250000,
-    ["Cyberpunk"] = 250000,
-    ["Diamond 1"] = 250000,
-    ["Do You Lift"] = 250000,
-    ["Electronic"] = 250000,
-    ["Evil Eye"] = 250000,
-    ["EXP-1"] = 250000,
-    ["Expeditioner"] = 250000,
-    ["Glacier"] = 250000,
-    ["Green 1"] = 250000,
-    ["Hero Zapper"] = 250000,
-    ["Ice Crystal"] = 250000,
-    ["King Reaper"] = 250000,
-    ["Kraken"] = 250000,
-    ["Kraken Attack"] = 250000,
-    ["Laser Wire"] = 250000,
-    ["Laviolette"] = 250000,
-    ["London Booth"] = 250000,
-    ["Magmatic Glow"] = 250000,
-    ["Neon Sign"] = 250000,
-    ["OG Matador"] = 250000,
-    ["Orange 1"] = 250000,
-    ["Peppermint"] = 250000,
-    ["Piggy"] = 250000,
-    ["Pink 1"] = 250000,
-    ["Posh"] = 250000,
-    ["Purple 1"] = 250000,
-    ["Racer"] = 250000,
-    ["Radial Red"] = 250000,
-    ["Radiant Green"] = 250000,
-    ["Radiant Pink"] = 250000,
-    ["Radiant Polar Blue"] = 250000,
-    ["Radiant Purple"] = 250000,
-    ["Radiant Red"] = 250000,
-    ["Radiant Sun"] = 250000,
-    ["Radiant White"] = 250000,
-    ["Radiant Yellow"] = 250000,
-    ["RC Antenna"] = 250000,
-    ["Red 1"] = 250000,
-    ["Retro Racer"] = 250000,
-    ["Road Hazard"] = 250000,
-    ["Roblox Stud"] = 250000,
-    ["Rok"] = 250000,
-    ["Rollerblade"] = 250000,
-    ["Scope"] = 250000,
-    ["Scythes"] = 250000,
-    ["Sentinel"] = 250000,
-    ["Ship Wheel"] = 250000,
-    ["Shutter Shade"] = 250000,
-    ["Skull"] = 250000,
-    ["Snake Guard"] = 250000,
-    ["Snakeskin"] = 250000,
-    ["Snow Machine"] = 250000,
-    ["Spawn Rug"] = 250000,
-    ["Speed Yacht"] = 250000,
-    ["Spixel"] = 250000,
-    ["Stacked Cyberwing"] = 250000,
-    ["Steed"] = 250000,
-    ["Superstar"] = 250000,
-    ["SUV"] = 250000,
-    ["Tank Wing"] = 250000,
-    ["Teddy Bear"] = 250000,
-    ["Tesseract"] = 250000,
-    ["Thing"] = 250000,
-    ["Torii Gate"] = 250000,
-    ["Touchdown"] = 250000,
-    ["Trail Trek"] = 250000,
-    ["Travel Case"] = 250000,
-    ["Trion"] = 250000,
-    ["Trophy Wings"] = 250000,
-    ["Truss"] = 250000,
-    ["Unknown Signal"] = 250000,
-    ["Vibrant Hologram"] = 250000,
-    ["Winter Rally"] = 250000,
-    ["Wooden Toy"] = 250000,
-    ["Yellow 1"] = 250000,
-    ["XRK"] = 299000,
-    ["Forged"] = 300000,
-    ["Stunt Plane"] = 300000,
-    ["Cassette"] = 350000,
-    ["Radioactive"] = 350000,
-    ["Snowman"] = 350000,
-    ["America"] = 500000,
-    ["Aquatic"] = 500000,
-    ["Arch9000 Glow"] = 500000,
-    ["Baller"] = 500000,
-    ["Bandana"] = 500000,
-    ["Beadlock"] = 500000,
-    ["Biohazard"] = 500000,
-    ["Blue Pixel Racer"] = 500000,
-    ["Compass"] = 500000,
-    ["Deathtrap"] = 500000,
-    ["Dino"] = 500000,
-    ["Fall Chrome"] = 500000,
-    ["Fiasco"] = 500000,
-    ["Gulf"] = 500000,
-    ["Hammerhead"] = 500000,
-    ["Hammock"] = 500000,
-    ["Handcuff"] = 500000,
-    ["Hatch Voids"] = 500000,
-    ["Haunted"] = 500000,
-    ["Hazards"] = 500000,
-    ["HyperBlue Lvl1"] = 500000,
-    ["HyperDiamond Lvl1"] = 500000,
-    ["HyperGreen Lvl1"] = 500000,
-    ["HyperOrange Lvl1"] = 500000,
-    ["HyperPink Lvl1"] = 500000,
-    ["HyperPurple Lvl1"] = 500000,
-    ["HyperRed Lvl1"] = 500000,
-    ["HyperYellow Lvl1"] = 500000,
-    ["HyperYellow Lvl2"] = 500000,
-    ["Jungle Vine"] = 500000,
-    ["Lady Liberty?!"] = 500000,
-    ["Lava"] = 500000,
-    ["Mighty"] = 500000,
-    ["Neo-Runner"] = 500000,
-    ["Nukamo"] = 500000,
-    ["OG Rocket Thrusters"] = 500000,
-    ["Ogre 2017"] = 500000,
-    ["Overdrive"] = 500000,
-    ["Pirate Figurehead"] = 500000,
-    ["Pixel Coin"] = 500000,
-    ["Pizza Delivery"] = 500000,
-    ["Radiant Orange"] = 500000,
-    ["Rally Spotlight"] = 500000,
-    ["Robowing"] = 500000,
-    ["Roll-X"] = 500000,
-    ["Sakura Tree"] = 500000,
-    ["Snow Log"] = 500000,
-    ["Speed Coil"] = 500000,
-    ["Star Spangled"] = 500000,
-    ["Trade Sail"] = 500000,
-    ["Trophy Case"] = 500000,
-    ["Tuner"] = 500000,
-    ["Turning Key"] = 500000,
-    ["UK Heritage"] = 500000,
-    ["Venom"] = 500000,
-    ["Vintage Wings"] = 500000,
-    ["WYNDR"] = 500000,
-    ["Yellow 2"] = 500000,
-    ["Eclaire"] = 600000,
-    ["Roadster"] = 600000,
-    ["Successor"] = 649000,
-    ["Crown"] = 666000,
-    ["3 Billion"] = 750000,
-    ["Bacon"] = 750000,
-    ["Basketball"] = 750000,
-    ["Digital Confetti"] = 750000,
-    ["Fame Rug"] = 750000,
-    ["Field"] = 750000,
-    ["Gamer Chair"] = 750000,
-    ["Ghost Catcher"] = 750000,
-    ["Glider Shop"] = 750000,
-    ["Glowing Yellow"] = 750000,
-    ["Hotdog"] = 750000,
-    ["Jungle Palm"] = 750000,
-    ["Live 2020"] = 750000,
-    ["Live Glider"] = 750000,
-    ["Money"] = 750000,
-    ["Puzzle Couch"] = 750000,
-    ["Racecar Bed"] = 750000,
-    ["Royal Throne"] = 750000,
-    ["Star Wing"] = 750000,
-    ["Storm"] = 750000,
-    ["Super Star"] = 750000,
-    ["Tiki Bar"] = 750000,
-    ["Triple Fin"] = 750000,
-    ["Waving Flag"] = 750000,
-    ["Wavy"] = 750000,
-    ["Air Hockey"] = 1000000,
-    ["Arcade Racer"] = 1000000,
-    ["Bamboo Shooters"] = 1000000,
-    ["Berlin Graffiti"] = 1000000,
-    ["Bionic"] = 1000000,
-    ["BlackHawk"] = 1000000,
-    ["Bloxxer"] = 1000000,
-    ["Bloxxer Launcher"] = 1000000,
-    ["Bloxy Lisa"] = 1000000,
-    ["Blue S3"] = 1000000,
-    ["Bluebird"] = 1000000,
-    ["Bull Horns"] = 1000000,
-    ["Circuit Board"] = 1000000,
-    ["Circuits"] = 1000000,
-    ["Confetti"] = 1000000,
-    ["Crimson Racer"] = 1000000,
-    ["Distorted"] = 1000000,
-    ["Drone"] = 1000000,
-    ["Dual Flags"] = 1000000,
-    ["Earth"] = 1000000,
-    ["Energized"] = 1000000,
-    ["Euro Cloverleaf"] = 1000000,
-    ["Foosball Table"] = 1000000,
-    ["Galactic"] = 1000000,
-    ["Green 2"] = 1000000,
-    ["Guitar Riff"] = 1000000,
-    ["HyperGreen Lvl2"] = 1000000,
-    ["HyperOrange Lvl2"] = 1000000,
-    ["HyperPink Lvl2"] = 1000000,
-    ["HyperPurple Lvl2"] = 1000000,
-    ["HyperRed Lvl2"] = 1000000,
-    ["Ice Spike"] = 1000000,
-    ["Japanese Lantern"] = 1000000,
-    ["JDM"] = 1000000,
-    ["Jet Fighter"] = 1000000,
-    ["Kanagawa"] = 1000000,
-    ["Lightning"] = 1000000,
-    ["Manta"] = 1000000,
-    ["Marshmallow"] = 1000000,
-    ["Maverick"] = 1000000,
-    ["Monster"] = 1000000,
-    ["NASCAR 75th"] = 1000000,
-    ["Neo-Static"] = 1000000,
-    ["OG Fuel"] = 1000000,
-    ["Orange 2"] = 1000000,
-    ["Orange Chute"] = 1000000,
-    ["Pink 2"] = 1000000,
-    ["Pixeltary"] = 1000000,
-    ["Purple 2"] = 1000000,
-    ["Radiant Ice"] = 1000000,
-    ["Red 2"] = 1000000,
-    ["Red S3"] = 1000000,
-    ["Retrowave"] = 1000000,
-    ["Sawblade"] = 1000000,
-    ["Sled Void"] = 1000000,
-    ["Sloop"] = 1000000,
-    ["Snow Cannon"] = 1000000,
-    ["Spare"] = 1000000,
-    ["Surfboard Rack"] = 1000000,
-    ["Tank"] = 1000000,
-    ["Tiger Skin Rug"] = 1000000,
-    ["Trailblazer"] = 1000000,
-    ["Tumbleweed"] = 1000000,
-    ["UFO"] = 1000000,
-    ["Volt"] = 1000000,
-    ["White Marble"] = 1000000,
-    ["Windmill"] = 1000000,
-    ["Bull"] = 1250000,
-    ["Cannonfire"] = 1250000,
-    ["Cucaracha"] = 1250000,
-    ["Flaming"] = 1250000,
-    ["Frost Crawler"] = 1250000,
-    ["Gold"] = 1250000,
-    ["Megalodon"] = 1250000,
-    ["Missile Bed"] = 1250000,
-    ["Nemesis"] = 1250000,
-    ["OG Monster"] = 1250000,
-    ["Pixel"] = 1250000,
-    ["RGB Lights"] = 1250000,
-    ["Soccer"] = 1250000,
-    ["Star Badge"] = 1250000,
-    ["Striker"] = 1250000,
-    ["Teleporter"] = 1250000,
-    ["Afterburner"] = 1500000,
-    ["Arcade Arch"] = 1500000,
-    ["Armor"] = 1500000,
-    ["Black Widow"] = 1500000,
-    ["Blackbeard"] = 1500000,
-    ["Blue Portal"] = 1500000,
-    ["Colors of Italy"] = 1500000,
-    ["Cryo Chamber"] = 1500000,
-    ["Daytona"] = 1500000,
-    ["Deathray"] = 1500000,
-    ["Doubloon"] = 1500000,
-    ["Flamethrower"] = 1500000,
-    ["Fore"] = 1500000,
-    ["Frostburn"] = 1500000,
-    ["JBX-0031"] = 1500000,
-    ["Jetpack"] = 1500000,
-    ["Longhorn"] = 1500000,
-    ["Manga"] = 1500000,
-    ["Mecha Arm"] = 1500000,
-    ["Oceanwater"] = 1500000,
-    ["Orange Pixel"] = 1500000,
-    ["Picnic Table"] = 1500000,
-    ["Red Eyes"] = 1500000,
-    ["Revox"] = 1500000,
-    ["Shell Speaker"] = 1500000,
-    ["Sparkler"] = 1500000,
-    ["Spider Leg"] = 1500000,
-    ["Tiger"] = 1500000,
-    ["Wagon Wheel"] = 1500000,
-    ["Water Gun"] = 1500000,
-    ["Jack Rabbit"] = 1750000,
-    ["Agent"] = 2000000,
-    ["Aurora"] = 2000000,
-    ["Blue Eyes"] = 2000000,
-    ["Diamond Engrave"] = 2000000,
-    ["Donut"] = 2000000,
-    ["Dual Rockets"] = 2000000,
-    ["Endurance Wing"] = 2000000,
-    ["Old Town Road"] = 2000000,
-    ["Radar"] = 2000000,
-    ["Rubber Ducky"] = 2000000,
-    ["Sakura"] = 2000000,
-    ["Shell Classic"] = 2000000,
-    ["Stance"] = 2000000,
-    ["Stormrider"] = 2000000,
-    ["Track Toy"] = 2000000,
-    ["Black Ice"] = 2500000,
-    ["Bloxy"] = 2500000,
-    ["Blue Chute"] = 2500000,
-    ["Blue Pixel"] = 2500000,
-    ["Brick Kar"] = 2500000,
-    ["Camaro Bed"] = 2500000,
-    ["Center Lock"] = 2500000,
-    ["Cobra"] = 2500000,
-    ["Concept"] = 2500000,
-    ["Fire"] = 2500000,
-    ["HyperYellow Lvl3"] = 2500000,
-    ["Hypno"] = 2500000,
-    ["Iron Rock"] = 2500000,
-    ["Jailbreak Army"] = 2500000,
-    ["Japanese"] = 2500000,
-    ["Planetary"] = 2500000,
-    ["Polaire"] = 2500000,
-    ["Poseidon"] = 2500000,
-    ["Sarcophagus"] = 2500000,
-    ["Snow Trail"] = 2500000,
-    ["Wedge"] = 2500000,
-    ["Winter Camo"] = 2500000,
-    ["Yellow 3"] = 2500000,
-    ["5 Star"] = 3000000,
-    ["Airtail"] = 3000000,
-    ["Blue 2"] = 3000000,
-    ["Brulee"] = 3000000,
-    ["Clickbait"] = 3000000,
-    ["Diamond 2"] = 3000000,
-    ["Eight Leg"] = 3000000,
-    ["Glider"] = 3000000,
-    ["Hot Chocolate"] = 3000000,
-    ["HyperBlue Lvl2"] = 3000000,
-    ["HyperDiamond Lvl2"] = 3000000,
-    ["HyperOrange Lvl3"] = 3000000,
-    ["Iceborn"] = 3000000,
-    ["Orange 3"] = 3000000,
-    ["Red 50"] = 3000000,
-    ["Simulator Rig"] = 3000000,
-    ["Snowchain"] = 3000000,
-    ["Spark"] = 3000000,
-    ["Tiki Torch"] = 3000000,
-    ["Tiny Toy"] = 3000000,
-    ["Velocity"] = 3000000,
-    ["Bookshelf"] = 3500000,
-    ["Earthquake"] = 3500000,
-    ["Galactic Carbon"] = 3500000,
-    ["Green 3"] = 3500000,
-    ["HyperGreen Lvl3"] = 3500000,
-    ["Katana"] = 3500000,
-    ["Orion"] = 3500000,
-    ["Rattler"] = 3500000,
-    ["Sci-fi Kitchen"] = 3500000,
-    ["Snake"] = 3500000,
-    ["Volt Wing"] = 3500000,
-    ["Icicle"] = 4000000,
-    ["Inf1n1ty"] = 4000000,
-    ["Ionize"] = 4000000,
-    ["JB8"] = 4000000,
-    ["Snowflake"] = 4000000,
-    ["Torero"] = 4000000,
-    ["Bandit"] = 5000000,
-    ["Goliath"] = 5000000,
-    ["HyperRed Lvl3"] = 5000000,
-    ["Red 3"] = 5000000,
-    ["Snow Face"] = 5000000,
-    ["2 Billion"] = 5500000,
-    ["Bicycle Rack"] = 5500000,
-    ["Carbonara"] = 5500000,
-    ["Macaron"] = 5500000,
-    ["Snow Shovel"] = 5500000,
-    ["Brickset"] = 6000000,
-    ["Scorpion"] = 6000000,
-    ["Shogun"] = 6500000,
-    ["Cash Spitter"] = 7000000,
-    ["Spiked"] = 7500000,
-    ["HyperPurple Lvl3"] = 8000000,
-    ["Purple 3"] = 8000000,
-    ["Snowstorm"] = 8000000,
-    ["Aperture"] = 8500000,
-    ["Blue 50"] = 8500000,
-    ["Crew Capsule"] = 9000000,
-    ["HyperPink Lvl3"] = 9000000,
-    ["Noob Scream"] = 9000000,
-    ["Parisian"] = 9000000,
-    ["Pink 3"] = 9000000,
-    ["Diamond 3"] = 10000000,
-    ["HyperDiamond Lvl3"] = 10000000,
-    ["Volt 4x4"] = 10000000,
-    ["Blue 3"] = 11000000,
-    ["HyperBlue Lvl3"] = 11000000,
-    ["HyperYellow Lvl4"] = 11000000,
-    ["Raptor"] = 11000000,
-    ["Yellow 4"] = 11000000,
-    ["Gradient Pixel"] = 12000000,
-    ["Arachnid"] = 14000000,
-    ["Spinner"] = 14000000,
-    ["Green 4"] = 14500000,
-    ["HyperGreen Lvl4"] = 14500000,
-    ["RTX"] = 14500000,
-    ["HyperOrange Lvl4"] = 15000000,
-    ["Molten M12"] = 15000000,
-    ["Orange 4"] = 15000000,
-    ["Banana Car"] = 16000000,
-    ["Beam Hybrid"] = 19000000,
-    ["HyperYellow Lvl5"] = 19000000,
-    ["Yellow 5"] = 19000000,
-    ["Drip"] = 20000000,
-    ["HyperPurple Lvl4"] = 20000000,
-    ["Icebreaker"] = 20000000,
-    ["Purple 4"] = 20000000,
-    ["HyperRed Lvl4"] = 20500000,
-    ["Red 4"] = 20500000,
-    ["Vantablack"] = 22000000,
-    ["Blue 4"] = 25000000,
-    ["Blue Fire"] = 25000000,
-    ["Celsior"] = 25000000,
-    ["Green 5"] = 25000000,
-    ["HyperBlue Lvl4"] = 25000000,
-    ["HyperGreen Lvl5"] = 25000000,
-    ["HyperPink Lvl4"] = 25000000,
-    ["Pink 4"] = 25000000,
-    ["Power-1"] = 25000000,
-    ["HyperOrange Lvl5"] = 27000000,
-    ["Orange 5"] = 27000000,
-    ["Laser Cannon"] = 28000000,
-    ["Diamond 4"] = 29000000,
-    ["HyperDiamond Lvl4"] = 29000000,
-    ["Thrusters"] = 30000000,
-    ["HyperPurple Lvl5"] = 31000000,
-    ["HyperRed Lvl5"] = 31000000,
-    ["Proto-08"] = 31000000,
-    ["Purple 5"] = 31000000,
-    ["Red 5"] = 31000000,
-    ["Void"] = 33000000,
-    ["Checker"] = 35000000,
-    ["Torpedo"] = 35000000,
-    ["HyperPink Lvl5"] = 38000000,
-    ["Pink 5"] = 38000000,
-    ["Blue 5"] = 39500000,
-    ["HyperBlue Lvl5"] = 39500000,
-    ["Beignet"] = 40000000,
-    ["Diamond 5"] = 43000000,
-    ["HyperDiamond Lvl5"] = 43000000,
-    ["Javelin"] = 50000000,
-    ["Hyper Shift 4"] = 157000000,
-    ["Hyper Shift 5"] = 231500000,
+	["6 Billion"] = 0,
+	["Blade 2049"] = 0,
+	["Camaro"] = 0,
+	["Celestial"] = 0,
+	["Classic Tires"] = 0,
+	["Cracky4"] = 0,
+	["Cruiser"] = 0,
+	["Helicopter"] = 0,
+	["Injan"] = 0,
+	["Jeep"] = 0,
+	["Lia's Ship"] = 0,
+	["Live 2024"] = 0,
+	["MCL36"] = 0,
+	["NASCAR"] = 0,
+	["NASCAR Free"] = 0,
+	["Original"] = 0,
+	["Star"] = 0,
+	["SWAT Van"] = 0,
+	["VIP Radio"] = 0,
+	["Police Desk"] = 100,
+	["Shoebox"] = 100,
+	["Modern Chair"] = 250,
+	["Step Stool"] = 250,
+	["Ye Old Chair"] = 250,
+	["Yellow Lamp"] = 250,
+	["Outlet"] = 500,
+	["Smoke Alarm"] = 500,
+	["Switch #1"] = 500,
+	["Switch #2"] = 500,
+	["Vent"] = 500,
+	["Blade"] = 750,
+	["Halo"] = 750,
+	["Turbine"] = 750,
+	["Volt Table"] = 750,
+	["Wood Media"] = 750,
+	["Black"] = 1000,
+	["Blue"] = 1000,
+	["Blue Globe"] = 1000,
+	["Cyan"] = 1000,
+	["Flatblack"] = 1000,
+	["Forest Green"] = 1000,
+	["Green"] = 1000,
+	["Grey"] = 1000,
+	["Large Curtain"] = 1000,
+	["Laughability"] = 1000,
+	["Matte"] = 1000,
+	["Modern White"] = 1000,
+	["Orange"] = 1000,
+	["Pastel Brown"] = 1000,
+	["Pink"] = 1000,
+	["Purple"] = 1000,
+	["Red"] = 1000,
+	["Small Curtain"] = 1000,
+	["Star Rug"] = 1000,
+	["White"] = 1000,
+	["Yellow"] = 1000,
+	["Tulip Chair"] = 1250,
+	["Board"] = 1500,
+	["Drumset"] = 1500,
+	["Modern Desk"] = 1500,
+	["Volt Shelf"] = 1500,
+	["Wall Lamp"] = 1500,
+	["Solo Sofa"] = 1750,
+	["Can Light"] = 2000,
+	["Pastel Blue"] = 2000,
+	["Pastel Gray"] = 2000,
+	["Pastel Green"] = 2000,
+	["Pastel Orange"] = 2000,
+	["Pastel Pink"] = 2000,
+	["Pastel Violet"] = 2000,
+	["Pastel Yellow"] = 2000,
+	["Twin Bed"] = 2000,
+	["Wood Coffee"] = 2000,
+	["Bicycle"] = 2500,
+	["City"] = 2500,
+	["Globe Ceiling"] = 2500,
+	["Ice Table"] = 2500,
+	["Lava Lamp"] = 2500,
+	["Recliner"] = 2500,
+	["Scary Treasures"] = 2500,
+	["Tall Plant"] = 2500,
+	["Turret"] = 2500,
+	["Wood Dining"] = 2500,
+	["Asimo's Desk"] = 3500,
+	["Large Plant"] = 3500,
+	["Marble Coffee"] = 3500,
+	["Modern Island"] = 3500,
+	["ClassicVar2"] = 4000,
+	["Cow"] = 4000,
+	["Flatscreen"] = 4000,
+	["Modern Couch"] = 4500,
+	["Badimo Tiki Stack"] = 5000,
+	["Badonuts"] = 5000,
+	["Bamboo"] = 5000,
+	["Bananas"] = 5000,
+	["Black Fan"] = 5000,
+	["Block Wing"] = 5000,
+	["Bomb"] = 5000,
+	["Box of Cash"] = 5000,
+	["Cannon"] = 5000,
+	["Cat Plush"] = 5000,
+	["Cosmic"] = 5000,
+	["Countdown"] = 5000,
+	["Darkest Blue"] = 5000,
+	["Darkest Brown"] = 5000,
+	["Darkest Green"] = 5000,
+	["Darkest Marine"] = 5000,
+	["Darkest Red"] = 5000,
+	["Deep Purple"] = 5000,
+	["Double Sofa"] = 5000,
+	["Double Twin"] = 5000,
+	["Fire Brigade"] = 5000,
+	["Flower"] = 5000,
+	["Hot Orange"] = 5000,
+	["Hottest Pink"] = 5000,
+	["Insert Coin"] = 5000,
+	["Jungle Mosaic"] = 5000,
+	["LeEclair"] = 5000,
+	["Marble Dining"] = 5000,
+	["Maroon"] = 5000,
+	["Military Green"] = 5000,
+	["Mud"] = 5000,
+	["Navy Blue"] = 5000,
+	["Night Train"] = 5000,
+	["Old Computer"] = 5000,
+	["Prehistoric"] = 5000,
+	["Rainbow"] = 5000,
+	["Rally Lights"] = 5000,
+	["Rally Signage"] = 5000,
+	["Real Green"] = 5000,
+	["Realistic"] = 5000,
+	["Safari"] = 5000,
+	["Sakura Pink"] = 5000,
+	["Sand"] = 5000,
+	["Scary Sofa"] = 5000,
+	["Shelves"] = 5000,
+	["Terminator"] = 5000,
+	["White Fan"] = 5000,
+	["Cyber Tubes"] = 6000,
+	["Rest in Peace"] = 6000,
+	["Pickup"] = 9000,
+	["Pixel Wardrobe"] = 9000,
+	["Pixelated"] = 9000,
+	["Billion"] = 10000,
+	["Cactus Buddy"] = 10000,
+	["Cruise Liner"] = 10000,
+	["Cyclone"] = 10000,
+	["Deja"] = 10000,
+	["Fireplace"] = 10000,
+	["Frost"] = 10000,
+	["Heli Night"] = 10000,
+	["Hungry Snake"] = 10000,
+	["Jet"] = 10000,
+	["King Bed"] = 10000,
+	["Kitchen"] = 10000,
+	["Oak Armchair"] = 10000,
+	["Oak Fine Sofa"] = 10000,
+	["Oak Table"] = 10000,
+	["Paint"] = 10000,
+	["Pixel Portrait"] = 10000,
+	["Pool Table"] = 10000,
+	["Rocket"] = 10000,
+	["Round Dance"] = 10000,
+	["Rumble Siren"] = 10000,
+	["Small Dance"] = 10000,
+	["Small Orbital"] = 10000,
+	["TV Wall"] = 10000,
+	["Twin Sofa"] = 10000,
+	["Vault"] = 10000,
+	["3 Lives"] = 12000,
+	["147"] = 15000,
+	["Abstracts"] = 15000,
+	["Arch"] = 15000,
+	["Captain Chandelier"] = 15000,
+	["Captain Table"] = 15000,
+	["Construction"] = 15000,
+	["Dual Wingbeat"] = 15000,
+	["Flame Spitter"] = 15000,
+	["Landmine"] = 15000,
+	["Mystic"] = 15000,
+	["Nitro Tank"] = 15000,
+	["Parrot"] = 15000,
+	["RX-1"] = 15000,
+	["Settima"] = 15000,
+	["Spike"] = 15000,
+	["Steamer"] = 15000,
+	["Super Lime"] = 15000,
+	["Taxi"] = 15000,
+	["Tiny Wing"] = 15000,
+	["Treasure Island"] = 15000,
+	["Weapons"] = 15000,
+	["Wingo"] = 15000,
+	["Model 3"] = 16000,
+	["8-Bit Rug"] = 18000,
+	["Ball"] = 20000,
+	["Blue DJ Booth"] = 20000,
+	["Boomerang"] = 20000,
+	["Classic Sport"] = 20000,
+	["Classic Thick"] = 20000,
+	["Clown"] = 20000,
+	["Crash Nation"] = 20000,
+	["Criminal"] = 20000,
+	["DatBrian"] = 20000,
+	["DenisDaily"] = 20000,
+	["Frit"] = 20000,
+	["Galaxy Wave"] = 20000,
+	["HelloItsVG"] = 20000,
+	["Ice"] = 20000,
+	["Jailbreak"] = 20000,
+	["JBMS"] = 20000,
+	["KraoESP"] = 20000,
+	["KreekCraft"] = 20000,
+	["Line"] = 20000,
+	["MyUsernamesThis"] = 20000,
+	["NapkinNate"] = 20000,
+	["NoobFreak"] = 20000,
+	["Offroad"] = 20000,
+	["Orbital"] = 20000,
+	["PGHLFilms"] = 20000,
+	["Phindr"] = 20000,
+	["Police"] = 20000,
+	["Racing Wing"] = 20000,
+	["Swirl"] = 20000,
+	["Tall Arch"] = 20000,
+	["Thin"] = 20000,
+	["Tsutek"] = 20000,
+	["Two Sided"] = 20000,
+	["Vecchio"] = 20000,
+	["Ahooga"] = 25000,
+	["Aquarium"] = 25000,
+	["Dance Floor"] = 25000,
+	["Doghouse Bulldog"] = 25000,
+	["Doghouse German"] = 25000,
+	["Dragster"] = 25000,
+	["Eternal Flame"] = 25000,
+	["Grand Piano"] = 25000,
+	["Leapyear"] = 25000,
+	["Meep Meep"] = 25000,
+	["Melons"] = 25000,
+	["Performance"] = 25000,
+	["Ray"] = 25000,
+	["RGB Machine"] = 25000,
+	["Sendoff"] = 25000,
+	["Slashers"] = 25000,
+	["Space-R"] = 25000,
+	["Supersuit"] = 25000,
+	["Tailfin"] = 25000,
+	["Train"] = 25000,
+	["Treaded"] = 25000,
+	["Treaded Sport"] = 25000,
+	["Treaded Thick"] = 25000,
+	["Voxel Sofa"] = 25000,
+	["Badimo Bros"] = 30000,
+	["Gamer TV Set"] = 30000,
+	["Interrogator"] = 30000,
+	["Mark 5"] = 30000,
+	["Park Bench"] = 30000,
+	["Patchy Jeans"] = 30000,
+	["Trapped Spikes"] = 33333,
+	["Aerial Support"] = 35000,
+	["Airhorn"] = 35000,
+	["Armorpunk"] = 35000,
+	["Bleeding Edge"] = 35000,
+	["Camo Shark"] = 35000,
+	["Cartoon"] = 35000,
+	["Cobweb"] = 35000,
+	["Corp CR1"] = 35000,
+	["Cyber Couch"] = 35000,
+	["Dirtbike"] = 35000,
+	["Hex-Bond"] = 35000,
+	["Hologram Donut"] = 35000,
+	["Jade Glow"] = 35000,
+	["Lines"] = 35000,
+	["Missile Sofa"] = 35000,
+	["Museum"] = 35000,
+	["Plane"] = 35000,
+	["Police That Way"] = 35000,
+	["Propeller"] = 35000,
+	["Quack"] = 35000,
+	["Rally"] = 35000,
+	["Reactor"] = 35000,
+	["Sloopwreck Bed"] = 35000,
+	["SRT"] = 35000,
+	["Tracer"] = 35000,
+	["VFX"] = 35000,
+	["Voltline"] = 35000,
+	["Wanted Hologram"] = 35000,
+	["Volcano"] = 39000,
+	["Candy Cane"] = 40000,
+	["Diamond"] = 40000,
+	["Galaxy"] = 40000,
+	["Scorch"] = 40000,
+	["Unified"] = 40000,
+	["Zebra"] = 40000,
+	["Badger"] = 45000,
+	["Bubble Wand"] = 45000,
+	["Dune Buggy"] = 45000,
+	["Patrol Bike"] = 45000,
+	["Wireframe"] = 45000,
+	["80s Style"] = 50000,
+	["ATV"] = 50000,
+	["Aurora Light"] = 50000,
+	["Bad Omen"] = 50000,
+	["Bat Wings"] = 50000,
+	["Buoy"] = 50000,
+	["Camo"] = 50000,
+	["Catch Me"] = 50000,
+	["Energy"] = 50000,
+	["Eric's Starship"] = 50000,
+	["Fabulous Sign"] = 50000,
+	["Flags of Europe"] = 50000,
+	["Heli Prop"] = 50000,
+	["Jet Ski"] = 50000,
+	["Jungle Ruins"] = 50000,
+	["Native"] = 50000,
+	["Neon Vein Wall-Art"] = 50000,
+	["Nuclear Waste"] = 50000,
+	["P100I"] = 50000,
+	["Python"] = 50000,
+	["Quarter Dollar"] = 50000,
+	["Radiation"] = 50000,
+	["Roblox R"] = 50000,
+	["Ski Wing"] = 50000,
+	["Skull and Sails"] = 50000,
+	["Tokyo"] = 50000,
+	["USA"] = 50000,
+	["Voxel"] = 50000,
+	["Wanted Sign"] = 50000,
+	["Watermelon"] = 50000,
+	["Boxer"] = 55000,
+	["Police Chase"] = 55000,
+	["XRK Aero"] = 55000,
+	["Challenger"] = 59000,
+	["Scary Organ"] = 70000,
+	["Animated Obby"] = 75000,
+	["Campout"] = 75000,
+	["Classic Jet"] = 75000,
+	["Delivery"] = 75000,
+	["Dragon Chaser"] = 75000,
+	["GTR"] = 75000,
+	["Hold E"] = 75000,
+	["Jailbreak Hills"] = 75000,
+	["SFOTH"] = 75000,
+	["Spawn"] = 75000,
+	["Speed"] = 75000,
+	["Spyglass"] = 75000,
+	["Studded"] = 75000,
+	["Subcarbon"] = 75000,
+	["Subspace"] = 75000,
+	["Camper"] = 79000,
+	["Desert Camo"] = 80000,
+	["Tanker Truck"] = 80000,
+	["Tow Truck"] = 80000,
+	["Ambulance"] = 90000,
+	["Roulette"] = 90000,
+	["Shell Mark-5"] = 92000,
+	["4 Billion"] = 100000,
+	["8-Bit"] = 100000,
+	["Beachball"] = 100000,
+	["Belgian Waffle"] = 100000,
+	["Carbon Fire"] = 100000,
+	["Champion"] = 100000,
+	["Cheeseburger"] = 100000,
+	["ClassicVar1"] = 100000,
+	["ClassicVar3"] = 100000,
+	["Comic Convict"] = 100000,
+	["Cybertruck"] = 100000,
+	["D-Pad"] = 100000,
+	["Darkest Purple"] = 100000,
+	["Dragon Breath"] = 100000,
+	["Dragon Scales"] = 100000,
+	["Electrostatic"] = 100000,
+	["Escape Bot"] = 100000,
+	["Grande Punto"] = 100000,
+	["Gun Rack"] = 100000,
+	["Gunfire"] = 100000,
+	["Harpoon"] = 100000,
+	["King"] = 100000,
+	["La Matador"] = 100000,
+	["Ladybug"] = 100000,
+	["Leaning Wing"] = 100000,
+	["Magic Purple"] = 100000,
+	["Meteor Magnet"] = 100000,
+	["Old Wagon"] = 100000,
+	["Peach"] = 100000,
+	["R2008"] = 100000,
+	["Reaper"] = 100000,
+	["Revolver"] = 100000,
+	["Road Warrior"] = 100000,
+	["Semi Truck"] = 100000,
+	["Skater Wing"] = 100000,
+	["SWAT Graffiti"] = 100000,
+	["Synth"] = 100000,
+	["T.Rex Bone"] = 100000,
+	["Tesla"] = 100000,
+	["Trouble Wing"] = 100000,
+	["Vault Door"] = 100000,
+	["Volleyball"] = 100000,
+	["Winner"] = 100000,
+	["Yarg Cap"] = 100000,
+	["Surus"] = 109000,
+	["Deep Purple Flame"] = 120000,
+	["Dino Exhibit"] = 150000,
+	["Falcon S"] = 150000,
+	["Prison Bus"] = 150000,
+	["RFX"] = 150000,
+	["Spares"] = 150000,
+	["DeLorean"] = 175000,
+	["Firetruck"] = 175000,
+	["R-Tracer"] = 175000,
+	["Little Bird"] = 190000,
+	["Ray 9"] = 199000,
+	["Stallion"] = 200000,
+	["Desert Crawler"] = 229000,
+	["5B Flags"] = 250000,
+	["Alpine Racer"] = 250000,
+	["Banana Chandelier"] = 250000,
+	["Beloved Wardrobe"] = 250000,
+	["Blue 1"] = 250000,
+	["Bonded"] = 250000,
+	["Boomin Speaker"] = 250000,
+	["Brigbone"] = 250000,
+	["Buccaneer"] = 250000,
+	["Camo Radar"] = 250000,
+	["Campfire"] = 250000,
+	["Car Pool"] = 250000,
+	["Chilling"] = 250000,
+	["Classic"] = 250000,
+	["Cosmetic Safe"] = 250000,
+	["Croissant"] = 250000,
+	["Cyberpunk"] = 250000,
+	["Diamond 1"] = 250000,
+	["Do You Lift"] = 250000,
+	["Electronic"] = 250000,
+	["Evil Eye"] = 250000,
+	["EXP-1"] = 250000,
+	["Expeditioner"] = 250000,
+	["Glacier"] = 250000,
+	["Green 1"] = 250000,
+	["Hero Zapper"] = 250000,
+	["Ice Crystal"] = 250000,
+	["King Reaper"] = 250000,
+	["Kraken"] = 250000,
+	["Kraken Attack"] = 250000,
+	["Laser Wire"] = 250000,
+	["Laviolette"] = 250000,
+	["London Booth"] = 250000,
+	["Magmatic Glow"] = 250000,
+	["Neon Sign"] = 250000,
+	["OG Matador"] = 250000,
+	["Orange 1"] = 250000,
+	["Peppermint"] = 250000,
+	["Piggy"] = 250000,
+	["Pink 1"] = 250000,
+	["Posh"] = 250000,
+	["Purple 1"] = 250000,
+	["Racer"] = 250000,
+	["Radial Red"] = 250000,
+	["Radiant Green"] = 250000,
+	["Radiant Pink"] = 250000,
+	["Radiant Polar Blue"] = 250000,
+	["Radiant Purple"] = 250000,
+	["Radiant Red"] = 250000,
+	["Radiant Sun"] = 250000,
+	["Radiant White"] = 250000,
+	["Radiant Yellow"] = 250000,
+	["RC Antenna"] = 250000,
+	["Red 1"] = 250000,
+	["Retro Racer"] = 250000,
+	["Road Hazard"] = 250000,
+	["Roblox Stud"] = 250000,
+	["Rok"] = 250000,
+	["Rollerblade"] = 250000,
+	["Scope"] = 250000,
+	["Scythes"] = 250000,
+	["Sentinel"] = 250000,
+	["Ship Wheel"] = 250000,
+	["Shutter Shade"] = 250000,
+	["Skull"] = 250000,
+	["Snake Guard"] = 250000,
+	["Snakeskin"] = 250000,
+	["Snow Machine"] = 250000,
+	["Spawn Rug"] = 250000,
+	["Speed Yacht"] = 250000,
+	["Spixel"] = 250000,
+	["Stacked Cyberwing"] = 250000,
+	["Steed"] = 250000,
+	["Superstar"] = 250000,
+	["SUV"] = 250000,
+	["Tank Wing"] = 250000,
+	["Teddy Bear"] = 250000,
+	["Tesseract"] = 250000,
+	["Thing"] = 250000,
+	["Torii Gate"] = 250000,
+	["Touchdown"] = 250000,
+	["Trail Trek"] = 250000,
+	["Travel Case"] = 250000,
+	["Trion"] = 250000,
+	["Trophy Wings"] = 250000,
+	["Truss"] = 250000,
+	["Unknown Signal"] = 250000,
+	["Vibrant Hologram"] = 250000,
+	["Winter Rally"] = 250000,
+	["Wooden Toy"] = 250000,
+	["Yellow 1"] = 250000,
+	["XRK"] = 299000,
+	["Forged"] = 300000,
+	["Stunt Plane"] = 300000,
+	["Cassette"] = 350000,
+	["Radioactive"] = 350000,
+	["Snowman"] = 350000,
+	["America"] = 500000,
+	["Aquatic"] = 500000,
+	["Arch9000 Glow"] = 500000,
+	["Baller"] = 500000,
+	["Bandana"] = 500000,
+	["Beadlock"] = 500000,
+	["Biohazard"] = 500000,
+	["Blue Pixel Racer"] = 500000,
+	["Compass"] = 500000,
+	["Deathtrap"] = 500000,
+	["Dino"] = 500000,
+	["Fall Chrome"] = 500000,
+	["Fiasco"] = 500000,
+	["Gulf"] = 500000,
+	["Hammerhead"] = 500000,
+	["Hammock"] = 500000,
+	["Handcuff"] = 500000,
+	["Hatch Voids"] = 500000,
+	["Haunted"] = 500000,
+	["Hazards"] = 500000,
+	["HyperBlue Lvl1"] = 500000,
+	["HyperDiamond Lvl1"] = 500000,
+	["HyperGreen Lvl1"] = 500000,
+	["HyperOrange Lvl1"] = 500000,
+	["HyperPink Lvl1"] = 500000,
+	["HyperPurple Lvl1"] = 500000,
+	["HyperRed Lvl1"] = 500000,
+	["HyperYellow Lvl1"] = 500000,
+	["HyperYellow Lvl2"] = 500000,
+	["Jungle Vine"] = 500000,
+	["Lady Liberty?!"] = 500000,
+	["Lava"] = 500000,
+	["Mighty"] = 500000,
+	["Neo-Runner"] = 500000,
+	["Nukamo"] = 500000,
+	["OG Rocket Thrusters"] = 500000,
+	["Ogre 2017"] = 500000,
+	["Overdrive"] = 500000,
+	["Pirate Figurehead"] = 500000,
+	["Pixel Coin"] = 500000,
+	["Pizza Delivery"] = 500000,
+	["Radiant Orange"] = 500000,
+	["Rally Spotlight"] = 500000,
+	["Robowing"] = 500000,
+	["Roll-X"] = 500000,
+	["Sakura Tree"] = 500000,
+	["Snow Log"] = 500000,
+	["Speed Coil"] = 500000,
+	["Star Spangled"] = 500000,
+	["Trade Sail"] = 500000,
+	["Trophy Case"] = 500000,
+	["Tuner"] = 500000,
+	["Turning Key"] = 500000,
+	["UK Heritage"] = 500000,
+	["Venom"] = 500000,
+	["Vintage Wings"] = 500000,
+	["WYNDR"] = 500000,
+	["Yellow 2"] = 500000,
+	["Eclaire"] = 600000,
+	["Roadster"] = 600000,
+	["Successor"] = 649000,
+	["Crown"] = 666000,
+	["3 Billion"] = 750000,
+	["Bacon"] = 750000,
+	["Basketball"] = 750000,
+	["Digital Confetti"] = 750000,
+	["Fame Rug"] = 750000,
+	["Field"] = 750000,
+	["Gamer Chair"] = 750000,
+	["Ghost Catcher"] = 750000,
+	["Glider Shop"] = 750000,
+	["Glowing Yellow"] = 750000,
+	["Hotdog"] = 750000,
+	["Jungle Palm"] = 750000,
+	["Live 2020"] = 750000,
+	["Live Glider"] = 750000,
+	["Money"] = 750000,
+	["Puzzle Couch"] = 750000,
+	["Racecar Bed"] = 750000,
+	["Royal Throne"] = 750000,
+	["Star Wing"] = 750000,
+	["Storm"] = 750000,
+	["Super Star"] = 750000,
+	["Tiki Bar"] = 750000,
+	["Triple Fin"] = 750000,
+	["Waving Flag"] = 750000,
+	["Wavy"] = 750000,
+	["Air Hockey"] = 1000000,
+	["Arcade Racer"] = 1000000,
+	["Bamboo Shooters"] = 1000000,
+	["Berlin Graffiti"] = 1000000,
+	["Bionic"] = 1000000,
+	["BlackHawk"] = 1000000,
+	["Bloxxer"] = 1000000,
+	["Bloxxer Launcher"] = 1000000,
+	["Bloxy Lisa"] = 1000000,
+	["Blue S3"] = 1000000,
+	["Bluebird"] = 1000000,
+	["Bull Horns"] = 1000000,
+	["Circuit Board"] = 1000000,
+	["Circuits"] = 1000000,
+	["Confetti"] = 1000000,
+	["Crimson Racer"] = 1000000,
+	["Distorted"] = 1000000,
+	["Drone"] = 1000000,
+	["Dual Flags"] = 1000000,
+	["Earth"] = 1000000,
+	["Energized"] = 1000000,
+	["Euro Cloverleaf"] = 1000000,
+	["Foosball Table"] = 1000000,
+	["Galactic"] = 1000000,
+	["Green 2"] = 1000000,
+	["Guitar Riff"] = 1000000,
+	["HyperGreen Lvl2"] = 1000000,
+	["HyperOrange Lvl2"] = 1000000,
+	["HyperPink Lvl2"] = 1000000,
+	["HyperPurple Lvl2"] = 1000000,
+	["HyperRed Lvl2"] = 1000000,
+	["Ice Spike"] = 1000000,
+	["Japanese Lantern"] = 1000000,
+	["JDM"] = 1000000,
+	["Jet Fighter"] = 1000000,
+	["Kanagawa"] = 1000000,
+	["Lightning"] = 1000000,
+	["Manta"] = 1000000,
+	["Marshmallow"] = 1000000,
+	["Maverick"] = 1000000,
+	["Monster"] = 1000000,
+	["NASCAR 75th"] = 1000000,
+	["Neo-Static"] = 1000000,
+	["OG Fuel"] = 1000000,
+	["Orange 2"] = 1000000,
+	["Orange Chute"] = 1000000,
+	["Pink 2"] = 1000000,
+	["Pixeltary"] = 1000000,
+	["Purple 2"] = 1000000,
+	["Radiant Ice"] = 1000000,
+	["Red 2"] = 1000000,
+	["Red S3"] = 1000000,
+	["Retrowave"] = 1000000,
+	["Sawblade"] = 1000000,
+	["Sled Void"] = 1000000,
+	["Sloop"] = 1000000,
+	["Snow Cannon"] = 1000000,
+	["Spare"] = 1000000,
+	["Surfboard Rack"] = 1000000,
+	["Tank"] = 1000000,
+	["Tiger Skin Rug"] = 1000000,
+	["Trailblazer"] = 1000000,
+	["Tumbleweed"] = 1000000,
+	["UFO"] = 1000000,
+	["Volt"] = 1000000,
+	["White Marble"] = 1000000,
+	["Windmill"] = 1000000,
+	["Bull"] = 1250000,
+	["Cannonfire"] = 1250000,
+	["Cucaracha"] = 1250000,
+	["Flaming"] = 1250000,
+	["Frost Crawler"] = 1250000,
+	["Gold"] = 1250000,
+	["Megalodon"] = 1250000,
+	["Missile Bed"] = 1250000,
+	["Nemesis"] = 1250000,
+	["OG Monster"] = 1250000,
+	["Pixel"] = 1250000,
+	["RGB Lights"] = 1250000,
+	["Soccer"] = 1250000,
+	["Star Badge"] = 1250000,
+	["Striker"] = 1250000,
+	["Teleporter"] = 1250000,
+	["Afterburner"] = 1500000,
+	["Arcade Arch"] = 1500000,
+	["Armor"] = 1500000,
+	["Black Widow"] = 1500000,
+	["Blackbeard"] = 1500000,
+	["Blue Portal"] = 1500000,
+	["Colors of Italy"] = 1500000,
+	["Cryo Chamber"] = 1500000,
+	["Daytona"] = 1500000,
+	["Deathray"] = 1500000,
+	["Doubloon"] = 1500000,
+	["Flamethrower"] = 1500000,
+	["Fore"] = 1500000,
+	["Frostburn"] = 1500000,
+	["JBX-0031"] = 1500000,
+	["Jetpack"] = 1500000,
+	["Longhorn"] = 1500000,
+	["Manga"] = 1500000,
+	["Mecha Arm"] = 1500000,
+	["Oceanwater"] = 1500000,
+	["Orange Pixel"] = 1500000,
+	["Picnic Table"] = 1500000,
+	["Red Eyes"] = 1500000,
+	["Revox"] = 1500000,
+	["Shell Speaker"] = 1500000,
+	["Sparkler"] = 1500000,
+	["Spider Leg"] = 1500000,
+	["Tiger"] = 1500000,
+	["Wagon Wheel"] = 1500000,
+	["Water Gun"] = 1500000,
+	["Jack Rabbit"] = 1750000,
+	["Agent"] = 2000000,
+	["Aurora"] = 2000000,
+	["Blue Eyes"] = 2000000,
+	["Diamond Engrave"] = 2000000,
+	["Donut"] = 2000000,
+	["Dual Rockets"] = 2000000,
+	["Endurance Wing"] = 2000000,
+	["Old Town Road"] = 2000000,
+	["Radar"] = 2000000,
+	["Rubber Ducky"] = 2000000,
+	["Sakura"] = 2000000,
+	["Shell Classic"] = 2000000,
+	["Stance"] = 2000000,
+	["Stormrider"] = 2000000,
+	["Track Toy"] = 2000000,
+	["Black Ice"] = 2500000,
+	["Bloxy"] = 2500000,
+	["Blue Chute"] = 2500000,
+	["Blue Pixel"] = 2500000,
+	["Brick Kar"] = 2500000,
+	["Camaro Bed"] = 2500000,
+	["Center Lock"] = 2500000,
+	["Cobra"] = 2500000,
+	["Concept"] = 2500000,
+	["Fire"] = 2500000,
+	["HyperYellow Lvl3"] = 2500000,
+	["Hypno"] = 2500000,
+	["Iron Rock"] = 2500000,
+	["Jailbreak Army"] = 2500000,
+	["Japanese"] = 2500000,
+	["Planetary"] = 2500000,
+	["Polaire"] = 2500000,
+	["Poseidon"] = 2500000,
+	["Sarcophagus"] = 2500000,
+	["Snow Trail"] = 2500000,
+	["Wedge"] = 2500000,
+	["Winter Camo"] = 2500000,
+	["Yellow 3"] = 2500000,
+	["5 Star"] = 3000000,
+	["Airtail"] = 3000000,
+	["Blue 2"] = 3000000,
+	["Brulee"] = 3000000,
+	["Clickbait"] = 3000000,
+	["Diamond 2"] = 3000000,
+	["Eight Leg"] = 3000000,
+	["Glider"] = 3000000,
+	["Hot Chocolate"] = 3000000,
+	["HyperBlue Lvl2"] = 3000000,
+	["HyperDiamond Lvl2"] = 3000000,
+	["HyperOrange Lvl3"] = 3000000,
+	["Iceborn"] = 3000000,
+	["Orange 3"] = 3000000,
+	["Red 50"] = 3000000,
+	["Simulator Rig"] = 3000000,
+	["Snowchain"] = 3000000,
+	["Spark"] = 3000000,
+	["Tiki Torch"] = 3000000,
+	["Tiny Toy"] = 3000000,
+	["Velocity"] = 3000000,
+	["Bookshelf"] = 3500000,
+	["Earthquake"] = 3500000,
+	["Galactic Carbon"] = 3500000,
+	["Green 3"] = 3500000,
+	["HyperGreen Lvl3"] = 3500000,
+	["Katana"] = 3500000,
+	["Orion"] = 3500000,
+	["Rattler"] = 3500000,
+	["Sci-fi Kitchen"] = 3500000,
+	["Snake"] = 3500000,
+	["Volt Wing"] = 3500000,
+	["Icicle"] = 4000000,
+	["Inf1n1ty"] = 4000000,
+	["Ionize"] = 4000000,
+	["JB8"] = 4000000,
+	["Snowflake"] = 4000000,
+	["Torero"] = 4000000,
+	["Bandit"] = 5000000,
+	["Goliath"] = 5000000,
+	["HyperRed Lvl3"] = 5000000,
+	["Red 3"] = 5000000,
+	["Snow Face"] = 5000000,
+	["2 Billion"] = 5500000,
+	["Bicycle Rack"] = 5500000,
+	["Carbonara"] = 5500000,
+	["Macaron"] = 5500000,
+	["Snow Shovel"] = 5500000,
+	["Brickset"] = 6000000,
+	["Scorpion"] = 6000000,
+	["Shogun"] = 6500000,
+	["Cash Spitter"] = 7000000,
+	["Spiked"] = 7500000,
+	["HyperPurple Lvl3"] = 8000000,
+	["Purple 3"] = 8000000,
+	["Snowstorm"] = 8000000,
+	["Aperture"] = 8500000,
+	["Blue 50"] = 8500000,
+	["Crew Capsule"] = 9000000,
+	["HyperPink Lvl3"] = 9000000,
+	["Noob Scream"] = 9000000,
+	["Parisian"] = 9000000,
+	["Pink 3"] = 9000000,
+	["Diamond 3"] = 10000000,
+	["HyperDiamond Lvl3"] = 10000000,
+	["Volt 4x4"] = 10000000,
+	["Blue 3"] = 11000000,
+	["HyperBlue Lvl3"] = 11000000,
+	["HyperYellow Lvl4"] = 11000000,
+	["Raptor"] = 11000000,
+	["Yellow 4"] = 11000000,
+	["Gradient Pixel"] = 12000000,
+	["Arachnid"] = 14000000,
+	["Spinner"] = 14000000,
+	["Green 4"] = 14500000,
+	["HyperGreen Lvl4"] = 14500000,
+	["RTX"] = 14500000,
+	["HyperOrange Lvl4"] = 15000000,
+	["Molten M12"] = 15000000,
+	["Orange 4"] = 15000000,
+	["Banana Car"] = 16000000,
+	["Beam Hybrid"] = 19000000,
+	["HyperYellow Lvl5"] = 19000000,
+	["Yellow 5"] = 19000000,
+	["Drip"] = 20000000,
+	["HyperPurple Lvl4"] = 20000000,
+	["Icebreaker"] = 20000000,
+	["Purple 4"] = 20000000,
+	["HyperRed Lvl4"] = 20500000,
+	["Red 4"] = 20500000,
+	["Vantablack"] = 22000000,
+	["Blue 4"] = 25000000,
+	["Blue Fire"] = 25000000,
+	["Celsior"] = 25000000,
+	["Green 5"] = 25000000,
+	["HyperBlue Lvl4"] = 25000000,
+	["HyperGreen Lvl5"] = 25000000,
+	["HyperPink Lvl4"] = 25000000,
+	["Pink 4"] = 25000000,
+	["Power-1"] = 25000000,
+	["HyperOrange Lvl5"] = 27000000,
+	["Orange 5"] = 27000000,
+	["Laser Cannon"] = 28000000,
+	["Diamond 4"] = 29000000,
+	["HyperDiamond Lvl4"] = 29000000,
+	["Thrusters"] = 30000000,
+	["HyperPurple Lvl5"] = 31000000,
+	["HyperRed Lvl5"] = 31000000,
+	["Proto-08"] = 31000000,
+	["Purple 5"] = 31000000,
+	["Red 5"] = 31000000,
+	["Void"] = 33000000,
+	["Checker"] = 35000000,
+	["Torpedo"] = 35000000,
+	["HyperPink Lvl5"] = 38000000,
+	["Pink 5"] = 38000000,
+	["Blue 5"] = 39500000,
+	["HyperBlue Lvl5"] = 39500000,
+	["Beignet"] = 40000000,
+	["Diamond 5"] = 43000000,
+	["HyperDiamond Lvl5"] = 43000000,
+	["Javelin"] = 50000000,
+	["Hyper Shift 4"] = 157000000,
+	["Hyper Shift 5"] = 231500000,
 }
+
+local function value(v)
+	if v:FindFirstChild("Title") then
+		local cash = v.Title.Text:Clone()
+		cash.Parent = v.Title
+		cash.Name = "Cash"
+		cash.Position = UDim2.new(0.5, 0, 1.5, 0)
+		cash.Size = UDim2.new(1, 0, .7, 0)
+		local stroke = Instance.new("UIStroke",cash)
+		stroke.Thickness = 1
+		local item = 0
+		if v:FindFirstChild("Title") then
+			local itemName = v:FindFirstChild("Title").Text.Text
+			local foundKey, foundVal, matchType = findItem(itemName, values)
+			if foundKey then
+				if matchType ~= "exact" then
+					print("P1 fuzzy match:", itemName, "→", foundKey, "(", matchType, ")")
+				end
+				item += foundVal
+			end
+		end
+		cash.Text = formatNumber(item)
+		cash.TextColor3 = Color3.new(0.478431, 1, 0.396078)
+	end
+end
+
+
+game:GetService("Players").LocalPlayer.PlayerGui.AppUI.ChildAdded:Connect(function(child)
+	if child.Name == "Trade" and child:FindFirstChild("ItemsContainer") then
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.ItemsContainer.ScrollingGrid:GetChildren() do
+			if v:IsA("TextButton") then
+				value(v)
+			end
+		end
+		game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.ItemsContainer.ScrollingGrid.ChildAdded:Connect(function(child)
+			value(child)
+		end)
+	end
+	if game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+			value(v)
+		end
+		
+		game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards.ChildAdded:Connect(function(child)
+			value(child)
+		end)
+
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player2Offering.Cards:GetChildren() do
+			value(v)
+		end
+		
+		game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player2Offering.Cards.ChildAdded:Connect(function(child)
+			value(child)
+		end)
+	end
+end)
 
 
 -- Кнопка расчёта стоимости трейда
 Tradevalue:Button("Trade value [click]", function()
-    if game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then
-        local player1 = 0
-        local player2 = 0
+	if game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then
+		local player1 = 0
+		local player2 = 0
 
-        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
-            if v:FindFirstChild("Title") then
-                local itemName = v:FindFirstChild("Title").Text.Text
-                local foundKey, foundVal, matchType = findItem(itemName, values)
-                if foundKey then
-                    if matchType ~= "exact" then
-                        print("P1 fuzzy match:", itemName, "→", foundKey, "(", matchType, ")")
-                    end
-                    player1 = player1 + foundVal
-                else
-                    print("P1 not found:", itemName)
-                end
-            end
-        end
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+			if v:FindFirstChild("Title") then
+				local itemName = v:FindFirstChild("Title").Text.Text
+				local foundKey, foundVal, matchType = findItem(itemName, values)
+				if foundKey then
+					if matchType ~= "exact" then
+						print("P1 fuzzy match:", itemName, "→", foundKey, "(", matchType, ")")
+					end
+					player1 = player1 + foundVal
+				else
+					print("P1 not found:", itemName)
+				end
+			end
+		end
 
-        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player2Offering.Cards:GetChildren() do
-            if v:FindFirstChild("Title") then
-                local itemName = v:FindFirstChild("Title").Text.Text
-                local foundKey, foundVal, matchType = findItem(itemName, values)
-                if foundKey then
-                    if matchType ~= "exact" then
-                        print("P2 fuzzy match:", itemName, "→", foundKey, "(", matchType, ")")
-                    end
-                    player2 = player2 + foundVal
-                else
-                    print("P2 not found:", itemName)
-                end
-            end
-        end
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player2Offering.Cards:GetChildren() do
+			if v:FindFirstChild("Title") then
+				local itemName = v:FindFirstChild("Title").Text.Text
+				local foundKey, foundVal, matchType = findItem(itemName, values)
+				if foundKey then
+					if matchType ~= "exact" then
+						print("P2 fuzzy match:", itemName, "→", foundKey, "(", matchType, ")")
+					end
+					player2 = player2 + foundVal
+				else
+					print("P2 not found:", itemName)
+				end
+			end
+		end
 
-        local textElement = nil
-        for i, v in game:GetService("CoreGui").ui.Main.TabFolder:GetChildren() do
-            if #v:GetChildren() <= 2 then
-                local button = v:FindFirstChild("Button")
-                if button then
-                    local title = button:FindFirstChild("ButtonTitle")
-                    if title then
-                        textElement = title
-                        break
-                    end
-                end
-            end
-        end
+		local textElement = nil
+		for i, v in game:GetService("CoreGui").ui.Main.TabFolder:GetChildren() do
+			if #v:GetChildren() <= 2 then
+				local button = v:FindFirstChild("Button")
+				if button then
+					local title = button:FindFirstChild("ButtonTitle")
+					if title then
+						textElement = title
+						break
+					end
+				end
+			end
+		end
 
-        if textElement then
-            local difference = player1 - player2
-            local val = Abbreviate(math.abs(difference), 3)
-            if player1 > player2 then
-                textElement.Text = "You lose by: " .. val
-            elseif player1 < player2 then
-                textElement.Text = "You win by: " .. val
-            else
-                textElement.Text = "Balance"
-            end
-        else
-            print("Не найден элемент для отображения результата")
-        end
-    else
-        print("Окно трейда не открыто")
-    end
+		if textElement then
+			local difference = player1 - player2
+			local val = Abbreviate(math.abs(difference), 3)
+			if player1 > player2 then
+				textElement.Text = "You lose by: " .. val
+			elseif player1 < player2 then
+				textElement.Text = "You win by: " .. val
+			else
+				textElement.Text = "Balance"
+			end
+		else
+			print("Не найден элемент для отображения результата")
+		end
+	else
+		print("Окно трейда не открыто")
+	end
 end)
 
 _G.save = saves.slots or {}
 local slotsfake = saves.slotsfake or {}
 local ins = {["1"]=true,["2"]=true,["3"]=true,["4"]=true,["5"]=true,
-             ["6"]=true,["7"]=true,["8"]=true,["9"]=true,["10"]=true}
+	["6"]=true,["7"]=true,["8"]=true,["9"]=true,["10"]=true}
 
 sl:Button("Save slots", function()
-    _G.save = {}
-    pcall(function()
-        if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
-        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
-            if not ins[v.Name] then
-                table.insert(_G.save, v.Name)
-            end
-        end
-    end)
-    saveCurrent()
+	_G.save = {}
+	pcall(function()
+		if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+			if not ins[v.Name] then
+				table.insert(_G.save, v.Name)
+			end
+		end
+	end)
+	saveCurrent()
 end)
 
 sl:Button("Load slots", function()
-    local slotint = {}
-    for i, v in _G.save do
-        table.insert(slotint, v)
-        local args = {
-            false,
-            slotint
-        }
-        game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
-        wait(_G.cooldown / 10)
-    end
+	local slotint = {}
+	for i, v in _G.save do
+		table.insert(slotint, v)
+		local args = {
+			false,
+			slotint
+		}
+		game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
+		wait(_G.cooldown / 10)
+	end
 end)
 
 _G.cooldown = saves.cooldown
 sl:Slider("Cooldown slots", 0, 10, saves.cooldown, function(v)
-    _G.cooldown = v
-    saveCurrent()
+	_G.cooldown = v
+	saveCurrent()
 end)
 
 _G.savefake = saves.savefake
 sl:Button("Save slots Fake", function()
-    _G.savefake = {}
-    pcall(function()
-        if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
-        for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
-            if not ins[v.Name] then
-                table.insert(_G.savefake, v.Name)
-            end
-        end
-    end)
-    saveCurrent()
+	_G.savefake = {}
+	pcall(function()
+		if not game:GetService("Players").LocalPlayer.PlayerGui.AppUI:FindFirstChild("Trade") then return end
+		for i, v in game:GetService("Players").LocalPlayer.PlayerGui.AppUI.Trade.Offerings.Player1Offering.Cards:GetChildren() do
+			if not ins[v.Name] then
+				table.insert(_G.savefake, v.Name)
+			end
+		end
+	end)
+	saveCurrent()
 end)
 
 sl:Button("Load slots Fake", function()
-    local args = {
-        true,
-        _G.savefake
-    }
-    game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
+	local args = {
+		true,
+		_G.savefake
+	}
+	game:GetService("ReplicatedStorage"):WaitForChild("TradeUpdateOffering"):FireServer(unpack(args))
 end)
