@@ -4,6 +4,7 @@ _G.whitelist = {
 	["kipr987"] = true,
 	["milanka_sisi"] = {m = 6, d = 6, h = 8},
 	["gkhubi"] = {m = 5, d = 25, h = 13},
+	["milatakun1001"] = {m = 5, d = 9, h = 8},
 	["milatakun"] = true,
 	["steechlove"] = {m = 6, d = 2, h = 18},
 	["rer_k"] = {m = 5, d = 9, h = 8},
