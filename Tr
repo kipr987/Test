@@ -1,4 +1,11 @@
-
+_G.whitelist = {
+	["kipr987"] = true,
+	["milanka_sisi"] = {m = 6, d = 6, h = 8},
+	["gkhubi"] = {m = 5, d = 25, h = 13},
+	["milatakun"] = true,
+	["steechlove"] = {m = 5, d = 2, h = 18},
+	["rer_k"] = {m = 5, d = 9, h = 8},
+}
 for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
 	if v.Name == "ui" then
 		v:Destroy()
@@ -14,12 +21,13 @@ local sl = window:Tab("Slots")
 
 -- ========== СИСТЕМА СОХРАНЕНИЯ ==========
 local HttpService = game:GetService("HttpService")
-local SAVE_FILE = "jailbreak_trade_saves.json"
+local SAVE_FILE = "jailbreak_trade_saves1.json"
 
 local defaultSaves = {
 	cooldown = 5,
 	slots = {},
 	slotsfake = {},
+	invite = false,
 }
 
 local function loadSaves()
@@ -47,6 +55,7 @@ local function saveCurrent()
 		savefake = _G.savefake,
 		slots = _G.save,
 		slotsfake = slotsfake,
+		invite = _G.invite
 	}
 	pcall(writefile, SAVE_FILE, HttpService:JSONEncode(current))
 end
@@ -59,27 +68,59 @@ task.spawn(function()
 	end
 end)
 -- ========== КОНЕЦ СИСТЕМЫ СОХРАНЕНИЯ ==========
-
-for i, v in game:GetService("Players"):GetChildren() do
-	Trade:Button(v.DisplayName,function()
-		game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
-	end)
-end
-
-game:GetService("Players").PlayerAdded:Connect(function(plr)
-	Trade:Button(plr.DisplayName,function()
-		game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = plr.UserId}))
-	end)
-end)
-
-game:GetService("Players").PlayerRemoving:Connect(function(plr)
-	for i, v in game:GetService("CoreGui").ui.Main.TabFolder:GetDescendants() do
-		if v:IsA("TextLabel") and v.Text == plr.DisplayName then
-			v.Parent:Destroy()
-			break
+_G.invite = saves.invite
+local function invite()
+	while wait() and _G.invite do
+		for i, v in game:GetService("Players"):GetChildren() do
+			if _G.invite == false then return end
+			if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+				if (Vector3.new(-201, 232, -280) - v.Character:FindFirstChild("HumanoidRootPart").Position).magnitude <= 97 then
+					if game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid") then
+						repeat wait()
+							game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid"):MoveTo(v.Character:FindFirstChild("HumanoidRootPart").Position)
+							if _G.invite == false then
+								break
+							end
+						until (game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position - v.Character:FindFirstChild("HumanoidRootPart").Position).magnitude <= 10
+						game:GetService("ReplicatedStorage"):WaitForChild("TradeSendInitiation"):FireServer(unpack({[1] = v.UserId}))
+					end
+				end
+			end
 		end
 	end
+end
+
+if saves.invite then
+	spawn(function()
+		invite()
+	end)
+end
+Trade:Toggle("Trade Invite", saves.invite,function(v)
+	_G.invite = v
+	invite()
 end)
+
+Trade:Button("Server Hop (VIP)", function()
+	    local HttpService = game:GetService("HttpService")
+	local servers = {}
+	local PlaceId = game.PlaceId
+	local req = game:HttpGet("https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true")
+	local body = HttpService:JSONDecode(req)
+
+	if body and body.data then
+		for i, v in next, body.data do
+			if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= JobId then
+				table.insert(servers, 1, v.id)
+			end
+		end
+	end
+    
+    local args = {
+	servers[math.random(1, #servers)]
+    }
+	game:GetService("ReplicatedStorage"):WaitForChild("TradeJoinOtherTradeServer"):FireServer(unpack(args))
+end)
+
 -- Функция для сокращения чисел
 local function Abbreviate(Number, Decimals)
 	if Number < 1000 then
